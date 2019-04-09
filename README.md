@@ -33,30 +33,21 @@ Installation and Reproduction Steps:
 `$ sudo apt-get -y install git make`
 
 2. Clone the repository:
-`$ git clone https://github.com/sibanez12/dctcp-ns2.git`
+`$ git clone https://github.com/serhatarslan-hub/congestion_benchmark.git`
 
 3. Install the dependencies (this will take about 8 minutes):
-`$ cd dctcp-ns2 && make`
+`$ cd congestion_benchmark/dctcp-ns2 && make`
 
 4. Reproduce the results (this will take about 5 minutes):
-`$ ./run.sh`
-
-The plots will be saved in the plots/ directory. When the simulations are 
-complete and the plots have been produced, an HTTP server will be started 
-up automatically (may need to enter sudo password).
-
-5. Please identify the External IP address of the machine you are running the 
-simulations on and navigate to http://<IP_ADDRESS> or to http://localhost
-if you are running on a local machine. Click on a link to view the
-corresponding figure. 
+`$ cd ..`
+`$ ./run_benchmark.sh`
 
 
 Additional Notes
 ----------------
 
-You can use the run_sim.py script to create figures individually, but you
-will need to source the settings.sh script first. 
+You can use the benchmark_sim.py script to run individual congestion algorithms,
+but you will need to source the settings.sh script first. 
 
-Run, `$ ./run_sim.py --help` for usage information.
-
+Run, `$ ./dctcp-ns2/run_sim.py --help` for usage information.
 
