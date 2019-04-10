@@ -42,7 +42,6 @@ def plot_rtt(algo_name):
     sorted_data = np.sort(rtt)
     yvals=np.arange(len(sorted_data))/float(len(sorted_data)-1)
     plt.figure()
-    plt.xlim(0,300)
     plt.xlabel('RTT (usec)')
     plt.title('CDF of RTT for '+algo_name+' experiment')
     plt.plot(sorted_data, yvals, linestyle='-', marker='', label=algo_name)

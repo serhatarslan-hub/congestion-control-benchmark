@@ -1,0 +1,17 @@
+ <table style="width:100%">
+  <tr>
+    <th>RTT Trend</th>
+    <th>CDF of RTT</th>
+    <th>Throughput Trend</th>
+  </tr>
+  <tr>
+    <td><img src="./out/dctcp.rtt.png" alt="RTT trend" style="height:300px;"></td>
+    <td><img src="./out/dctcp.rttCDF.png" alt="CDF of RTT" style="height:300px;"></td>
+    <td><img src="./out/dctcp_thp.png" alt="Throughput trend" style="height:300px;"></td>
+  </tr>
+  <tr>
+    <td>Eve</td>
+    <td>Jackson</td>
+    <td>94</td>
+  </tr>
+</table> 
