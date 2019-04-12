@@ -12,12 +12,12 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 #from matplotlib.backends.backend_pdf import PdfPages
 
-def plot_rtt(algo_name):
+def plot_rtt(algo_name, repro_dir):
     fmat = r"(?P<time>[\d.]*) (?P<rtt>[\d.]*)"
 
-    in_file = './out/'+algo_name+'.rtt.out'
-    out_file = './out/'+algo_name+'.rtt.png'
-    cdf_file = './out/'+algo_name+'.rttCDF.png'
+    in_file = repro_dir+algo_name+'.rtt.out'
+    out_file = repro_dir+algo_name+'.rtt.png'
+    cdf_file = repro_dir+algo_name+'.rttCDF.png'
 
     time = []
     rtt = []
@@ -49,10 +49,10 @@ def plot_rtt(algo_name):
     plt.savefig(cdf_file)
     print "Saved plot: ", cdf_file
 
-def plot_throughput(algo_name, num_clients):
+def plot_throughput(algo_name, num_clients, repro_dir):
     
-    nam_file = './out/'+algo_name+'.nam'
-    out_file = './out/'+algo_name+'_thp.png'
+    nam_file = repro_dir+algo_name+'.nam'
+    out_file = repro_dir+algo_name+'_thp.png'
     granularity = 0.001
     clock = 0
     sum_bytes = []
@@ -112,27 +112,28 @@ def main():
     args = parser.parse_args()
     
     num_clients = 10
+    repro_dir = './reproduction_out/'
 
     if (args.dctcp):
 	congestion_alg = 'dctcp'
-        os.system('ns ./experiment.tcl {0} {1}'.format(congestion_alg, num_clients))
+        os.system('ns ./lib/reproduction.tcl {0} {1} {2}'.format(congestion_alg, repro_dir, num_clients))
 	print("DCTCP Simulation Done!")
-        plot_rtt(congestion_alg)
-	plot_throughput(congestion_alg, num_clients)
+        plot_rtt(congestion_alg, repro_dir)
+	plot_throughput(congestion_alg, num_clients, repro_dir)
 
     if (args.vegas):
 	congestion_alg = 'vegas'
-        os.system('ns ./experiment.tcl {0} {1}'.format(congestion_alg, num_clients))
+        os.system('ns ./lib/reproduction.tcl {0} {1} {2}'.format(congestion_alg, repro_dir, num_clients))
 	print("Vegas Simulation Done!")
-        plot_rtt(congestion_alg)
-	plot_throughput(congestion_alg, num_clients)
+        plot_rtt(congestion_alg, repro_dir)
+	plot_throughput(congestion_alg, num_clients, repro_dir)
 
     if (args.timely):
 	congestion_alg = 'timely'
-        os.system('ns ./experiment.tcl {0} {1}'.format(congestion_alg, num_clients))
+        os.system('ns ./lib/reproduction.tcl {0} {1} {2}'.format(congestion_alg, repro_dir, num_clients))
 	print("Timely Simulation Done!")
-        plot_rtt(congestion_alg)
-	plot_throughput(congestion_alg, num_clients)
+        plot_rtt(congestion_alg, repro_dir)
+	plot_throughput(congestion_alg, num_clients, repro_dir)
 
 if __name__ == "__main__":
     main()

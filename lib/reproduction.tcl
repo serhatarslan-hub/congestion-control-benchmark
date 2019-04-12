@@ -6,18 +6,19 @@
 # in "TIMELY: RTT-based Congestion Control for the Datacenter"
 # paper by Radhika Mittal et. al.
 
-if {$argc != 2} {
-    puts "wrong number of arguments, expected 2, got $argc"
+if {$argc != 3} {
+    puts "wrong number of arguments, expected 3, got $argc"
     exit 0
 }
 
 set congestion_alg [lindex $argv 0]
+set repro_dir [lindex $argv 1]
 
-set out_rtt_file ./out/$congestion_alg.rtt.out
+set out_rtt_file $repro_dir$congestion_alg.rtt.out
 set rttFile [open $out_rtt_file w]
-set out_q_file ./out/$congestion_alg.queue.out
+set out_q_file $repro_dir$congestion_alg.queue.out
 
-set num_clients [lindex $argv 1]
+set num_clients [lindex $argv 2]
 set num_conn_per_client 1
 
 # samp_int (sec)
@@ -31,7 +32,7 @@ set link_delay 5us
 # tcp_window (pkts)
 set tcp_window 10000000
 # run_time (sec)
-set run_time 0.1
+set run_time 0.3
 # pktSize (bytes)
 set pktSize 1460
 
@@ -51,11 +52,11 @@ set deque_prio_ false
 set ns [new Simulator]
 
 #Open the Trace files
-set tracefile [open ./out/$congestion_alg.tr w]
+set tracefile [open $repro_dir$congestion_alg.tr w]
 #$ns trace-all $tracefile
 
 #Open the NAM trace file
-set nf [open ./out/$congestion_alg.nam w]
+set nf [open $repro_dir$congestion_alg.nam w]
 $ns namtrace-all $nf
 
 # Create TOR_switch, server, and client nodes
@@ -340,7 +341,7 @@ $ns at $run_time "finish"
 
 #Define a 'finish' procedure
 proc finish {} {
-    global congestion_alg ns nf tracefile rttFile qf_size
+    global congestion_alg ns nf tracefile rttFile qf_size repro_dir
     $ns flush-trace
     # Close the NAM trace file
     close $nf
@@ -348,7 +349,7 @@ proc finish {} {
     close $rttFile 
     close $qf_size
     # Execute NAM on the trace file
-    exec nam ./out/$congestion_alg.nam &
+    exec nam $repro_dir$congestion_alg.nam &
     exit 0
 }
 

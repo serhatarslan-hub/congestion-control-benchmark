@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<style>
+			html, body {
+				height: 100%;
+			}
+			img.dyn {
+				height: 50%;
+				width: 100%;
+			}
+		</style>
+	</head>
+	<body>
+		<table style="width:100%">
+			<tr>
+    				<th>RTT Trend</th>
+    				<th>CDF of RTT</th>
+    				<th>Throughput Trend</th>
+  			</tr>
+			<tr>
+    				<td><img class="dyn" src="./reproduction_out/dctcp.rtt.png" alt="RTT trend" ></td>
+    				<td><img class="dyn" src="./reproduction_out/dctcp.rttCDF.png" alt="CDF of RTT" ></td>
+    				<td><img class="dyn" src="./reproduction_out/dctcp_thp.png" alt="Throughput trend" ></td>
+  			</tr>
+			<tr>
+    				<td><img class="dyn" src="./reproduction_out/timely.rtt.png" alt="RTT trend" ></td>
+    				<td><img class="dyn" src="./reproduction_out/timely.rttCDF.png" alt="CDF of RTT" ></td>
+    				<td><img class="dyn" src="./reproduction_out/timely_thp.png" alt="Throughput trend" ></td>
+  			</tr>
+			<tr>
+    				<td><img class="dyn" src="./reproduction_out/vegas.rtt.png" alt="RTT trend" ></td>
+    				<td><img class="dyn" src="./reproduction_out/vegas.rttCDF.png" alt="CDF of RTT" ></td>
+    				<td><img class="dyn" src="./reproduction_out/vegas_thp.png" alt="Throughput trend" ></td>
+  			</tr>
+		</table> 
+	</body>
+</html>
