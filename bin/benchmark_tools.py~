@@ -1,26 +1,18 @@
 #!/usr/bin/env python
 
-"""
-Controls the NS-2 Reproduction simulation runs
-"""
-
 import os, sys, re
 import numpy as np
 import argparse
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-#from matplotlib.backends.backend_pdf import PdfPages
 
-sys.path.append(os.path.expandvars('$BENCHMARK_NS2/bin/'))
-import benchmark_tools
-
-def plot_rtt(algo_name, repro_dir):
+def plot_rtt(algo_name, out_dir):
     fmat = r"(?P<time>[\d.]*) (?P<rtt>[\d.]*)"
 
-    in_file = repro_dir+algo_name+'.rtt.out'
-    out_file = repro_dir+algo_name+'.rtt.png'
-    cdf_file = repro_dir+algo_name+'.rttCDF.png'
+    in_file = out_dir+algo_name+'.rtt.out'
+    out_file = out_dir+algo_name+'.rtt.png'
+    cdf_file = out_dir+algo_name+'.rttCDF.png'
 
     time = []
     rtt = []
@@ -45,23 +37,23 @@ def plot_rtt(algo_name, repro_dir):
     sorted_data = np.sort(rtt)
     yvals=np.arange(len(sorted_data))/float(len(sorted_data)-1)
     plt.figure()
-    plt.xlim(0,300)
+    #plt.xlim(0,300)
     plt.xlabel('RTT (usec)')
     plt.title('CDF of RTT for '+algo_name+' experiment')
     plt.plot(sorted_data, yvals, linestyle='-', marker='', label=algo_name)
     plt.savefig(cdf_file)
     print "Saved plot: ", cdf_file
 
-def plot_throughput(algo_name, num_clients, repro_dir):
+def plot_throughput(algo_name, num_clients, out_dir, num_leafs=1):
     
-    nam_file = repro_dir+algo_name+'.nam'
-    out_file = repro_dir+algo_name+'_thp.png'
+    nam_file = out_dir+algo_name+'.nam'
+    out_file = out_dir+algo_name+'_thp.png'
     granularity = 0.001
     clock = 0
     sum_bytes = []
     time = []
 
-    num_nodes = num_clients + 2 # First 2 nodes are TOR and the Server
+    num_nodes = num_clients + num_leafs + 1
     throughputs = []
     for i in range(num_nodes):
 	throughputs.append([])
@@ -94,9 +86,8 @@ def plot_throughput(algo_name, num_clients, repro_dir):
 	throughputs[i].append(dummy_thp)
 
     plt.figure()
-    plt.plot(time,throughputs[0],linestyle='-', marker='', label='TOR Switch')
-    for i in range(2,num_nodes):
-	node_name = 'client_{}'.format(i)
+    for i in range(num_nodes):
+	node_name = 'node_{}'.format(i)
         plt.plot(time,throughputs[i],linestyle='-', marker='', label=node_name)
     plt.yscale('log')
     plt.ylabel('Throughput (bps)')
@@ -107,36 +98,35 @@ def plot_throughput(algo_name, num_clients, repro_dir):
     plt.savefig(out_file, bbox_inches="tight")
     print "Saved plot: ", out_file
 
-def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--dctcp', action='store_true', help="Simulates DCTCP with the setup proposed in Timely paper")
-    parser.add_argument('--vegas', action='store_true', help="Simulates VEGAS as a reference for the Timely implementation")
-    parser.add_argument('--timely', action='store_true', help="Simulates Timely with the setup proposed in Timely paper")
-    args = parser.parse_args()
+"""
+Parse the sampled queue size output file and plot the queue size over time
+"""
+def plot_queue(algo_name, out_dir):
+    fmat = r"(?P<time>[\d.]*) (?P<from_node>[\d]*) (?P<to_node>[\d]*) (?P<q_size_B>[\d.]*) (?P<q_size_p>[\d.]*) (?P<arr_p>[\d.]*) (?P<dep_p>[\d.]*) (?P<drop_p>[\d.]*) (?P<arr_B>[\d.]*) (?P<dep_B>[\d.]*) (?P<drop_B>[\d.]*)"
+
+    in_file = out_dir+algo_name+'.queue.out'
+    out_file = out_dir+algo_name+'.queue.png'
+
+    time = []
+    q_size = []
+    with open(in_file) as f:
+        for line in f:
+            searchObj = re.search(fmat, line)
+            if searchObj is not None:
+                t = float(searchObj.groupdict()['time'])
+                time.append(t)
+                s = float(searchObj.groupdict()['q_size_p'])
+                q_size.append(s)
     
-    num_clients = 10
-    repro_dir = './reproduction_out/'
+    plt.figure()
+    plt.plot(time,q_size,linestyle='-', marker='', label='Queue in packets')
+    plt.yscale('log')
+    #plt.xscale('log')
+    plt.xlim(0,0.2)
+    plt.ylabel('Queue (bits)')
+    plt.xlabel('Time (sec)')
+    plt.title('Queue size for '+algo_name+' experiment')
+    plt.grid()
+    plt.savefig(out_file, bbox_inches="tight")
+    print "Saved plot: ", out_file
 
-    if (args.dctcp):
-	congestion_alg = 'dctcp'
-        os.system('ns ./lib/reproduction.tcl {0} {1} {2}'.format(congestion_alg, repro_dir, num_clients))
-	print("DCTCP Simulation Done!")
-        plot_rtt(congestion_alg, repro_dir)
-	plot_throughput(congestion_alg, num_clients, repro_dir)
-
-    if (args.vegas):
-	congestion_alg = 'vegas'
-        os.system('ns ./lib/reproduction.tcl {0} {1} {2}'.format(congestion_alg, repro_dir, num_clients))
-	print("Vegas Simulation Done!")
-        plot_rtt(congestion_alg, repro_dir)
-	plot_throughput(congestion_alg, num_clients, repro_dir)
-
-    if (args.timely):
-	congestion_alg = 'timely'
-        os.system('ns ./lib/reproduction.tcl {0} {1} {2}'.format(congestion_alg, repro_dir, num_clients))
-	print("Timely Simulation Done!")
-        plot_rtt(congestion_alg, repro_dir)
-	plot_throughput(congestion_alg, num_clients, repro_dir)
-
-if __name__ == "__main__":
-    main()

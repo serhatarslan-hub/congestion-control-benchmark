@@ -52,7 +52,7 @@ set deque_prio_ false
 set ns [new Simulator]
 
 #Open the Trace files
-set tracefile [open $repro_dir$congestion_alg.tr w]
+#set tracefile [open $repro_dir$congestion_alg.tr w]
 #$ns trace-all $tracefile
 
 #Open the NAM trace file

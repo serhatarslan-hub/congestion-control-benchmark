@@ -1,28 +1,28 @@
 
-# March, 2019
+# April, 2019
 # Author: Serhat Arslan, Stanford University
 
-#  This script simulates the DCTCP behavior with the setup given
-# in "TIMELY: RTT-based Congestion Control for the Datacenter"
-# paper by Radhika Mittal et. al.
+#  This script simulates a multi-Level topology where
+# congestion takes place in multiple hops.
 
-if {$argc != 3} {
-    puts "wrong number of arguments, expected 3, got $argc"
+if {$argc != 4} {
+    puts "wrong number of arguments, expected 4, got $argc"
     exit 0
 }
 
 set congestion_alg [lindex $argv 0]
-set repro_dir [lindex $argv 1]
+set out_dir [lindex $argv 1]
 
-set out_rtt_file $repro_dir$congestion_alg.rtt.out
+set out_rtt_file $out_dir$congestion_alg.rtt.out
 set rttFile [open $out_rtt_file w]
-set out_q_file $repro_dir$congestion_alg.queue.out
+set out_q_file $out_dir$congestion_alg.queue.out
 
 set num_clients [lindex $argv 2]
+set num_leafs [lindex $argv 3]
 set num_conn_per_client 1
 
 # samp_int (sec)
-set samp_int 0.01
+set samp_int 0.0001
 # q_size (pkts)
 set q_size 200
 # link_cap (Mbps)
@@ -32,7 +32,7 @@ set link_delay 5us
 # tcp_window (pkts)
 set tcp_window 10000000
 # run_time (sec)
-set run_time 0.3
+set run_time 0.11
 # pktSize (bytes)
 set pktSize 1460
 
@@ -52,22 +52,26 @@ set deque_prio_ false
 set ns [new Simulator]
 
 #Open the Trace files
-set tracefile [open $repro_dir$congestion_alg.tr w]
+#set tracefile [open $out_dir$congestion_alg.tr w]
 #$ns trace-all $tracefile
 
 #Open the NAM trace file
-set nf [open $repro_dir$congestion_alg.nam w]
+set nf [open $out_dir$congestion_alg.nam w]
 $ns namtrace-all $nf
 
 # Create TOR_switch, server, and client nodes
-set TOR_switch_node [$ns node]
-$ns at 0.001 "$TOR_switch_node label \"TOR\""
-set server_node [$ns node]
-$ns at 0.001 "$server_node label \"Server\""
-
 for {set i 0} {$i < $num_clients} {incr i} {
     set client($i) [$ns node]
 }
+
+for {set i 0} {$i < $num_leafs} {incr i} {
+    set leaf_switch($i) [$ns node]
+}
+
+set spine_switch [$ns node]
+$ns at 0.001 "$spine_switch label \"Spine\""
+set server_node [$ns node]
+$ns at 0.001 "$server_node label \"Server\""
 
 # Queue options
 Queue set limit_ $q_size
@@ -95,22 +99,41 @@ if {[string compare $congestion_alg "dctcp"] == 0} {
 }
 
 # Create links between the nodes
-$ns duplex-link $TOR_switch_node $server_node $link_cap $link_delay $queue_type
+$ns duplex-link $spine_switch $server_node $link_cap $link_delay $queue_type
+$ns duplex-link-op $spine_switch $server_node orient up 
 
-# Create a Star topology to simulate a rack environment
-for {set i 0} {$i < $num_clients} {incr i} {
-    $ns duplex-link $client($i) $TOR_switch_node $link_cap $link_delay $queue_type
+# Create links between the spine and the leafs
+for {set i 0} {$i < $num_leafs} {incr i} {
+    $ns duplex-link $leaf_switch($i) $spine_switch $link_cap $link_delay $queue_type
+
+    # Only for 2-leaf topologies!
+    set orientation [lindex {up-right up-left} $i]
+    $ns duplex-link-op $leaf_switch($i) $spine_switch orient $orientation
 }
 
-#Monitor the queue for link (s1-h3). (for NAM)
-$ns duplex-link-op $TOR_switch_node $server_node queuePos 0.5
+# Create links between the clients and the leafs
+set clientPerLeaf [expr $num_clients/$num_leafs]
+for {set i 0} {$i < $num_leafs} {incr i} {
+    for {set j 0} {$j < $clientPerLeaf} {incr j} {
+	set conn_idx [expr $i*$clientPerLeaf+$j]
+
+        $ns duplex-link $client($conn_idx) $leaf_switch($i) $link_cap $link_delay $queue_type
+	#$ns duplex-link-op $client($conn_idx) $leaf_switch($i) orient up
+    }
+}
+
+#Monitor the queue for link. (for NAM)
+$ns duplex-link-op $spine_switch $server_node queuePos 0.5
+for {set i 0} {$i < $num_leafs} {incr i} {
+    $ns duplex-link-op $leaf_switch($i) $spine_switch queuePos 0.5
+}
 
 ##Set error model on link n3 to n2
 #set loss_module [new ErrorModel]
 #$loss_module set rate_ 0.01
 #$loss_module ranvar [new RandomVariable/Uniform]
 #$loss_module drop-target [new Agent/Null]
-#$ns lossmodel $loss_module $TOR_switch_node $server_node
+#$ns lossmodel $loss_module $spine_switch $server_node
 
 # HOST options
 Agent/TCP set window_ $tcp_window
@@ -162,13 +185,13 @@ if {[string compare $congestion_alg "dctcp"] == 0} {
 
         }
     }
-    # The following procedure is called when ever a packet is received 
+    # The following procedure is called whenever a packet is received 
     Agent/TCP/FullTcp instproc recv {rtt_t} {
 	global ns rttFile 
 	#puts $rttFile "A packet received"       
 	
 	$self instvar node_
-	if {[$node_ id] == 2 } {
+	if {[$node_ id] == 0 } {
 	    set now [$ns now]
 	    set rtt [$self set rtt_]
 	    #set rtt [$self set t_rtt_]
@@ -214,7 +237,7 @@ if {[string compare $congestion_alg "dctcp"] == 0} {
 	global ns rttFile       
 	
 	$self instvar node_
-	if {[$node_ id] == 2 } {
+	if {[$node_ id] == 0 } {
 	    set now [$ns now]
 	    #set rtt [$self set v_rtt_]
 	    set rtt [expr $rtt_t*1000000.0]
@@ -248,7 +271,7 @@ if {[string compare $congestion_alg "dctcp"] == 0} {
 	    $tcp($conn_idx) set timely_additiveInc_ 10000000
 	    $tcp($conn_idx) set timely_decreaseFac_ 0.8
 	    $tcp($conn_idx) set timely_HAI_thresh_ 5
-	    $tcp($conn_idx) set timely_rate_ 7000000000
+	    $tcp($conn_idx) set timely_rate_ 5000000000
 
         }
     }
@@ -268,7 +291,7 @@ if {[string compare $congestion_alg "dctcp"] == 0} {
 	global ns rttFile        
 	
 	$self instvar node_
-	if {[$node_ id] == 11 } {
+	if {[$node_ id] == 0 } {
 	    set now [$ns now]
 	    #set rtt [$self set v_rtt_]
 	    set rtt [expr $rtt_t*1000000.0]
@@ -313,35 +336,25 @@ if {[string compare $congestion_alg "dctcp"] == 0} {
 
 # queue monitoring
 set qf_size [open $out_q_file w]
-set qmon_size [$ns monitor-queue $TOR_switch_node $server_node $qf_size $samp_int]
-[$ns link $TOR_switch_node $server_node] queue-sample-timeout
+set qmon_size [$ns monitor-queue $spine_switch $server_node $qf_size $samp_int]
+[$ns link $spine_switch $server_node] queue-sample-timeout
 
 #Schedule events for the FTP agents
 for {set i 0} {$i < $num_clients} {incr i} {
     for {set j 0} {$j < $num_conn_per_client} {incr j} {
 	set conn_idx [expr $i*$num_conn_per_client+$j]        
 	
-	$ns at 0.01 "$ftp($conn_idx) start"
-        $ns at [expr $run_time - 0.01] "$ftp($conn_idx) stop"
+	$ns at 0.001 "$ftp($conn_idx) start"
+        $ns at [expr $run_time - 0.001] "$ftp($conn_idx) stop"
     }
 }
-
-#proc plotRTT {tcpSource file} {
-#	global ns 
-#	set time 0.00002
-#	set now [$ns now]
-#	set rtt [$tcpSource set rtt_]
-#	puts $file "$now $rtt"
-#	$ns at [expr $now+$time] "plotRTT $tcpSource $file"
-#}
-#$ns at 0.1 "plotRTT $tcp(0) $rttFile"
 
 #Call the finish procedure after run_time seconds of simulation time
 $ns at $run_time "finish"
 
 #Define a 'finish' procedure
 proc finish {} {
-    global congestion_alg ns nf tracefile rttFile qf_size repro_dir
+    global congestion_alg ns nf tracefile rttFile qf_size out_dir
     $ns flush-trace
     # Close the NAM trace file
     close $nf
@@ -349,7 +362,7 @@ proc finish {} {
     close $rttFile 
     close $qf_size
     # Execute NAM on the trace file
-    exec nam $repro_dir$congestion_alg.nam &
+    exec nam $out_dir$congestion_alg.nam &
     exit 0
 }
 

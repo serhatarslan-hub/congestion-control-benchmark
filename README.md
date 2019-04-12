@@ -40,7 +40,7 @@ Installation and Reproduction Steps:
 
 4. Reproduce the results (this will take about 5 minutes):
 `$ cd ..`
-`$ ./run_timely_reproduction.sh`
+`$ ./run_timelyReproduction.sh`
 
 
 Additional Notes

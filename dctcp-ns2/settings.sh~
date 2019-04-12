@@ -28,8 +28,3 @@ PATH=$PATH:$XGRAPH:$NS:$NAM
 export DCTCP_NS2=/home/sarslan/Documents/congestion_benchmark/dctcp-ns2
 export TCL_DIR=${DCTCP_NS2}/tcl
 export PYTHONPATH="$PYTHONPATH:${DCTCP_NS2}/bin"
-
-########################
-#### Benchmark NS-2 ####
-########################
-export BENCHMARK_NS2=/home/sarslan/Documents/congestion_benchmark
