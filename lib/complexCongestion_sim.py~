@@ -34,6 +34,7 @@ def main():
 	print("Timely Simulation Done!")
         benchmark_tools.plot_rtt(congestion_alg, out_dir)
 	benchmark_tools.plot_throughput(congestion_alg, num_clients, out_dir, num_leafs)
+	benchmark_tools.plot_queue(congestion_alg, out_dir)
 
 if __name__ == "__main__":
     main()

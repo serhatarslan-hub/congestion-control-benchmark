@@ -25,7 +25,7 @@ def plot_rtt(algo_name, out_dir):
                 s = float(searchObj.groupdict()['rtt'])
                 rtt.append(s)
     plt.figure()
-    plt.plot(time,rtt,linestyle='-', marker='', label=algo_name)
+    plt.plot(time,rtt,'.', label=algo_name)
     plt.ylabel('RTT (usec)')
     plt.xlabel('Time (sec)')
     plt.title('RTT for '+algo_name+' experiment')
@@ -40,7 +40,7 @@ def plot_rtt(algo_name, out_dir):
     #plt.xlim(0,300)
     plt.xlabel('RTT (usec)')
     plt.title('CDF of RTT for '+algo_name+' experiment')
-    plt.plot(sorted_data, yvals, linestyle='-', marker='', label=algo_name)
+    plt.plot(sorted_data, yvals, '.', label=algo_name)
     plt.savefig(cdf_file)
     print "Saved plot: ", cdf_file
 
@@ -89,6 +89,7 @@ def plot_throughput(algo_name, num_clients, out_dir, num_leafs=1):
     for i in range(num_nodes):
 	node_name = 'node_{}'.format(i)
         plt.plot(time,throughputs[i],linestyle='-', marker='', label=node_name)
+	#plt.plot(time,throughputs[i],linestyle='-', marker='')
     plt.yscale('log')
     plt.ylabel('Throughput (bps)')
     plt.xlabel('Time (sec)')

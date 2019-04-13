@@ -20,7 +20,7 @@ def main():
     parser.add_argument('--timely', action='store_true', help="Simulates Timely in the 2-level congestion scenario")
     args = parser.parse_args()
     
-    num_clients = 10
+    num_clients = 20
     num_leafs = 2
     if (num_clients % num_leafs != 0):
 	print('ERROR: Please provide number of clients that is multiple of number of leafs.')
