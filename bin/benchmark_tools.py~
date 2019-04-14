@@ -88,8 +88,8 @@ def plot_throughput(algo_name, num_clients, out_dir, num_leafs=1):
     plt.figure()
     for i in range(num_nodes):
 	node_name = 'node_{}'.format(i)
-        #plt.plot(time,throughputs[i],linestyle='-', marker='', label=node_name)
-	plt.plot(time,throughputs[i],linestyle='-', marker='')
+        plt.plot(time,throughputs[i],linestyle='-', marker='', label=node_name)
+	#plt.plot(time,throughputs[i],linestyle='-', marker='')
     plt.yscale('log')
     plt.ylabel('Throughput (bps)')
     plt.xlabel('Time (sec)')

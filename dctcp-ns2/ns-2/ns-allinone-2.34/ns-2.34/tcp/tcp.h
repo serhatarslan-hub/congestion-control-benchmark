@@ -613,6 +613,8 @@ protected:
 	double timely_lastUpdateTime;	// Last Update time of prevRTT
 	double timely_avgRTTDiff_;	// RTT difference
 	int timely_negGradientCount_;	// For HAI mode
+	/* Serhat's implementation of HOPE */
+	int hope_;		// whether to use hope congestion control
 	/* End of TIMELY parameters */
 
 	double t_cwnd_changed_; // last time cwnd changed

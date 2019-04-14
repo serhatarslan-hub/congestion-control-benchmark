@@ -1170,6 +1170,8 @@ Agent/TCP/Vegas set timely_additiveInc_ 10000000
 Agent/TCP/Vegas set timely_decreaseFac_ 0.8
 Agent/TCP/Vegas set timely_HAI_thresh_ 5
 Agent/TCP/Vegas set timely_rate_ 10000000000
+## Serhat's implementation of Hope ##
+Agent/TCP/Vegas set hope_ 0
 
 Agent/TCP/Vegas/RBP set rbp_scale_ 0.75
 # rbp_rate_algorithm_'s are defined in tcp-rbp.cc.

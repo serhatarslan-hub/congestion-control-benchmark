@@ -171,6 +171,18 @@ void DropTail::enque(Packet* p)
 			drop(p);
 		}
 	} else {
+		/* Serhat's implementation of HOPE */
+		hdr_ip* iph = hdr_ip::access(p);
+		int hop_cnt = iph->HOPE_hop_cnt(); 
+		//int* hop_delay = iph->HOPE_hop_delay();
+		//int hop_delay[] = iph->HOPE_hop_delay_;
+		if (hop_cnt < HOPE_MAX_HOP) {
+			//printf("**The delay at this hop: %d bytes %d packets\n",q_->byteLength(),q_->length());
+			*(iph->HOPE_hop_delay() + hop_cnt) = q_->byteLength();
+			//hop_delay[hop_cnt] = q_->byteLength();
+			iph->HOPE_hop_cnt() ++;					
+		}
+		/* End of HOPE operations */
 		q_->enque(p);
 	}
 }

@@ -124,7 +124,7 @@ def plot_queue(algo_name, out_dir):
     plt.yscale('log')
     #plt.xscale('log')
     #plt.xlim(0,0.2)
-    plt.ylabel('Queue (bits)')
+    plt.ylabel('Queue (packets)')
     plt.xlabel('Time (sec)')
     plt.title('Queue size for '+algo_name+' experiment')
     plt.grid()

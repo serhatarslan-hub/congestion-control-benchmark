@@ -604,7 +604,7 @@ protected:
 	double timely_ewma_alpha_;	// Moving Average constant for RTTDiff
 	double timely_t_low_;	// T_low for RTT gradient based rate update (in seconds)
 	double timely_t_high_;	// T_high for RTT gradient based rate update (in seconds)
-	double timely_additiveInc_;	// Additive increase constant
+	double timely_additiveInc_;	// Additive increase constant (in bits/sec)
 	double timely_decreaseFac_;	// Multiplicative decrease constant
 	int timely_HAI_thresh_;	// HAI mode threshold
 
