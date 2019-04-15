@@ -27,7 +27,7 @@ def main():
 	print('ERROR: Please provide number of clients that is multiple of number of leafs.')
 	return
 
-    out_dir = './complexCongestion_out/'
+    out_dir = './out_complexCongestion/'
 
     if (args.timely):
 	congestion_alg = 'timely'

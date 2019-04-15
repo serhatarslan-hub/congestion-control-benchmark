@@ -23,7 +23,7 @@ def main():
     args = parser.parse_args()
     
     num_clients = 10
-    repro_dir = './reproduction_out/'
+    repro_dir = './out_reproduction/'
 
     if (args.dctcp):
 	congestion_alg = 'dctcp'

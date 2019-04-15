@@ -210,7 +210,7 @@ if {[string compare $congestion_alg "dctcp"] == 0} {
 	    $ftp($conn_idx) attach-agent $tcp($conn_idx)
         }
     }
-    Agent/TCP/Vegas instproc recv {rtt_t} {
+    Agent/TCP/Vegas instproc recv {rtt_t cong_signal_t hopCnt_t} {
 	global ns rttFile       
 	
 	$self instvar node_
@@ -264,7 +264,7 @@ if {[string compare $congestion_alg "dctcp"] == 0} {
 	    $ftp($conn_idx) attach-agent $tcp($conn_idx)
         }
     }
-    Agent/TCP/Vegas instproc recv {rtt_t} {
+    Agent/TCP/Vegas instproc recv {rtt_t cong_signal_t hopCnt_t} {
 	global ns rttFile        
 	
 	$self instvar node_
@@ -321,7 +321,7 @@ for {set i 0} {$i < $num_clients} {incr i} {
     for {set j 0} {$j < $num_conn_per_client} {incr j} {
 	set conn_idx [expr $i*$num_conn_per_client+$j]        
 	
-	$ns at 0.01 "$ftp($conn_idx) start"
+	$ns at 0.0001 "$ftp($conn_idx) start"
         $ns at [expr $run_time - 0.01] "$ftp($conn_idx) stop"
     }
 }

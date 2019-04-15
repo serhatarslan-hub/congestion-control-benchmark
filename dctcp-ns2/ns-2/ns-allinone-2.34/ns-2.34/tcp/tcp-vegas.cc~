@@ -397,46 +397,54 @@ VegasTcpAgent::recv(Packet *pkt, Handler *)
 		
 		/* Serhat's implementation of TIMELY and HOPE */
 		hdr_ip* iph = hdr_ip::access(pkt);
-		double cong_signal;
-				
-		if(timely_==1 || hope_==1){
+		int hop_cnt = iph->HOPE_hop_cnt(); 
+		int* hop_delay = iph->HOPE_hop_delay();	
+		double cong_signal = rtt; //default congestion control algo is Timely				
+		if(timely_==1 || hope_!=0){
+			
+			double line_rate = 10000000000.0;
+					
 			if (hope_==1){
-				int hop_cnt = iph->HOPE_hop_cnt(); 
-				printf("\n***Hop Count: %d ",hop_cnt);
-				double delays[hop_cnt];
-				
-				int* hop_delay = iph->HOPE_hop_delay();
+				// Max-delay to be used
 				double max_delay = 0.0;
-				int dummy;
+				double dummy;
 				for (int i=0; i<hop_cnt; i++){
-					dummy = *(hop_delay + i);
-					delays[i] = (double)dummy;
-					printf("delay_%d: %f | ",i,delays[i]);
-					if( delays[i] > max_delay){ max_delay = delays[i];}
+					dummy = (double)*(hop_delay + i);
+					if( dummy > max_delay){ max_delay = dummy;}
 				}
-				cong_signal = max_delay * 8.0 / 10000000000.0;
-			}else if (timely_==1){
-				cong_signal = rtt;
+				cong_signal = max_delay * 8.0 / line_rate;
+			} else if (hope_==2) {
+				// Total queueing delay to be used
+				double tot_delay = 0.0;
+				double dummy;
+				for (int i=0; i<hop_cnt; i++){
+					dummy = (double)*(hop_delay + i);
+					tot_delay += dummy;
+				}
+				cong_signal = tot_delay * 8.0 / line_rate;
 			}
 
-			if(timely_prevRTT_ == 0) timely_prevRTT_ = cong_signal;
+			if(timely_prevRTT_ == 0) {
+				timely_prevRTT_ = cong_signal;
+				//timely_lastUpdateTime = currentTime;
+			}
 			
 			double rtt_diff = cong_signal - timely_prevRTT_;
-
-			if (rtt_diff <= 0) {
+		
+			if (rtt_diff < 0) {
     				timely_negGradientCount_++;
   			} else {
     				timely_negGradientCount_ = 0;
   			}
 
 			timely_avgRTTDiff_ = ((1 - timely_ewma_alpha_) * timely_avgRTTDiff_) + (timely_ewma_alpha_ * rtt_diff);
-
+		
 			double normalized_gradient = timely_avgRTTDiff_ / v_baseRTT_;
-
+		printf("****\n*** rtt= %f | cong_sgnl= %f | old_cwnd= %f | old_rate= %f\n",rtt,cong_signal,(double)cwnd_,timely_rate_);
+		printf("**cur_time= %f | last_update_time= %f | base_rtt= %f\n",currentTime*1000,timely_lastUpdateTime*1000,v_baseRTT_);
 			double delta_factor = (currentTime - timely_lastUpdateTime) / v_baseRTT_;
   			delta_factor = (delta_factor<1.0)?delta_factor:1.0;
-
-  			timely_lastUpdateTime = currentTime;
+			delta_factor = (delta_factor>0.0)?delta_factor:0.0;
 
 			double timely_oldRate = timely_rate_;
 			if (rtt < timely_t_low_) { //additivive increase if rtt < t_low
@@ -456,10 +464,14 @@ VegasTcpAgent::recv(Packet *pkt, Handler *)
 
  			}
 			timely_prevRTT_ = cong_signal;
+			timely_lastUpdateTime = currentTime;
 
 			//derease in rate capped by 0.5 times the old rate
  			timely_rate_ = (timely_rate_<(timely_oldRate * 0.5))?(timely_oldRate * 0.5):timely_rate_;
-
+		
+		printf("*rtt_diff= %f | avgRTTDiff= %f | gradient= %f ",rtt_diff,timely_avgRTTDiff_,normalized_gradient);
+		printf("| delta_factor= %f | new_rate= %f\n",delta_factor,timely_rate_);
+		
 			cwnd_ = timely_rate_ * rtt / double(timely_packetSize_ * 8.0);
 			cwnd_ = ((double)cwnd_>1.0)?(double)cwnd_:1.1;
 								
@@ -467,7 +479,7 @@ VegasTcpAgent::recv(Packet *pkt, Handler *)
 		
 		/* Serhat's implementation of instproc recv for TCL scripts */
 		//Tcl::instance().evalf("%s recv %f", this->name(), rtt );
-		Tcl::instance().evalf("%s recv %f %d", this->name(), rtt, iph->HOPE_hop_cnt() );
+		Tcl::instance().evalf("%s recv %f %f %d", this->name(), rtt, cong_signal, iph->HOPE_hop_cnt() );
 		
    	} else if (tcph->seqno() == last_ack_)  {
 		/* check if a timeout should happen */
