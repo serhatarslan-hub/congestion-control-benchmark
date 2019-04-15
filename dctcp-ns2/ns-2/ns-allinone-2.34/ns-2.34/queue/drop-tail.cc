@@ -88,6 +88,7 @@ void DropTail::enque(Packet* p)
                 Queue::updateStats(qib_?q_->byteLength():q_->length());
 	}
 	//printf("qlim_ = %d, qib_ = %d, mean_pktsize_ = %d\n", qlim_, qib_, mean_pktsize_);
+	//printf("** bytes_ = %d, len_ = %d\n", q_->byteLength(), q_->length());
 	int qlimBytes = qlim_ * mean_pktsize_;
 	if ((!qib_ && (q_->length() + 1) >= qlim_) ||
   	(qib_ && (q_->byteLength() + hdr_cmn::access(p)->size()) >= qlimBytes)){
@@ -171,18 +172,7 @@ void DropTail::enque(Packet* p)
 			drop(p);
 		}
 	} else {
-		/* Serhat's implementation of HOPE */
-		hdr_ip* iph = hdr_ip::access(p);
-		int hop_cnt = iph->HOPE_hop_cnt(); 
-		//int* hop_delay = iph->HOPE_hop_delay();
-		//int hop_delay[] = iph->HOPE_hop_delay_;
-		if (hop_cnt < HOPE_MAX_HOP) {
-			//printf("**The delay at this hop: %d bytes %d packets\n",q_->byteLength(),q_->length());
-			*(iph->HOPE_hop_delay() + hop_cnt) = q_->byteLength();
-			//hop_delay[hop_cnt] = q_->byteLength();
-			iph->HOPE_hop_cnt() ++;					
-		}
-		/* End of HOPE operations */
+
 		q_->enque(p);
 	}
 }

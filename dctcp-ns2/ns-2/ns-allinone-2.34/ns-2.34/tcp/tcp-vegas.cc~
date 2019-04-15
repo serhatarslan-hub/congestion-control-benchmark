@@ -402,21 +402,18 @@ VegasTcpAgent::recv(Packet *pkt, Handler *)
 		if(timely_==1 || hope_==1){
 			if (hope_==1){
 				int hop_cnt = iph->HOPE_hop_cnt(); 
-				printf("***Hop Count: %d \t",hop_cnt);
+				printf("\n***Hop Count: %d ",hop_cnt);
 				double delays[hop_cnt];
-
-				//int* hop_delay = iph->HOPE_hop_delay();
-				int hop_delay[HOPE_MAX_HOP] = iph->HOPE_hop_delay_;
+				
+				int* hop_delay = iph->HOPE_hop_delay();
 				double max_delay = 0.0;
 				int dummy;
 				for (int i=0; i<hop_cnt; i++){
-					//dummy = *(hop_delay + i);
-					dummy = hop_delay[i];
+					dummy = *(hop_delay + i);
 					delays[i] = (double)dummy;
 					printf("delay_%d: %f | ",i,delays[i]);
 					if( delays[i] > max_delay){ max_delay = delays[i];}
 				}
-				printf("Chosen: %f \n",max_delay);
 				cong_signal = max_delay * 8.0 / 10000000000.0;
 			}else if (timely_==1){
 				cong_signal = rtt;
@@ -426,7 +423,7 @@ VegasTcpAgent::recv(Packet *pkt, Handler *)
 			
 			double rtt_diff = cong_signal - timely_prevRTT_;
 
-			if (rtt_diff < 0) {
+			if (rtt_diff <= 0) {
     				timely_negGradientCount_++;
   			} else {
     				timely_negGradientCount_ = 0;

@@ -309,6 +309,11 @@ void TcpSink::ack(Packet* opkt)
 	nip->flowid() = oip->flowid();
 	// copy the flow id
 	
+	/* Serhat's implementation of Hope */
+	int hop_cnt = oip->HOPE_hop_cnt(); 
+	nip->HOPE_hop_cnt() = hop_cnt;
+	memcpy ( nip->HOPE_hop_delay(), oip->HOPE_hop_delay(), sizeof(int)*hop_cnt );
+	
 	hdr_flags* of = hdr_flags::access(opkt);
 	hdr_flags* nf = hdr_flags::access(npkt);
 	hdr_flags* sf;

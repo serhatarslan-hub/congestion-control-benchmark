@@ -55,6 +55,17 @@ public:
 			tail_= p;
 		}
 		tail_->next_= 0;
+
+		/* Serhat's implementation of HOPE */
+		hdr_ip* iph = hdr_ip::access(p);
+				
+		int hop_cnt = iph->HOPE_hop_cnt(); 
+		if (hop_cnt < HOPE_MAX_HOP) {
+			*(iph->HOPE_hop_delay() + hop_cnt) = bytes_;
+			iph->HOPE_hop_cnt() ++;					
+		}
+		/* End of HOPE operations */
+
 		++len_;
 		bytes_ += hdr_cmn::access(p)->size();
 		return pt;
