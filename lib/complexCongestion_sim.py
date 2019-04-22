@@ -18,7 +18,8 @@ import benchmark_tools
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--timely', action='store_true', help="Simulates Timely in the 2-level congestion scenario")
-    parser.add_argument('--hope', action='store_true', help="Simulates Hope in the 2-level congestion scenario")
+    parser.add_argument('--hope_max', action='store_true', help="Simulates Hope-Max in the 2-level congestion scenario")
+    parser.add_argument('--hope_sum', action='store_true', help="Simulates Hope-Sum in the 2-level congestion scenario")
     args = parser.parse_args()
     
     num_clients = 20
@@ -36,10 +37,17 @@ def main():
         benchmark_tools.plot_rtt(congestion_alg, out_dir)
 	benchmark_tools.plot_throughput(congestion_alg, num_clients, out_dir, num_leafs)
 	benchmark_tools.plot_queue(congestion_alg, out_dir)
-    if (args.hope):
-	congestion_alg = 'hope'
+    if (args.hope_max):
+	congestion_alg = 'hope_max'
         os.system('ns ./lib/complexCongestion.tcl {0} {1} {2} {3}'.format(congestion_alg, out_dir, num_clients, num_leafs))
-	print("Hope Simulation Done!")
+	print("Hope-Max Simulation Done!")
+        benchmark_tools.plot_rtt(congestion_alg, out_dir)
+	benchmark_tools.plot_throughput(congestion_alg, num_clients, out_dir, num_leafs)
+	benchmark_tools.plot_queue(congestion_alg, out_dir)
+    if (args.hope_sum):
+	congestion_alg = 'hope_sum'
+        os.system('ns ./lib/complexCongestion.tcl {0} {1} {2} {3}'.format(congestion_alg, out_dir, num_clients, num_leafs))
+	print("Hope-Sum Simulation Done!")
         benchmark_tools.plot_rtt(congestion_alg, out_dir)
 	benchmark_tools.plot_throughput(congestion_alg, num_clients, out_dir, num_leafs)
 	benchmark_tools.plot_queue(congestion_alg, out_dir)

@@ -31,20 +31,21 @@ def main():
 	print("DCTCP Simulation Done!")
         benchmark_tools.plot_rtt(congestion_alg, repro_dir)
 	benchmark_tools.plot_throughput(congestion_alg, num_clients, repro_dir)
-
+	benchmark_tools.plot_queue(congestion_alg, repro_dir)
     if (args.vegas):
 	congestion_alg = 'vegas'
         os.system('ns ./lib/reproduction.tcl {0} {1} {2}'.format(congestion_alg, repro_dir, num_clients))
 	print("Vegas Simulation Done!")
         benchmark_tools.plot_rtt(congestion_alg, repro_dir)
 	benchmark_tools.plot_throughput(congestion_alg, num_clients, repro_dir)
-
+	benchmark_tools.plot_queue(congestion_alg, repro_dir)
     if (args.timely):
 	congestion_alg = 'timely'
         os.system('ns ./lib/reproduction.tcl {0} {1} {2}'.format(congestion_alg, repro_dir, num_clients))
 	print("Timely Simulation Done!")
         benchmark_tools.plot_rtt(congestion_alg, repro_dir)
 	benchmark_tools.plot_throughput(congestion_alg, num_clients, repro_dir)
+	benchmark_tools.plot_queue(congestion_alg, repro_dir)
 
 if __name__ == "__main__":
     main()

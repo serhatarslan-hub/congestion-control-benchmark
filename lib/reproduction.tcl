@@ -22,7 +22,7 @@ set num_clients [lindex $argv 2]
 set num_conn_per_client 1
 
 # samp_int (sec)
-set samp_int 0.01
+set samp_int 0.0001
 # q_size (pkts)
 set q_size 200
 # link_cap (Mbps)
@@ -32,7 +32,7 @@ set link_delay 5us
 # tcp_window (pkts)
 set tcp_window 10000000
 # run_time (sec)
-set run_time 0.3
+set run_time 0.11
 # pktSize (bytes)
 set pktSize 1460
 
@@ -241,11 +241,12 @@ if {[string compare $congestion_alg "dctcp"] == 0} {
             #$sink($conn_idx) listen
 
 	    $tcp($conn_idx) set timely_ 1
+	    $tcp($conn_idx) set hope_ 0
 	    $tcp($conn_idx) set timely_packetSize_ $pktSize
-	    $tcp($conn_idx) set timely_ewma_alpha_ 0.2
+	    $tcp($conn_idx) set timely_ewma_alpha_ 0.3
 	    $tcp($conn_idx) set timely_t_low_ 0
 	    $tcp($conn_idx) set timely_t_high_ 0.0001
-	    $tcp($conn_idx) set timely_additiveInc_ 10000000
+	    $tcp($conn_idx) set timely_additiveInc_ 10000000.0
 	    $tcp($conn_idx) set timely_decreaseFac_ 0.8
 	    $tcp($conn_idx) set timely_HAI_thresh_ 5
 	    $tcp($conn_idx) set timely_rate_ 7000000000

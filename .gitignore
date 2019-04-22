@@ -1,0 +1,7 @@
+# Gunk
+.DS_Store
+*.pyc
+*~
+
+# Nam
+*.nam

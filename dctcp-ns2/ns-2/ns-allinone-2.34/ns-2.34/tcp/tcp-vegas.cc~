@@ -403,6 +403,7 @@ VegasTcpAgent::recv(Packet *pkt, Handler *)
 		if(timely_==1 || hope_!=0){
 			
 			double line_rate = 10000000000.0;
+			double epsilon = 0.000001;	//Threshold to say gradient <= 0
 					
 			if (hope_==1){
 				// Max-delay to be used
@@ -439,28 +440,32 @@ VegasTcpAgent::recv(Packet *pkt, Handler *)
 
 			timely_avgRTTDiff_ = ((1 - timely_ewma_alpha_) * timely_avgRTTDiff_) + (timely_ewma_alpha_ * rtt_diff);
 		
-			double normalized_gradient = timely_avgRTTDiff_ / v_baseRTT_;
-		printf("****\n*** rtt= %f | cong_sgnl= %f | old_cwnd= %f | old_rate= %f\n",rtt,cong_signal,(double)cwnd_,timely_rate_);
-		printf("**cur_time= %f | last_update_time= %f | base_rtt= %f\n",currentTime*1000,timely_lastUpdateTime*1000,v_baseRTT_);
+			double normalized_gradient = timely_avgRTTDiff_ ; // / v_baseRTT_;
+
 			double delta_factor = (currentTime - timely_lastUpdateTime) / v_baseRTT_;
   			delta_factor = (delta_factor<1.0)?delta_factor:1.0;
 			delta_factor = (delta_factor>0.0)?delta_factor:0.0;
 
 			double timely_oldRate = timely_rate_;
+			//double old_cwnd = (double)cwnd_;
 			if (rtt < timely_t_low_) { //additivive increase if rtt < t_low
       				timely_rate_ = timely_rate_ + (timely_additiveInc_ * delta_factor);
+				//printf("****Entered rtt < timely_t_low \n");
 
   			} else if (rtt > timely_t_high_) { //multiplicative decrease if rtt > t_high
       				timely_rate_ =timely_rate_ *(1.0 -(delta_factor *timely_decreaseFac_ *(1.0 -(timely_t_high_ /rtt))));
+				//printf("****Entered rtt > timely_t_low \n");
 
-    			} else if (normalized_gradient <= 0) { //additive increase if avg gradient <= 0 
+    			} else if (normalized_gradient <= epsilon) { //additive increase if avg gradient <= 0 
       					
         			int N = 1;
         			if (timely_negGradientCount_ >= timely_HAI_thresh_) N = 5;
         			timely_rate_ = timely_rate_ + (double(N) * timely_additiveInc_ * delta_factor);
+				//printf("****Entered normalized_gradient <= 0 \n");
 
       			} else { //multiplicative decrease if avg gradient > 0
         			timely_rate_ = timely_rate_ * (1.0 - (timely_decreaseFac_ * normalized_gradient));
+				//printf("****Entered gradient > 0 \n");
 
  			}
 			timely_prevRTT_ = cong_signal;
@@ -469,11 +474,13 @@ VegasTcpAgent::recv(Packet *pkt, Handler *)
 			//derease in rate capped by 0.5 times the old rate
  			timely_rate_ = (timely_rate_<(timely_oldRate * 0.5))?(timely_oldRate * 0.5):timely_rate_;
 		
-		printf("*rtt_diff= %f | avgRTTDiff= %f | gradient= %f ",rtt_diff,timely_avgRTTDiff_,normalized_gradient);
-		printf("| delta_factor= %f | new_rate= %f\n",delta_factor,timely_rate_);
-		
 			cwnd_ = timely_rate_ * rtt / double(timely_packetSize_ * 8.0);
 			cwnd_ = ((double)cwnd_>1.0)?(double)cwnd_:1.1;
+
+			//printf("*** rtt= %f | cong_sgnl= %f | old_cwnd= %f | old_rate= %f\n",rtt*1000000, cong_signal*1000000, old_cwnd, timely_oldRate);
+			//printf("**cur_time= %f | last_update_time= %f | base_rtt= %f\n", currentTime*1000, timely_lastUpdateTime*1000, v_baseRTT_);		
+			//printf("*rtt_diff= %f | avgRTTDiff= %f | gradient= %f ", rtt_diff, timely_avgRTTDiff_, normalized_gradient*1000000000);
+			//printf("| delta_factor= %f | new_cwnd = %f | new_rate= %f\n",delta_factor, (double)cwnd_, timely_rate_);
 								
 		} /* End of Serhat's Timely and Hope implementation */
 		
