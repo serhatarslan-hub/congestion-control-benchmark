@@ -61,8 +61,8 @@ set deque_prio_ false
 set ns [new Simulator]
 
 #Open the Trace files
-#set tracefile [open $out_dir$congestion_alg.tr w]
-#$ns trace-all $tracefile
+set tracefile [open $out_dir$congestion_alg.tr w]
+$ns trace-all $tracefile
 
 #Open the NAM trace file
 set nf [open $out_dir$congestion_alg.nam w]
@@ -481,7 +481,7 @@ proc finish {} {
     $ns flush-trace
     # Close the NAM trace file
     close $nf
-#    close $tracefile
+    close $tracefile
     close $rttFile 
     close $qf_size
     # Execute NAM on the trace file

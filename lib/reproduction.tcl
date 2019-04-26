@@ -52,22 +52,22 @@ set deque_prio_ false
 set ns [new Simulator]
 
 #Open the Trace files
-#set tracefile [open $repro_dir$congestion_alg.tr w]
-#$ns trace-all $tracefile
+set tracefile [open $repro_dir$congestion_alg.tr w]
+$ns trace-all $tracefile
 
 #Open the NAM trace file
 set nf [open $repro_dir$congestion_alg.nam w]
 $ns namtrace-all $nf
 
 # Create TOR_switch, server, and client nodes
+for {set i 0} {$i < $num_clients} {incr i} {
+    set client($i) [$ns node]
+}
+
 set TOR_switch_node [$ns node]
 $ns at 0.001 "$TOR_switch_node label \"TOR\""
 set server_node [$ns node]
 $ns at 0.001 "$server_node label \"Server\""
-
-for {set i 0} {$i < $num_clients} {incr i} {
-    set client($i) [$ns node]
-}
 
 # Queue options
 Queue set limit_ $q_size
@@ -269,7 +269,7 @@ if {[string compare $congestion_alg "dctcp"] == 0} {
 	global ns rttFile        
 	
 	$self instvar node_
-	if {[$node_ id] == 11 } {
+	if {[$node_ id] == 2 } {
 	    set now [$ns now]
 	    #set rtt [$self set v_rtt_]
 	    set rtt [expr $rtt_t*1000000.0]
@@ -346,7 +346,7 @@ proc finish {} {
     $ns flush-trace
     # Close the NAM trace file
     close $nf
-#    close $tracefile
+    close $tracefile
     close $rttFile 
     close $qf_size
     # Execute NAM on the trace file

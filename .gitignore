@@ -5,3 +5,6 @@
 
 # Nam
 *.nam
+
+# Trace Files
+*.tr

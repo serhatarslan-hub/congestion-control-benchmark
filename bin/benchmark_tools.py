@@ -44,60 +44,112 @@ def plot_rtt(algo_name, out_dir):
     plt.savefig(cdf_file)
     print "Saved plot: ", cdf_file
 
-def plot_throughput(algo_name, num_clients, out_dir, num_leafs=1):
+    return sorted_data, yvals
+
+"""
+    Plot the given CDFs on the same figure for easier comparison
+"""
+def plot_allRTTcdf(out_dir, timely_cdf, hopeMax_cdf, hopeSum_cdf):
     
-    nam_file = out_dir+algo_name+'.nam'
-    out_file = out_dir+algo_name+'_thp.png'
+    allCDF_file = out_dir+'Timely-Hope.rttCDF_benchmark.png'
+    plt.figure()
+    plt.xlabel('RTT (usec)')
+    plt.title('CDF of RTT for benchmarked congestion control algorithms')
+
+    plt.plot(timely_cdf[0], timely_cdf[1], '-', label='Timely')
+    plt.plot(hopeMax_cdf[0], hopeMax_cdf[1], '-', label='Hope-Max')
+    plt.plot(hopeSum_cdf[0], hopeSum_cdf[1], '-', label='Hope-Sum')
+
+    plt.legend(loc='lower right')
+    plt.savefig(allCDF_file)
+    print "Saved plot: ", allCDF_file
+
+def plot_throughput(algo_name, num_clients, out_dir, num_leafs=0, num_spine=1):
+    
+    tr_file = out_dir+algo_name+'.tr'
+    out_file = out_dir+algo_name+'.thp.png'
     granularity = 0.001
     clock = 0
-    sum_bytes = []
     time = []
 
-    num_nodes = num_clients + num_leafs + 1
+    num_nodes = num_clients + num_leafs + num_spine + 1
     throughputs = []
+    sum_bytes = []
+    last_seq = []
     for i in range(num_nodes):
 	throughputs.append([])
 	sum_bytes.append(0.0)
+	last_seq.append(0.0)
 
-    with open(nam_file) as f:
+    with open(tr_file) as f:
         for line in f:
             split_line = line.split()
-            if ((split_line[0] == 'r' and split_line[8] == 'tcp')):
-                t = float(split_line[2])
-		
+            if ((split_line[0] == '-' and split_line[4] == 'tcp')):
+                t = float(split_line[1])
+		s = int(split_line[2]) #source node
 		if ( t-clock < granularity):
-		    s = int(split_line[4]) #source node
-		    if ( s != 0 or int(split_line[6]) == 1):
-		        sum_bytes[s] += int(split_line[10])
+		    # Don't count for retransmissions
+		    if ( int(split_line[10]) > last_seq[s] ):
+		        sum_bytes[s] += int(split_line[5])
+			last_seq[s] = int(split_line[10])
 		
 		else:
 		    time.append(t)
 		    clock += granularity
 		    
 		    for i in range(num_nodes):
-			dummy_thp = sum_bytes[i] * 8 /granularity
+			dummy_thp = sum_bytes[i] * 8 /granularity /1000000
 			throughputs[i].append(dummy_thp)
 			sum_bytes[i] = 0.0
-		    s = int(split_line[4]) #source node
-		    sum_bytes[s] += int(split_line[10])
+		    
+		    sum_bytes[s] += int(split_line[5])
     time.append(t)
     for i in range(num_nodes):
-	dummy_thp = sum_bytes[i] * 8 /granularity
+	dummy_thp = sum_bytes[i] * 8 /granularity /1000000
 	throughputs[i].append(dummy_thp)
 
+    total_thp = []
+    for n in range(len(time)):
+	total_thp.append(0.0)
+	for i in range(num_clients):
+	    total_thp[n] += throughputs[i][n]
+
     plt.figure()
-    for i in range(num_nodes):
-	node_name = 'node_{}'.format(i)
+    for i in range(num_clients):
+	node_name = 'Client_{}'.format(i)
         plt.plot(time,throughputs[i],linestyle='-', marker='', label=node_name)
-	#plt.plot(time,throughputs[i],linestyle='-', marker='')
+
+    plt.plot(time,total_thp,linestyle='-', marker='', label='Total')
+	
     plt.yscale('log')
-    plt.ylabel('Throughput (bps)')
+    plt.ylabel('Throughput (Mbps)')
     plt.xlabel('Time (sec)')
     plt.title('Throughput for '+algo_name+' experiment')
     plt.legend(bbox_to_anchor=(1.04,0.5), loc="center left", borderaxespad=0)
     plt.grid()
     plt.savefig(out_file, bbox_inches="tight")
     print "Saved plot: ", out_file
+
+    return time,total_thp
+
+"""
+   Plot the given throughputs in the same figure for easier comparison
+"""
+def plot_allTotalThp(out_dir, timely_thp, hopeMax_thp, hopeSum_thp):
+    
+    allThp_file = out_dir+'Timely-Hope.thp_benchmark.png'
+    plt.figure()
+    plt.ylabel('Throughput (Mbps)')
+    plt.xlabel('Time (sec)')
+    plt.title('Total throughputs for benchmarked congestion control algorithms')
+
+    plt.plot(timely_thp[0], timely_thp[1], '-', label='Timely')
+    plt.plot(hopeMax_thp[0], hopeMax_thp[1], '-', label='Hope-Max')
+    plt.plot(hopeSum_thp[0], hopeSum_thp[1], '-', label='Hope-Sum')
+
+    plt.legend(loc='lower right')
+    plt.savefig(allThp_file)
+    print "Saved plot: ", allThp_file
 
 """
 Parse the sampled queue size output file and plot the queue size over time
