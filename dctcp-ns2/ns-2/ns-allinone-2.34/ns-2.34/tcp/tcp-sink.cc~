@@ -312,15 +312,7 @@ void TcpSink::ack(Packet* opkt)
 	/* Serhat's implementation of Hope */
 	int hop_cnt = oip->HOPE_hop_cnt(); 
 	nip->HOPE_hop_cnt() = hop_cnt;
-	/*	
-	if (hop_cnt < HOPE_MAX_HOP) {
-		for(int i=0; i<hop_cnt; i++){
-			*(nip->HOPE_hop_delay() + i) = *(oip->HOPE_hop_delay() + i);
-		}				
-	}
-	*/
 	memcpy ( nip->HOPE_hop_delay(), oip->HOPE_hop_delay(), sizeof(int)*hop_cnt );
-	//nip->HOPE_max_delay() = oip->HOPE_max_delay();
 	
 	hdr_flags* of = hdr_flags::access(opkt);
 	hdr_flags* nf = hdr_flags::access(npkt);

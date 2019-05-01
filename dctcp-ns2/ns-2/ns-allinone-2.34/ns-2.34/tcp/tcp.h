@@ -615,6 +615,7 @@ protected:
 	int timely_negGradientCount_;	// For HAI mode
 	/* Serhat's implementation of HOPE */
 	int hope_;		// whether to use hope congestion control
+	double cong_signal_;	// The measurement to use for congestion control
 	/* End of TIMELY parameters */
 
 	double t_cwnd_changed_; // last time cwnd changed

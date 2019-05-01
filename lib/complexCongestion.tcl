@@ -302,7 +302,7 @@ if {[string compare $congestion_alg "dctcp"] == 0} {
 	global ns rttFile        
 	
 	$self instvar node_
-	if {[$node_ id] == 2 } {
+	if {[$node_ id] != 100 } {
 	    set now [$ns now]
 	    #set rtt [$self set v_rtt_]
 	    set rtt [expr $rtt_t*1000000.0]
@@ -357,7 +357,7 @@ if {[string compare $congestion_alg "dctcp"] == 0} {
 	global ns rttFile        
 	
 	$self instvar node_
-	if {[$node_ id] == 2 } {
+	if {[$node_ id] != 100 } {
 	    set now [$ns now]
 	    #set rtt [$self set v_rtt_]
 	    set rtt [expr $rtt_t*1000000.0]
@@ -413,7 +413,7 @@ if {[string compare $congestion_alg "dctcp"] == 0} {
 	global ns rttFile        
 	
 	$self instvar node_
-	if {[$node_ id] == 2 } {
+	if {[$node_ id] != 100 } {
 	    set now [$ns now]
 	    #set rtt [$self set v_rtt_]
 	    set rtt [expr $rtt_t*1000000.0]
