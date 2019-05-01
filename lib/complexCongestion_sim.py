@@ -52,8 +52,8 @@ def main():
 	hopeSum_thp = benchmark_tools.plot_throughput(congestion_alg, num_clients, out_dir, num_leafs)
 	benchmark_tools.plot_queue(congestion_alg, out_dir)
 
-    benchmark_tools.plot_allRTTcdf(out_dir, timely_cdf, hopeMax_cdf, hopeSum_cdf)
-    benchmark_tools.plot_allTotalThp(out_dir, timely_thp, hopeMax_thp, hopeSum_thp)
+    benchmark_tools.plot_allRTTcdf(out_dir, timely=timely_cdf, hopeMax=hopeMax_cdf, hopeSum=hopeSum_cdf)
+    benchmark_tools.plot_allTotalThp(out_dir, timely=timely_thp, hopeMax=hopeMax_thp, hopeSum=hopeSum_thp)
 
 if __name__ == "__main__":
     main()

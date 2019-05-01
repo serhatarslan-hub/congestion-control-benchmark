@@ -49,16 +49,23 @@ def plot_rtt(algo_name, out_dir):
 """
     Plot the given CDFs on the same figure for easier comparison
 """
-def plot_allRTTcdf(out_dir, timely_cdf, hopeMax_cdf, hopeSum_cdf):
+def plot_allRTTcdf(out_dir, dctcp=None, vegas=None, timely=None, hopeMax=None, hopeSum=None):
     
-    allCDF_file = out_dir+'Timely-Hope.rttCDF_benchmark.png'
+    allCDF_file = out_dir+'All.rttCDF_benchmark.png'
     plt.figure()
     plt.xlabel('RTT (usec)')
     plt.title('CDF of RTT for benchmarked congestion control algorithms')
 
-    plt.plot(timely_cdf[0], timely_cdf[1], '-', label='Timely')
-    plt.plot(hopeMax_cdf[0], hopeMax_cdf[1], '-', label='Hope-Max')
-    plt.plot(hopeSum_cdf[0], hopeSum_cdf[1], '-', label='Hope-Sum')
+    if dctcp is not None:
+	plt.plot(dctcp[0], dctcp[1], '-', label='DCTCP')
+    if vegas is not None:
+	plt.plot(vegas[0], vegas[1], '-', label='Vegas')
+    if timely is not None:
+        plt.plot(timely[0], timely[1], '-', label='Timely')
+    if hopeMax is not None:
+        plt.plot(hopeMax[0], hopeMax[1], '-', label='Hope-Max')
+    if hopeSum is not None:
+        plt.plot(hopeSum[0], hopeSum[1], '-', label='Hope-Sum')
 
     plt.legend(loc='lower right')
     plt.savefig(allCDF_file)
@@ -135,17 +142,24 @@ def plot_throughput(algo_name, num_clients, out_dir, num_leafs=0, num_spine=1):
 """
    Plot the given throughputs in the same figure for easier comparison
 """
-def plot_allTotalThp(out_dir, timely_thp, hopeMax_thp, hopeSum_thp):
+def plot_allTotalThp(out_dir, dctcp=None, vegas=None, timely=None, hopeMax=None, hopeSum=None):
     
-    allThp_file = out_dir+'Timely-Hope.thp_benchmark.png'
+    allThp_file = out_dir+'All.thp_benchmark.png'
     plt.figure()
     plt.ylabel('Throughput (Mbps)')
     plt.xlabel('Time (sec)')
     plt.title('Total throughputs for benchmarked congestion control algorithms')
 
-    plt.plot(timely_thp[0], timely_thp[1], '-', label='Timely')
-    plt.plot(hopeMax_thp[0], hopeMax_thp[1], '-', label='Hope-Max')
-    plt.plot(hopeSum_thp[0], hopeSum_thp[1], '-', label='Hope-Sum')
+    if dctcp is not None:
+	plt.plot(dctcp[0], dctcp[1], '-', label='DCTCP')
+    if vegas is not None:
+	plt.plot(vegas[0], vegas[1], '-', label='Vegas')
+    if timely is not None:
+        plt.plot(timely[0], timely[1], '-', label='Timely')
+    if hopeMax is not None:
+        plt.plot(hopeMax[0], hopeMax[1], '-', label='Hope-Max')
+    if hopeSum is not None:
+        plt.plot(hopeSum[0], hopeSum[1], '-', label='Hope-Sum')
 
     plt.legend(loc='lower right')
     plt.savefig(allThp_file)

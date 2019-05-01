@@ -246,7 +246,7 @@ if {[string compare $congestion_alg "dctcp"] == 0} {
 	    $tcp($conn_idx) set timely_ewma_alpha_ 0.3
 	    $tcp($conn_idx) set timely_t_low_ 0
 	    $tcp($conn_idx) set timely_t_high_ 0.0001
-	    $tcp($conn_idx) set timely_additiveInc_ 10000000.0
+	    $tcp($conn_idx) set timely_additiveInc_ 20000000.0
 	    $tcp($conn_idx) set timely_decreaseFac_ 0.8
 	    $tcp($conn_idx) set timely_HAI_thresh_ 5
 	    $tcp($conn_idx) set timely_rate_ 7000000000
@@ -317,11 +317,23 @@ set qf_size [open $out_q_file w]
 set qmon_size [$ns monitor-queue $TOR_switch_node $server_node $qf_size $samp_int]
 [$ns link $TOR_switch_node $server_node] queue-sample-timeout
 
+# Create random generator for starting the ftp connections
+set rng [new RNG]
+$rng seed 0
+
+# Parameters for random variables to ftp start times
+set RVstart [new RandomVariable/Uniform]
+$RVstart set min_ 0.0001
+$RVstart set max_ 0.0020
+$RVstart use-rng $rng
+
 #Schedule events for the FTP agents
 for {set i 0} {$i < $num_clients} {incr i} {
     for {set j 0} {$j < $num_conn_per_client} {incr j} {
 	set conn_idx [expr $i*$num_conn_per_client+$j]        
 	
+	#set startT($conn_idx) [expr [$RVstart value]]
+	#$ns at $startT($conn_idx) "$ftp($conn_idx) start"
 	$ns at 0.0001 "$ftp($conn_idx) start"
         $ns at [expr $run_time - 0.01] "$ftp($conn_idx) stop"
     }

@@ -48,7 +48,7 @@ set ackRatio 1
 set timely_ewma_alpha 0.3
 set timely_t_low 0
 set timely_t_high 0.0001
-set timely_additiveInc 10000000.0
+set timely_additiveInc 20000000.0
 set timely_decreaseFac 0.8
 set timely_HAI_thresh 5
 set timely_rate 1000000000.0
