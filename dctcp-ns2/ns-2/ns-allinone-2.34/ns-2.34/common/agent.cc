@@ -484,6 +484,8 @@ Agent::initpkt(Packet* p) const
 	double* HOPE_hop_delay = iph->HOPE_hop_delay();
 	for(int i = 0; i < HOPE_MAX_HOP; ++i)
      		*(HOPE_hop_delay + i) = -1;
+	iph->HOPE_hop_data() = 0;
+	
 
 	hdr_flags* hf = hdr_flags::access(p);
 	hf->ecn_capable_ = 0;

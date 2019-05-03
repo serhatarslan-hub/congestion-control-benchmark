@@ -70,9 +70,10 @@ struct hdr_ip {
 	//abd
 
 	/* Serhat's implementation of HOPE */
-#define HOPE_MAX_HOP 10
+#define HOPE_MAX_HOP 16
 	double HOPE_hop_delay_[HOPE_MAX_HOP];	/* Delay encountered at each hop */
 	int HOPE_hop_cnt_;	/* Number of hops so far */
+	int HOPE_hop_data_;	/* Type to data to be collected at each hop */
 	/* End of HOPE parameters */
 
 	/* Monarch extn */
@@ -107,6 +108,7 @@ struct hdr_ip {
 	/* Serhat's implementation of HOPE */
 	double* HOPE_hop_delay() { return (HOPE_hop_delay_); }
 	int& HOPE_hop_cnt() { return (HOPE_hop_cnt_); }
+	int& HOPE_hop_data() { return (HOPE_hop_data_); }
 	/* End of HOPE member functions */
 };
 

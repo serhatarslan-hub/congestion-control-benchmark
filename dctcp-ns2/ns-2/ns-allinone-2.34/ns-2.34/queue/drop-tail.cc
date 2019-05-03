@@ -172,6 +172,24 @@ void DropTail::enque(Packet* p)
 			drop(p);
 		}
 	} else {
+		/* Serhat's implementation of HOPE */
+		double now = Scheduler::instance().clock();
+		hdr_ip* iph = hdr_ip::access(p);
+				
+		int hop_cnt = iph->HOPE_hop_cnt();
+		int hop_data = iph->HOPE_hop_data(); 
+		if (hop_cnt < HOPE_MAX_HOP) {
+			if (hop_data == 0){
+				*(iph->HOPE_hop_delay() + hop_cnt) = now;
+			} else if (hop_data == 1){
+				*(iph->HOPE_hop_delay() + hop_cnt) = (double)q_->byteLength();
+				iph->HOPE_hop_cnt() ++;
+			} else if (hop_data == 3){
+				*(iph->HOPE_hop_delay() + hop_cnt) = (double)q_->byteLength() - (double)qlimBytes;
+				iph->HOPE_hop_cnt() ++;
+			}					
+		}
+		/* End of HOPE operations */
 
 		q_->enque(p);
 	}
@@ -291,6 +309,32 @@ Packet* DropTail::deque()
 		return p;
 		
     	} else {
+		/* Serhat's implementation of HOPE */
+		int qlimBytes = qlim_ * mean_pktsize_;
+
+		double now = Scheduler::instance().clock();
+		Packet* p = q_->head();
+		if(p){
+			hdr_ip* iph = hdr_ip::access(p);
+		
+			int hop_cnt = iph->HOPE_hop_cnt(); 
+			int hop_data = iph->HOPE_hop_data(); 
+		
+			if (hop_cnt < HOPE_MAX_HOP) {
+				if (hop_data == 0){
+					*(iph->HOPE_hop_delay() + hop_cnt) = now - *(iph->HOPE_hop_delay() + hop_cnt);
+					iph->HOPE_hop_cnt() ++;
+				} else if (hop_data == 2){
+					*(iph->HOPE_hop_delay() + hop_cnt) = (double)q_->byteLength();
+					iph->HOPE_hop_cnt() ++;
+				} else if (hop_data == 4){
+					*(iph->HOPE_hop_delay() + hop_cnt) = (double)q_->byteLength() - (double)qlimBytes;
+					iph->HOPE_hop_cnt() ++;
+				}					
+			}	
+		}		
+		/* End of HOPE operations */
+
 		return q_->deque();
 	}
 }

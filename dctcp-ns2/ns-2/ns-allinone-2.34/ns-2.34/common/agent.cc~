@@ -481,7 +481,7 @@ Agent::initpkt(Packet* p) const
 	
 	// Serhat's HOPE
 	iph->HOPE_hop_cnt() = 0;
-	int* HOPE_hop_delay = iph->HOPE_hop_delay();
+	double* HOPE_hop_delay = iph->HOPE_hop_delay();
 	for(int i = 0; i < HOPE_MAX_HOP; ++i)
      		*(HOPE_hop_delay + i) = -1;
 

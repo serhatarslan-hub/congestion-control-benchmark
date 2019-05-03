@@ -56,18 +56,6 @@ public:
 		}
 		tail_->next_= 0;
 
-		/* Serhat's implementation of HOPE */
-		double now = Scheduler::instance().clock();
-		hdr_ip* iph = hdr_ip::access(p);
-				
-		int hop_cnt = iph->HOPE_hop_cnt(); 
-		if (hop_cnt < HOPE_MAX_HOP) {
-			// *(iph->HOPE_hop_delay() + hop_cnt) = (double)bytes_;
-			*(iph->HOPE_hop_delay() + hop_cnt) = now;
-			iph->HOPE_hop_cnt() ++;					
-		}
-		/* End of HOPE operations */
-
 		++len_;
 		bytes_ += hdr_cmn::access(p)->size();
 		return pt;
@@ -80,13 +68,6 @@ public:
 		--len_;
 		bytes_ -= hdr_cmn::access(p)->size();
 
-		/* Serhat's implementation of HOPE */
-		double now = Scheduler::instance().clock();
-		hdr_ip* iph = hdr_ip::access(p);
-				
-		int hop_cnt = iph->HOPE_hop_cnt(); 
-		*(iph->HOPE_hop_delay() + hop_cnt -1 ) = now - *(iph->HOPE_hop_delay() + hop_cnt -1 );			
-		/* End of HOPE operations */
 		return p;
 	}
 	Packet* lookup(int n) {

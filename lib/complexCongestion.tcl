@@ -274,7 +274,7 @@ if {[string compare $congestion_alg "dctcp"] == 0} {
             #$sink($conn_idx) listen
 
 	    $tcp($conn_idx) set timely_ 1
-	    $tcp($conn_idx) set hope_ 0
+	    $tcp($conn_idx) set hope_type_ 0
 	    $tcp($conn_idx) set timely_packetSize_ $pktSize
 	    $tcp($conn_idx) set timely_ewma_alpha_ $timely_ewma_alpha
 	    $tcp($conn_idx) set timely_t_low_ $timely_t_low
@@ -329,7 +329,7 @@ if {[string compare $congestion_alg "dctcp"] == 0} {
             ## set up TCP-level connections
             #$sink($conn_idx) listen
 
-	    $tcp($conn_idx) set hope_ 1
+	    $tcp($conn_idx) set hope_type_ 1
 	    $tcp($conn_idx) set timely_packetSize_ $pktSize
 	    $tcp($conn_idx) set timely_ewma_alpha_ $timely_ewma_alpha
 	    $tcp($conn_idx) set timely_t_low_ $timely_t_low
@@ -385,7 +385,7 @@ if {[string compare $congestion_alg "dctcp"] == 0} {
             ## set up TCP-level connections
             #$sink($conn_idx) listen
 
-	    $tcp($conn_idx) set hope_ 2
+	    $tcp($conn_idx) set hope_type_ 2
 	    $tcp($conn_idx) set timely_packetSize_ $pktSize
 	    $tcp($conn_idx) set timely_ewma_alpha_ $timely_ewma_alpha
 	    $tcp($conn_idx) set timely_t_low_ $timely_t_low
