@@ -43,13 +43,15 @@ def plot_rtt(algo_name, out_dir):
     plt.plot(sorted_data, yvals, '.', label=algo_name)
     plt.savefig(cdf_file)
     print "Saved plot: ", cdf_file
+    plt.close()
 
     return sorted_data, yvals
 
 """
     Plot the given CDFs on the same figure for easier comparison
 """
-def plot_allRTTcdf(out_dir, dctcp=None, vegas=None, timely=None, hopeMax=None, hopeSum=None):
+def plot_allRTTcdf(out_dir, dctcp=None, vegas=None, timely=None, hopeSum=None, hopeMax=None, \
+			hopeMaxq=None, hopeMaxqd=None, hopeMaxe=None, hopeMaxed=None):
     
     allCDF_file = out_dir+'All.rttCDF_benchmark.png'
     plt.figure()
@@ -57,19 +59,28 @@ def plot_allRTTcdf(out_dir, dctcp=None, vegas=None, timely=None, hopeMax=None, h
     plt.title('CDF of RTT for benchmarked congestion control algorithms')
 
     if dctcp is not None:
-	plt.plot(dctcp[0], dctcp[1], '-', label='DCTCP')
+	plt.plot(dctcp[0], dctcp[1], '--', label='DCTCP')
     if vegas is not None:
-	plt.plot(vegas[0], vegas[1], '-', label='Vegas')
+	plt.plot(vegas[0], vegas[1], '-.', label='Vegas')
     if timely is not None:
         plt.plot(timely[0], timely[1], '-', label='Timely')
-    if hopeMax is not None:
-        plt.plot(hopeMax[0], hopeMax[1], '-', label='Hope-Max')
     if hopeSum is not None:
         plt.plot(hopeSum[0], hopeSum[1], '-', label='Hope-Sum')
+    if hopeMax is not None:
+        plt.plot(hopeMax[0], hopeMax[1], '-', label='Hope-Max')
+    if hopeMaxq is not None:
+        plt.plot(hopeMaxq[0], hopeMaxq[1], '-', label='Hope-Maxq')
+    if hopeMaxqd is not None:
+        plt.plot(hopeMaxqd[0], hopeMaxqd[1], '-', label='Hope-Maxqd')
+    if hopeMaxe is not None:
+        plt.plot(hopeMaxe[0], hopeMaxe[1], '-', label='Hope-Maxe')
+    if hopeMaxed is not None:
+        plt.plot(hopeMaxed[0], hopeMaxed[1], '-', label='Hope-Maxed')
 
     plt.legend(loc='lower right')
     plt.savefig(allCDF_file)
     print "Saved plot: ", allCDF_file
+    plt.close()
 
 def plot_throughput(algo_name, num_clients, out_dir, num_leafs=0, num_spine=1):
     
@@ -136,13 +147,15 @@ def plot_throughput(algo_name, num_clients, out_dir, num_leafs=0, num_spine=1):
     plt.grid()
     plt.savefig(out_file, bbox_inches="tight")
     print "Saved plot: ", out_file
+    plt.close()
 
     return time,total_thp
 
 """
    Plot the given throughputs in the same figure for easier comparison
 """
-def plot_allTotalThp(out_dir, dctcp=None, vegas=None, timely=None, hopeMax=None, hopeSum=None):
+def plot_allTotalThp(out_dir, dctcp=None, vegas=None, timely=None, hopeSum=None, hopeMax=None, \
+			hopeMaxq=None, hopeMaxqd=None, hopeMaxe=None, hopeMaxed=None):
     
     allThp_file = out_dir+'All.thp_benchmark.png'
     plt.figure()
@@ -156,14 +169,23 @@ def plot_allTotalThp(out_dir, dctcp=None, vegas=None, timely=None, hopeMax=None,
 	plt.plot(vegas[0], vegas[1], '-', label='Vegas')
     if timely is not None:
         plt.plot(timely[0], timely[1], '-', label='Timely')
-    if hopeMax is not None:
-        plt.plot(hopeMax[0], hopeMax[1], '-', label='Hope-Max')
     if hopeSum is not None:
         plt.plot(hopeSum[0], hopeSum[1], '-', label='Hope-Sum')
+    if hopeMax is not None:
+        plt.plot(hopeMax[0], hopeMax[1], '-', label='Hope-Max')
+    if hopeMaxq is not None:
+        plt.plot(hopeMaxq[0], hopeMaxq[1], '-', label='Hope-Maxq')
+    if hopeMaxqd is not None:
+        plt.plot(hopeMaxqd[0], hopeMaxqd[1], '-', label='Hope-Maxqd')
+    if hopeMaxe is not None:
+        plt.plot(hopeMaxe[0], hopeMaxe[1], '-', label='Hope-Maxe')
+    if hopeMaxed is not None:
+        plt.plot(hopeMaxed[0], hopeMaxed[1], '-', label='Hope-Maxed')
 
     plt.legend(loc='lower right')
     plt.savefig(allThp_file)
     print "Saved plot: ", allThp_file
+    plt.close()
 
 """
 Parse the sampled queue size output file and plot the queue size over time
@@ -196,4 +218,5 @@ def plot_queue(algo_name, out_dir):
     plt.grid()
     plt.savefig(out_file, bbox_inches="tight")
     print "Saved plot: ", out_file
+    plt.close()
 

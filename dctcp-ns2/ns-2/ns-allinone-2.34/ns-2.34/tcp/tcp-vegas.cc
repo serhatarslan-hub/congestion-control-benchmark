@@ -411,7 +411,7 @@ VegasTcpAgent::recv(Packet *pkt, Handler *)
 			
 		if(timely_==1 || hope_type_!=0){
 			
-			//double line_rate = 10000000000.0;
+			double line_rate = 10000000000.0;
 			double epsilon = 0.000001;	//Threshold to say gradient <= 0
 					
 			if (hope_type_==1){
@@ -422,7 +422,11 @@ VegasTcpAgent::recv(Packet *pkt, Handler *)
 					dummy = (double)*(hop_delay + i);
 					if( dummy > max_delay){ max_delay = dummy;}
 				}
-				cong_signal_ = max_delay;//* 8.0 / line_rate;
+				if (hope_collector_ == 0){
+					cong_signal_ = max_delay;
+				} else {
+					cong_signal_ = max_delay* 8.0 / line_rate;
+				}				
 			} else if (hope_type_==2) {
 				// Total queueing delay to be used
 				double tot_delay = 0.0;
@@ -431,7 +435,11 @@ VegasTcpAgent::recv(Packet *pkt, Handler *)
 					dummy = (double)*(hop_delay + i);
 					tot_delay += dummy;
 				}
-				cong_signal_ = tot_delay;//* 8.0 / line_rate;
+				if (hope_collector_ == 0){
+					cong_signal_ = tot_delay;
+				} else {
+					cong_signal_ = tot_delay* 8.0 / line_rate;
+				}
 			}
 
 			if(timely_prevRTT_ == -1) {

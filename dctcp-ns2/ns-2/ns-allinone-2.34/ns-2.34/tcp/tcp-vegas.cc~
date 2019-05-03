@@ -411,7 +411,7 @@ VegasTcpAgent::recv(Packet *pkt, Handler *)
 			
 		if(timely_==1 || hope_type_!=0){
 			
-			//double line_rate = 10000000000.0;
+			double line_rate = 10000000000.0;
 			double epsilon = 0.000001;	//Threshold to say gradient <= 0
 					
 			if (hope_type_==1){
@@ -422,7 +422,11 @@ VegasTcpAgent::recv(Packet *pkt, Handler *)
 					dummy = (double)*(hop_delay + i);
 					if( dummy > max_delay){ max_delay = dummy;}
 				}
-				cong_signal_ = max_delay;//* 8.0 / line_rate;
+				if (hope_collector_ == 0){
+					cong_signal_ = max_delay;
+				} else {
+					cong_signal_ = max_delay* 8.0 / line_rate;
+				}				
 			} else if (hope_type_==2) {
 				// Total queueing delay to be used
 				double tot_delay = 0.0;
@@ -431,7 +435,11 @@ VegasTcpAgent::recv(Packet *pkt, Handler *)
 					dummy = (double)*(hop_delay + i);
 					tot_delay += dummy;
 				}
-				cong_signal_ = tot_delay;//* 8.0 / line_rate;
+				if (hope_collector_ == 0){
+					cong_signal_ = tot_delay;
+				} else {
+					cong_signal_ = tot_delay* 8.0 / line_rate;
+				}
 			}
 
 			if(timely_prevRTT_ == -1) {
@@ -459,7 +467,7 @@ VegasTcpAgent::recv(Packet *pkt, Handler *)
 			delta_factor = (delta_factor>0.0)?delta_factor:0.0;
 
 			double timely_oldRate = timely_rate_;
-			double old_cwnd = (double)cwnd_;
+			//double old_cwnd = (double)cwnd_;
 			if (rtt < timely_t_low_) { //additivive increase if rtt < t_low
       				timely_rate_ = timely_rate_ + (timely_additiveInc_ * delta_factor);
 				//printf("****Entered rtt < timely_t_low \n");
@@ -489,7 +497,7 @@ VegasTcpAgent::recv(Packet *pkt, Handler *)
 			cwnd_ = timely_rate_ * rtt / double(timely_packetSize_ * 8.0);
 			cwnd_ = ((double)cwnd_>1.0)?(double)cwnd_:1.1;
 
-			printf("*** rtt= %f | cong_sgnl= %f | old_cwnd= %f | old_rate= %f\n",rtt*1000000, cong_signal_*1000000, old_cwnd, timely_oldRate);
+			//printf("*** rtt= %f | cong_sgnl= %f | old_cwnd= %f | old_rate= %f\n",rtt*1000000, cong_signal_*1000000, old_cwnd, timely_oldRate);
 			//printf("**cur_time= %f | last_update_time= %f | base_rtt= %f\n", currentTime*1000, timely_lastUpdateTime*1000, v_baseRTT_);		
 			//printf("*rtt_diff= %f | avgRTTDiff= %f | gradient= %f ", rtt_diff, timely_avgRTTDiff_, normalized_gradient*1000000000);
 			//printf("| delta_factor= %f | new_cwnd = %f | new_rate= %f\n",delta_factor, (double)cwnd_, timely_rate_);
