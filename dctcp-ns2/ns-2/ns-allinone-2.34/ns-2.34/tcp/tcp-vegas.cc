@@ -416,7 +416,7 @@ VegasTcpAgent::recv(Packet *pkt, Handler *)
 					
 			if (hope_type_==1){
 				// Max-delay to be used
-				double max_delay = 0.0;
+				double max_delay = -999999.9;
 				double dummy;
 				for (int i=0; i<hop_cnt; i++){
 					dummy = (double)*(hop_delay + i);

@@ -90,7 +90,7 @@ def main():
     if (args.hope_maxqd):
 	congestion_alg = 'hope_maxqd'
 	print("Hope-Maxqd Simulation Running...")
-        os.system('ns ./lib/complexCongestion.tcl {0} {1} {2} {3}'.format(congestion_alg, out_dir, num_clients, num_leafs))
+        os.system('ns ./lib/topology2.tcl {0} {1} {2} {3}'.format(congestion_alg, out_dir, num_clients, num_leafs))
         hopeMaxqd_cdf = benchmark_tools.plot_rtt(congestion_alg, out_dir)
 	hopeMaxqd_thp = benchmark_tools.plot_throughput(congestion_alg, num_clients, out_dir, num_leafs)
 	benchmark_tools.plot_queue(congestion_alg, out_dir)
