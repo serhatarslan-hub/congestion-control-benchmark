@@ -561,7 +561,7 @@ if {[string compare $congestion_alg "dctcp"] == 0} {
 	    $tcp($conn_idx) set hope_collector_ 3
 	    $tcp($conn_idx) set timely_packetSize_ $pktSize
 	    $tcp($conn_idx) set timely_ewma_alpha_ $timely_ewma_alpha
-	    $tcp($conn_idx) set timely_t_low_ $timely_t_low
+	    $tcp($conn_idx) set timely_t_low_ -10
 	    $tcp($conn_idx) set timely_t_high_ $timely_t_high
 	    $tcp($conn_idx) set timely_additiveInc_ $timely_additiveInc
 	    $tcp($conn_idx) set timely_decreaseFac_ $timely_decreaseFac
@@ -618,7 +618,7 @@ if {[string compare $congestion_alg "dctcp"] == 0} {
 	    $tcp($conn_idx) set hope_collector_ 4
 	    $tcp($conn_idx) set timely_packetSize_ $pktSize
 	    $tcp($conn_idx) set timely_ewma_alpha_ $timely_ewma_alpha
-	    $tcp($conn_idx) set timely_t_low_ $timely_t_low
+	    $tcp($conn_idx) set timely_t_low_ -10
 	    $tcp($conn_idx) set timely_t_high_ $timely_t_high
 	    $tcp($conn_idx) set timely_additiveInc_ $timely_additiveInc
 	    $tcp($conn_idx) set timely_decreaseFac_ $timely_decreaseFac
