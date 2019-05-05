@@ -52,10 +52,10 @@ set ackRatio 1
 set timely_ewma_alpha 0.3
 set timely_t_low 0
 set timely_t_high 0.0001
-set timely_additiveInc 20000000.0
+set timely_additiveInc 60000000.0
 set timely_decreaseFac 0.8
 set timely_HAI_thresh 5
-set timely_rate 1000000000.0
+set timely_rate 2000000000.0
 
 ##### Switch Parameters ####
 set drop_prio_ false
@@ -68,9 +68,9 @@ set ns [new Simulator]
 set tracefile [open $out_dir$congestion_alg.tr w]
 $ns trace-all $tracefile
 
-#Open the NAM trace file
-set nf [open $out_dir$congestion_alg.nam w]
-$ns namtrace-all $nf
+##Open the NAM trace file
+#set nf [open $out_dir$congestion_alg.nam w]
+#$ns namtrace-all $nf
 
 # Create TOR_switch, server, and client nodes
 for {set i 0} {$i < $num_clients} {incr i} {
@@ -718,10 +718,10 @@ $ns at $run_time "finish"
 
 #Define a 'finish' procedure
 proc finish {} {
-    global congestion_alg ns nf tracefile rttFile qf_size out_dir
+    global congestion_alg ns tracefile rttFile qf_size out_dir
     $ns flush-trace
     # Close the NAM trace file
-    close $nf
+#    close $nf
     close $tracefile
     close $rttFile 
     close $qf_size
