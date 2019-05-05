@@ -227,7 +227,7 @@ if {[string compare $congestion_alg "dctcp"] == 0} {
             #$sink($conn_idx) listen
 
 	    $tcp($conn_idx) set timely_ 0
-	    $tcp($conn_idx) set hope_ 0
+	    $tcp($conn_idx) set hope_type_ 0
 
         }
     }

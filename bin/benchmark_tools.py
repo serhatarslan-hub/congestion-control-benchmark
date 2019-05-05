@@ -32,6 +32,7 @@ def plot_rtt(algo_name, out_dir):
     plt.grid()
     plt.savefig(out_file)
     print "Saved plot: ", out_file
+    plt.close()
 
     # Compute the CDF
     sorted_data = np.sort(rtt)
@@ -82,7 +83,7 @@ def plot_allRTTcdf(out_dir, dctcp=None, vegas=None, timely=None, hopeSum=None, h
     print "Saved plot: ", allCDF_file
     plt.close()
 
-def plot_throughput(algo_name, num_clients, out_dir, num_leafs=0, num_spine=1):
+def plot_throughput(algo_name, num_clients, out_dir, num_leaf=0, num_spine=1, num_server=1):
     
     tr_file = out_dir+algo_name+'.tr'
     out_file = out_dir+algo_name+'.thp.png'
@@ -90,7 +91,7 @@ def plot_throughput(algo_name, num_clients, out_dir, num_leafs=0, num_spine=1):
     clock = 0
     time = []
 
-    num_nodes = num_clients + num_leafs + num_spine + 1
+    num_nodes = num_clients + num_leaf + num_spine + num_server
     throughputs = []
     sum_bytes = []
     last_seq = []
