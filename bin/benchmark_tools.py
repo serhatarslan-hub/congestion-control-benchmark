@@ -53,7 +53,8 @@ def plot_rtt(algo_name, out_dir):
 """
 def plot_allRTTcdf(out_dir, dctcp=None, vegas=None, timely=None, hopeSum=None, hopeMax=None, \
 			hopeMaxq=None, hopeMaxqd=None, hopeMaxe=None, hopeMaxed=None, \
-			hopeSumq=None, hopeSumqd=None, hopeSume=None, hopeSumed=None):
+			hopeSumq=None, hopeSumqd=None, hopeSume=None, hopeSumed=None, \
+			hopeSqu=None, hopeSquq=None):
     
     allCDF_file = out_dir+'All.rttCDF_benchmark.png'
     plt.figure()
@@ -86,6 +87,10 @@ def plot_allRTTcdf(out_dir, dctcp=None, vegas=None, timely=None, hopeSum=None, h
         plt.plot(hopeSume[0], hopeSume[1], '-.', label='Hope-Sume')
     if hopeSumed is not None:
         plt.plot(hopeSumed[0], hopeSumed[1], '-.', label='Hope-Sumed')
+    if hopeSqu is not None:
+        plt.plot(hopeSqu[0], hopeSqu[1], '-', label='Hope-Squ')
+    if hopeSquq is not None:
+        plt.plot(hopeSquq[0], hopeSquq[1], '-', label='Hope-Squq')
 
     plt.legend(loc='lower right')
     plt.savefig(allCDF_file)
@@ -166,7 +171,8 @@ def plot_throughput(algo_name, num_clients, out_dir, num_leaf=0, num_spine=1, nu
 """
 def plot_allTotalThp(out_dir, dctcp=None, vegas=None, timely=None, hopeSum=None, hopeMax=None, \
 			hopeMaxq=None, hopeMaxqd=None, hopeMaxe=None, hopeMaxed=None, \
-			hopeSumq=None, hopeSumqd=None, hopeSume=None, hopeSumed=None):
+			hopeSumq=None, hopeSumqd=None, hopeSume=None, hopeSumed=None, \
+			hopeSqu=None, hopeSquq=None):
     
     allThp_file = out_dir+'All.thp_benchmark.png'
     plt.figure()
@@ -200,6 +206,10 @@ def plot_allTotalThp(out_dir, dctcp=None, vegas=None, timely=None, hopeSum=None,
         plt.plot(hopeSume[0][:-2], hopeSume[1][:-2], '-.', label='Hope-Sume')
     if hopeSumed is not None:
         plt.plot(hopeSumed[0][:-2], hopeSumed[1][:-2], '-.', label='Hope-Sumed')
+    if hopeSqu is not None:
+        plt.plot(hopeSqu[0][:-2], hopeSqu[1][:-2], '-', label='Hope-Squ')
+    if hopeSquq is not None:
+        plt.plot(hopeSquq[0][:-2], hopeSquq[1][:-2], '-', label='Hope-Squq')
 
     plt.legend(loc='lower right')
     plt.savefig(allThp_file)

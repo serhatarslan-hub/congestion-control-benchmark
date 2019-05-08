@@ -29,6 +29,8 @@ def main():
     parser.add_argument('--hope_sumqd', action='store_true', help="Simulates Hope-Sumqd in the topology-3 congestion scenario")
     parser.add_argument('--hope_sume', action='store_true', help="Simulates Hope-Sume in the topology-3 congestion scenario")
     parser.add_argument('--hope_sumed', action='store_true', help="Simulates Hope-Sumed in the topology-3 congestion scenario")
+    parser.add_argument('--hope_squ', action='store_true', help="Simulates Hope-Squ in the topology-3 congestion scenario")
+    parser.add_argument('--hope_squq', action='store_true', help="Simulates Hope-Squq in the topology-3 congestion scenario")
     args = parser.parse_args()
     
     num_clients = 32
@@ -64,6 +66,10 @@ def main():
     hopeSume_thp = None
     hopeSumed_cdf = None
     hopeSumed_thp = None
+    hopeSqu_cdf = None
+    hopeSqu_thp = None
+    hopeSquq_cdf = None
+    hopeSquq_thp = None
 
     if (args.dctcp):
 	congestion_alg = 'dctcp'
@@ -149,13 +155,29 @@ def main():
         hopeSumed_cdf = benchmark_tools.plot_rtt(congestion_alg, out_dir)
 	hopeSumed_thp = benchmark_tools.plot_throughput(congestion_alg, num_clients, out_dir, num_leaf=num_leafs, num_server=num_servers)
 	benchmark_tools.plot_queue(congestion_alg, out_dir)
+    if (args.hope_squ):
+	congestion_alg = 'hope_squ'
+	print("Hope-Squ Simulation Running...")
+        os.system('ns ./lib/topology3.tcl {0} {1} {2} {3}'.format(congestion_alg, out_dir, num_clients, num_leafs))
+        hopeSqu_cdf = benchmark_tools.plot_rtt(congestion_alg, out_dir)
+	hopeSqu_thp = benchmark_tools.plot_throughput(congestion_alg, num_clients, out_dir, num_leaf=num_leafs, num_server=num_servers)
+	benchmark_tools.plot_queue(congestion_alg, out_dir)
+    if (args.hope_squq):
+	congestion_alg = 'hope_squq'
+	print("Hope-Squq Simulation Running...")
+        os.system('ns ./lib/topology3.tcl {0} {1} {2} {3}'.format(congestion_alg, out_dir, num_clients, num_leafs))
+        hopeSquq_cdf = benchmark_tools.plot_rtt(congestion_alg, out_dir)
+	hopeSquq_thp = benchmark_tools.plot_throughput(congestion_alg, num_clients, out_dir, num_leaf=num_leafs, num_server=num_servers)
+	benchmark_tools.plot_queue(congestion_alg, out_dir)
 
     benchmark_tools.plot_allRTTcdf(out_dir, dctcp=dctcp_cdf, timely=timely_cdf, hopeMax=hopeMax_cdf, hopeSum=hopeSum_cdf, \
 				hopeMaxq=hopeMaxq_cdf, hopeMaxqd=hopeMaxqd_cdf, hopeMaxe=hopeMaxe_cdf, hopeMaxed=hopeMaxed_cdf, \
-				hopeSumq=hopeSumq_cdf, hopeSumqd=hopeSumqd_cdf, hopeSume=hopeSume_cdf, hopeSumed=hopeSumed_cdf)
+				hopeSumq=hopeSumq_cdf, hopeSumqd=hopeSumqd_cdf, hopeSume=hopeSume_cdf, hopeSumed=hopeSumed_cdf, \
+				hopeSqu=hopeSqu_cdf, hopeSquq=hopeSquq_cdf)
     benchmark_tools.plot_allTotalThp(out_dir, dctcp=dctcp_thp, timely=timely_thp, hopeMax=hopeMax_thp, hopeSum=hopeSum_thp, \
 				hopeMaxq=hopeMaxq_thp, hopeMaxqd=hopeMaxqd_thp, hopeMaxe=hopeMaxe_thp, hopeMaxed=hopeMaxed_thp, \
-				hopeSumq=hopeSumq_thp, hopeSumqd=hopeSumqd_thp, hopeSume=hopeSume_thp, hopeSumed=hopeSumed_thp)
+				hopeSumq=hopeSumq_thp, hopeSumqd=hopeSumqd_thp, hopeSume=hopeSume_thp, hopeSumed=hopeSumed_thp, \
+				hopeSqu=hopeSqu_thp, hopeSquq=hopeSquq_thp)
 
 if __name__ == "__main__":
     main()

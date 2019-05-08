@@ -64,6 +64,7 @@ static const char rcsid[] =
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/types.h>
+#include <cmath>
 
 #include "ip.h"
 #include "tcp.h"
@@ -439,6 +440,20 @@ VegasTcpAgent::recv(Packet *pkt, Handler *)
 					cong_signal_ = tot_delay;
 				} else {
 					cong_signal_ = tot_delay* 8.0 / line_rate;
+				}
+			} else if (hope_type_==3) {
+				// Squared queueing delay to be used
+				double squ_delay = 0.0;
+				double dummy;
+				for (int i=0; i<hop_cnt; i++){
+					dummy = (double)*(hop_delay + i);
+					squ_delay += pow(dummy,2);
+				}
+				squ_delay = sqrt(squ_delay);
+				if (hope_collector_ == 0){
+					cong_signal_ = squ_delay;
+				} else {
+					cong_signal_ = squ_delay* 8.0 / line_rate;
 				}
 			}
 

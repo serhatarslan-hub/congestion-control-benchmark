@@ -227,6 +227,7 @@ if {[string compare $congestion_alg "dctcp"] == 0} {
 
 	    $tcp($conn_idx) set timely_packetSize_ $pktSize
 	    $tcp($conn_idx) set timely_ewma_alpha_ $timely_ewma_alpha
+	    $tcp($conn_idx) set timely_t_low_ $timely_t_low
 	    $tcp($conn_idx) set timely_t_high_ $timely_t_high
 	    $tcp($conn_idx) set timely_additiveInc_ $timely_additiveInc
 	    $tcp($conn_idx) set timely_decreaseFac_ $timely_decreaseFac
@@ -251,7 +252,6 @@ if {[string compare $congestion_alg "dctcp"] == 0} {
 
 	        $tcp($conn_idx) set timely_ 1
 	        $tcp($conn_idx) set hope_type_ 0
-	        $tcp($conn_idx) set timely_t_low_ $timely_t_low
             }
         }
     } elseif {[string compare $congestion_alg "hope_sum"] == 0} {    
@@ -261,7 +261,6 @@ if {[string compare $congestion_alg "dctcp"] == 0} {
 
 	        $tcp($conn_idx) set hope_type_ 2
 	        $tcp($conn_idx) set hope_collector_ 0
-	        $tcp($conn_idx) set timely_t_low_ $timely_t_low
             }
         }
     } elseif {[string compare $congestion_alg "hope_max"] == 0} {    
@@ -271,7 +270,6 @@ if {[string compare $congestion_alg "dctcp"] == 0} {
 
 	        $tcp($conn_idx) set hope_type_ 1
 	        $tcp($conn_idx) set hope_collector_ 0
-	        $tcp($conn_idx) set timely_t_low_ $timely_t_low
             }
         }
     } elseif {[string compare $congestion_alg "hope_maxq"] == 0} {    
@@ -281,7 +279,6 @@ if {[string compare $congestion_alg "dctcp"] == 0} {
 
 	        $tcp($conn_idx) set hope_type_ 1
 	        $tcp($conn_idx) set hope_collector_ 1
-	        $tcp($conn_idx) set timely_t_low_ $timely_t_low
             }
         }
     } elseif {[string compare $congestion_alg "hope_maxqd"] == 0} {    
@@ -291,7 +288,6 @@ if {[string compare $congestion_alg "dctcp"] == 0} {
 
 	        $tcp($conn_idx) set hope_type_ 1
 	        $tcp($conn_idx) set hope_collector_ 2
-	        $tcp($conn_idx) set timely_t_low_ $timely_t_low
             }
         }
     } elseif {[string compare $congestion_alg "hope_maxe"] == 0} {    
@@ -321,7 +317,6 @@ if {[string compare $congestion_alg "dctcp"] == 0} {
 
 	        $tcp($conn_idx) set hope_type_ 2
 	        $tcp($conn_idx) set hope_collector_ 1
-	        $tcp($conn_idx) set timely_t_low_ $timely_t_low
             }
         }
     } elseif {[string compare $congestion_alg "hope_sumqd"] == 0} {    
@@ -331,7 +326,6 @@ if {[string compare $congestion_alg "dctcp"] == 0} {
 
 	        $tcp($conn_idx) set hope_type_ 2
 	        $tcp($conn_idx) set hope_collector_ 2
-	        $tcp($conn_idx) set timely_t_low_ $timely_t_low
             }
         }
     } elseif {[string compare $congestion_alg "hope_sume"] == 0} {    
@@ -352,6 +346,24 @@ if {[string compare $congestion_alg "dctcp"] == 0} {
 	        $tcp($conn_idx) set hope_type_ 2
 	        $tcp($conn_idx) set hope_collector_ 4
 	        $tcp($conn_idx) set timely_t_low_ -10
+            }
+        }
+    } elseif {[string compare $congestion_alg "hope_squ"] == 0} {    
+        for {set i 0} {$i < $num_clients} {incr i} {
+            for {set j 0} {$j < $num_conn_per_client} {incr j} {
+	        set conn_idx [expr $i*$num_conn_per_client+$j]        
+
+	        $tcp($conn_idx) set hope_type_ 3
+	        $tcp($conn_idx) set hope_collector_ 0
+            }
+        }
+    } elseif {[string compare $congestion_alg "hope_squq"] == 0} {    
+        for {set i 0} {$i < $num_clients} {incr i} {
+            for {set j 0} {$j < $num_conn_per_client} {incr j} {
+	        set conn_idx [expr $i*$num_conn_per_client+$j]        
+
+	        $tcp($conn_idx) set hope_type_ 3
+	        $tcp($conn_idx) set hope_collector_ 1
             }
         }
     }
