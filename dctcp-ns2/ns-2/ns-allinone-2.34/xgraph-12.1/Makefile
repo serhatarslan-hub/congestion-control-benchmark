@@ -62,7 +62,7 @@ POST_UNINSTALL = :
 ADDITIONAL_INCLUDES = 
 ADDITIONAL_LIBS = 
 CC = gcc
-MAKEINFO = /home/sarslan/Documents/dctcp-ns2/ns-2/ns-allinone-2.34/xgraph-12.1/missing makeinfo
+MAKEINFO = /home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/xgraph-12.1/missing makeinfo
 PACKAGE = xgraph
 VERSION = 12.1
 

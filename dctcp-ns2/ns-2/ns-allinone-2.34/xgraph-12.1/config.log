@@ -15,67 +15,20 @@ configure:929: checking whether the C compiler (gcc  ) works
 configure:945: gcc -o conftest    conftest.c  1>&5
 configure:971: checking whether the C compiler (gcc  ) is a cross-compiler
 configure:976: checking whether we are using GNU C
-configure:985: gcc -E conftest.c
 configure:1004: checking whether gcc accepts -g
 configure:1037: checking how to run the C preprocessor
-configure:1058: gcc -E  conftest.c >/dev/null 2>conftest.out
 configure:1121: checking for X
-configure:1188: gcc -E  conftest.c >/dev/null 2>conftest.out
-configure:1264: gcc -o conftest -g -O2   conftest.c -lXt  1>&5
 configure:1435: checking for dnet_ntoa in -ldnet
-configure:1454: gcc -o conftest -g -O2   conftest.c -ldnet   1>&5
-/usr/bin/ld: cannot find -ldnet
-collect2: error: ld returned 1 exit status
-configure: failed program was:
-#line 1443 "configure"
-#include "confdefs.h"
-/* Override any gcc2 internal prototype to avoid an error.  */
-/* We use char because int might match the return type of a gcc2
-    builtin and then its argument prototype would still apply.  */
-char dnet_ntoa();
-
-int main() {
-dnet_ntoa()
-; return 0; }
 configure:1476: checking for dnet_ntoa in -ldnet_stub
-configure:1495: gcc -o conftest -g -O2   conftest.c -ldnet_stub   1>&5
-/usr/bin/ld: cannot find -ldnet_stub
-collect2: error: ld returned 1 exit status
-configure: failed program was:
-#line 1484 "configure"
-#include "confdefs.h"
-/* Override any gcc2 internal prototype to avoid an error.  */
-/* We use char because int might match the return type of a gcc2
-    builtin and then its argument prototype would still apply.  */
-char dnet_ntoa();
-
-int main() {
-dnet_ntoa()
-; return 0; }
 configure:1524: checking for gethostbyname
-configure:1552: gcc -o conftest -g -O2   conftest.c  1>&5
 configure:1622: checking for connect
-configure:1650: gcc -o conftest -g -O2   conftest.c  1>&5
 configure:1714: checking for remove
-configure:1742: gcc -o conftest -g -O2   conftest.c  1>&5
 configure:1806: checking for shmat
-configure:1834: gcc -o conftest -g -O2   conftest.c  1>&5
 configure:1907: checking for IceConnectionNumber in -lICE
-configure:1926: gcc -o conftest -g -O2   conftest.c -lICE   1>&5
 configure:1955: checking for float.h
-configure:1965: gcc -E  conftest.c >/dev/null 2>conftest.out
 configure:1955: checking for limits.h
-configure:1965: gcc -E  conftest.c >/dev/null 2>conftest.out
 configure:1955: checking for stdlib.h
-configure:1965: gcc -E  conftest.c >/dev/null 2>conftest.out
 configure:1955: checking for string.h
-configure:1965: gcc -E  conftest.c >/dev/null 2>conftest.out
 configure:1955: checking for strings.h
-configure:1965: gcc -E  conftest.c >/dev/null 2>conftest.out
 configure:1955: checking for unistd.h
-configure:1965: gcc -E  conftest.c >/dev/null 2>conftest.out
 configure:1996: checking for strcasecmp
-configure:2024: gcc -o conftest -g -O2   conftest.c  1>&5
-configure:2008:6: warning: conflicting types for built-in function 'strcasecmp' [enabled by default]
- char $ac_func();
-      ^

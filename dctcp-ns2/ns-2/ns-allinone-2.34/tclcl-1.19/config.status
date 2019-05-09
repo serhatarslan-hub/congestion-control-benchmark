@@ -359,7 +359,7 @@ Copyright (C) 2008 Free Software Foundation, Inc.
 This config.status script is free software; the Free Software Foundation
 gives unlimited permission to copy, distribute and modify it."
 
-ac_pwd='/home/sarslan/Documents/dctcp-ns2/ns-2/ns-allinone-2.34/tclcl-1.19'
+ac_pwd='/home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/tclcl-1.19'
 srcdir='.'
 INSTALL='/usr/bin/install -c'
 test -n "$AWK" || AWK=awk
@@ -541,23 +541,24 @@ S["V_LIB"]=" -lnsl -ldl"
 S["V_TAR_EXTRA"]=""
 S["V_CCOPT"]="-O2"
 S["V_ALL"]="libtclcl.a"
-S["V_LIB_TK"]="-L/home/sarslan/Documents/dctcp-ns2/ns-2/ns-allinone-2.34/lib -ltk8.4"
-S["V_LIB_TCL"]="-L/home/sarslan/Documents/dctcp-ns2/ns-2/ns-allinone-2.34/lib -ltcl8.4"
-S["V_LIB_OTCL"]="-L/home/sarslan/Documents/dctcp-ns2/ns-2/ns-allinone-2.34/otcl-1.13 -lotcl"
+S["V_LIB_TK"]="-L/home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/lib -ltk8.4"
+S["V_LIB_TCL"]="-L/home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/lib -ltcl8.4"
+S["V_LIB_OTCL"]="-L/home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/otcl-1.13 -lotcl"
 S["V_LIB_TCLCL"]=""
 S["V_TAR_TARGET"]="linux-gnu"
 S["V_STATIC"]=""
 S["V_DEFINES"]="-DHAVE_ZLIB_H -DHAVE_LIBOTCL1_13 -DHAVE_OTCL_H -DHAVE_LIBTK8_4 -DHAVE_TK_H -DHAVE_LIBTCL8_4 -DHAVE_TCLINT_H -DHAVE_TCL_H "
-S["V_LIBS"]="-L/home/sarslan/Documents/dctcp-ns2/ns-2/ns-allinone-2.34/otcl-1.13 -lotcl -L/home/sarslan/Documents/dctcp-ns2/ns-2/ns-allinone-2.34/lib -ltk8.4 -L/"\
-"home/sarslan/Documents/dctcp-ns2/ns-2/ns-allinone-2.34/lib -ltcl8.4"
-S["V_INCLUDES"]="-I/usr/include -I/home/sarslan/Documents/dctcp-ns2/ns-2/ns-allinone-2.34/otcl-1.13 -I/home/sarslan/Documents/dctcp-ns2/ns-2/ns-allinone-2.34/include"\
-" -I/home/sarslan/Documents/dctcp-ns2/ns-2/ns-allinone-2.34/include -I/home/sarslan/Documents/dctcp-ns2/ns-2/ns-allinone-2.34/include"
+S["V_LIBS"]="-L/home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/otcl-1.13 -lotcl -L/home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinon"\
+"e-2.34/lib -ltk8.4 -L/home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/lib -ltcl8.4"
+S["V_INCLUDES"]="-I/usr/include -I/home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/otcl-1.13 -I/home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns"\
+"-allinone-2.34/include -I/home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/include -I/home/sarslan/congestion_benchmark/dctcp-ns2/n"\
+"s-2/ns-allinone-2.34/include"
 S["V_LIB_X11"]="-lXext -lX11"
 S["V_INCLUDE_X11"]=""
 S["V_LIBRARY_TK"]="../lib/tk8.4"
 S["V_TKDOSNAMES"]="$(LIBRARY_TK)/optMenu.tcl $(LIBRARY_TK)/scrlbar.tcl"
 S["V_LIBRARY_TCL"]="../lib/tcl8.4"
-S["V_TCLSH"]="/home/sarslan/Documents/dctcp-ns2/ns-2/ns-allinone-2.34/bin/tclsh8.4"
+S["V_TCLSH"]="/home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/bin/tclsh8.4"
 S["V_TCL_LIBRARY_FILES"]="$(TCL_BASE_LIBRARY_FILES) ../lib/tcl8.4/http1.0/http.tcl"
 S["RANLIB"]="ranlib"
 S["EGREP"]="/bin/grep -E"

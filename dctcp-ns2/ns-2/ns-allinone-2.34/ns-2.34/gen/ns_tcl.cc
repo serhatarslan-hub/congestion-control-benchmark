@@ -101,9 +101,9 @@ ns will fall back on running the first perl in your path.\\\n\
 The wrong version of perl may break the test suites.\\\n\
 Reconfigure and rebuild ns if this is a problem.\\\n\
 \"\n\
-checkout_executable TCLSH \"/home/sarslan/Documents/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/bin/tclsh8.4\" tclsh \"\\\n\
+checkout_executable TCLSH \"/home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/bin/tclsh8.4\" tclsh \"\\\n\
 When configured, ns found the right version of tclsh in\\\n\
-/home/sarslan/Documents/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/bin/tclsh8.4\n\
+/home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/bin/tclsh8.4\n\
 but it doesn't seem to be there anymore, so\\\n\
 ns will fall back on running the first tclsh in your path.\\\n\
 The wrong version of tclsh may break the test suites.\\\n\

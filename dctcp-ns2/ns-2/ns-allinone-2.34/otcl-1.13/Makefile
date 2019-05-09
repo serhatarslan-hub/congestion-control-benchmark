@@ -38,7 +38,7 @@ INST_OINC=	/usr/local/include
 
 INCLUDES = \
 	-I. \
-	-I/home/sarslan/Documents/dctcp-ns2/ns-2/ns-allinone-2.34/include -I/home/sarslan/Documents/dctcp-ns2/ns-2/ns-allinone-2.34/include -I/home/sarslan/Documents/dctcp-ns2/ns-2/ns-allinone-2.34/include \
+	-I/home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/include -I/home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/include -I/home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/include \
 	 \
 	-I${prefix}/include \
 	
@@ -46,7 +46,7 @@ INCLUDES = \
 DEFINES = \
 	 -DNDEBUG -DUSE_SHM
 
-LIB =	-L/home/sarslan/Documents/dctcp-ns2/ns-2/ns-allinone-2.34/lib -ltk8.4 -L/home/sarslan/Documents/dctcp-ns2/ns-2/ns-allinone-2.34/lib -ltcl8.4 \
+LIB =	-L/home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/lib -ltk8.4 -L/home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/lib -ltcl8.4 \
 	-lXext -lX11  -lnsl -ldl -lm
 
 OTCLLIB= -L. -lotcl

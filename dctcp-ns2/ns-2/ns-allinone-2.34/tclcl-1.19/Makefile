@@ -41,7 +41,7 @@ CC	= gcc
 CPP	= g++
 LINK	= $(CPP)
 MKDEP	= ./conf/mkdep
-TCLSH	= /home/sarslan/Documents/dctcp-ns2/ns-2/ns-allinone-2.34/bin/tclsh8.4
+TCLSH	= /home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/bin/tclsh8.4
 TCL2C	= ./tcl2c++
 AR	= ar rc $(BLANK)
 
@@ -61,10 +61,10 @@ LDOUT	= -o $(BLANK)
 DEFINE	= -DNO_TK  -DNDEBUG -DUSE_SHM -DHAVE_ZLIB_H -DHAVE_LIBOTCL1_13 -DHAVE_OTCL_H -DHAVE_LIBTK8_4 -DHAVE_TK_H -DHAVE_LIBTCL8_4 -DHAVE_TCLINT_H -DHAVE_TCL_H  -DHAVE_CONFIG_H
 
 INCLUDES = \
-	-I. -I/usr/include -I/home/sarslan/Documents/dctcp-ns2/ns-2/ns-allinone-2.34/otcl-1.13 -I/home/sarslan/Documents/dctcp-ns2/ns-2/ns-allinone-2.34/include -I/home/sarslan/Documents/dctcp-ns2/ns-2/ns-allinone-2.34/include -I/home/sarslan/Documents/dctcp-ns2/ns-2/ns-allinone-2.34/include
+	-I. -I/usr/include -I/home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/otcl-1.13 -I/home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/include -I/home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/include -I/home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/include
 
 LIB	= \
-	-L/home/sarslan/Documents/dctcp-ns2/ns-2/ns-allinone-2.34/otcl-1.13 -lotcl -L/home/sarslan/Documents/dctcp-ns2/ns-2/ns-allinone-2.34/lib -ltk8.4 -L/home/sarslan/Documents/dctcp-ns2/ns-2/ns-allinone-2.34/lib -ltcl8.4
+	-L/home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/otcl-1.13 -lotcl -L/home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/lib -ltk8.4 -L/home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/lib -ltcl8.4
 
 CFLAGS	= $(CCOPT) $(DEFINE)
 

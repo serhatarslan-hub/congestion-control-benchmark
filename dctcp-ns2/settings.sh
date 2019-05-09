@@ -3,7 +3,7 @@
 ################################
 #### NS-2 v2.34 Environment ####
 ################################
-NS2_PATH=/home/sarslan/Documents/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34
+NS2_PATH=/home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34
 # LD_LIBRARY_PATH
 OTCL_LIB=$NS2_PATH/otcl-1.13
 NS2_LIB=$NS2_PATH/lib
@@ -25,11 +25,6 @@ PATH=$PATH:$XGRAPH:$NS:$NAM
 ####################
 #### DCTCP NS-2 ####
 ####################
-export DCTCP_NS2=/home/sarslan/Documents/congestion_benchmark/dctcp-ns2
+export DCTCP_NS2=/home/sarslan/congestion_benchmark/dctcp-ns2
 export TCL_DIR=${DCTCP_NS2}/tcl
 export PYTHONPATH="$PYTHONPATH:${DCTCP_NS2}/bin"
-
-########################
-#### Benchmark NS-2 ####
-########################
-export BENCHMARK_NS2=/home/sarslan/Documents/congestion_benchmark

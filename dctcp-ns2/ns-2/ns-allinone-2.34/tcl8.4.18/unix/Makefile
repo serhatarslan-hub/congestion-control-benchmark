@@ -26,10 +26,10 @@ PATCH_LEVEL		= .18
 # to the "configure" script.  The *dir vars are standard configure
 # substitutions that are based off prefix and exec_prefix.
 
-prefix			= /home/sarslan/Documents/dctcp-ns2/ns-2/ns-allinone-2.34
-exec_prefix		= /home/sarslan/Documents/dctcp-ns2/ns-2/ns-allinone-2.34
+prefix			= /home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34
+exec_prefix		= /home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34
 bindir			= ${exec_prefix}/bin
-libdir			= /home/sarslan/Documents/dctcp-ns2/ns-2/ns-allinone-2.34/lib
+libdir			= /home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/lib
 includedir		= ${prefix}/include
 mandir			= ${prefix}/share/man
 
@@ -85,7 +85,7 @@ HTML_DIR		= $(DISTDIR)/html
 HTML_INSTALL_DIR	= $(INSTALL_ROOT)$(HTML_DIR)
 
 # Package search path.
-TCL_PACKAGE_PATH	= /home/sarslan/Documents/dctcp-ns2/ns-2/ns-allinone-2.34/lib 
+TCL_PACKAGE_PATH	= /home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/lib 
 
 # Libraries built with optimization switches have this additional extension
 TCL_DBGX		= 
@@ -185,7 +185,7 @@ SHELL			= /bin/sh
 INSTALL_STRIP_PROGRAM   = -s
 INSTALL_STRIP_LIBRARY   = -S -S
 
-INSTALL			= /home/sarslan/Documents/dctcp-ns2/ns-2/ns-allinone-2.34/tcl8.4.18/unix/install-sh -c
+INSTALL			= /home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/tcl8.4.18/unix/install-sh -c
 INSTALL_PROGRAM		= ${INSTALL}
 INSTALL_LIBRARY		= ${INSTALL}
 INSTALL_DATA		= ${INSTALL} -m 644
@@ -255,7 +255,7 @@ AC_FLAGS		= -DPACKAGE_NAME=\"\" -DPACKAGE_TARNAME=\"\" -DPACKAGE_VERSION=\"\" -D
 AR			= ar
 RANLIB			= ranlib
 DTRACE			= 
-SRC_DIR			= /home/sarslan/Documents/dctcp-ns2/ns-2/ns-allinone-2.34/tcl8.4.18/unix
+SRC_DIR			= /home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/tcl8.4.18/unix
 TOP_DIR			= $(SRC_DIR)/..
 GENERIC_DIR		= $(TOP_DIR)/generic
 COMPAT_DIR		= $(TOP_DIR)/compat
@@ -263,9 +263,9 @@ TOOL_DIR		= $(TOP_DIR)/tools
 UNIX_DIR		= $(SRC_DIR)
 MAC_OSX_DIR		= $(TOP_DIR)/macosx
 # Must be absolute because of the cd dltest $(DLTEST_DIR)/configure below.
-DLTEST_DIR		= /home/sarslan/Documents/dctcp-ns2/ns-2/ns-allinone-2.34/tcl8.4.18/unix/dltest
+DLTEST_DIR		= /home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/tcl8.4.18/unix/dltest
 # Must be absolute to so the corresponding tcltest's tcl_library is absolute.
-TCL_BUILDTIME_LIBRARY	= /home/sarslan/Documents/dctcp-ns2/ns-2/ns-allinone-2.34/tcl8.4.18/library
+TCL_BUILDTIME_LIBRARY	= /home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/tcl8.4.18/library
 
 CC			= gcc
 #CC			= purify -best-effort gcc -DPURIFY
@@ -498,7 +498,7 @@ objs: ${OBJS}
 
 
 tclsh: ${TCLSH_OBJS} ${TCL_LIB_FILE}
-	${CC} ${CFLAGS} ${LDFLAGS} ${TCLSH_OBJS} -L/home/sarslan/Documents/dctcp-ns2/ns-2/ns-allinone-2.34/tcl8.4.18/unix -ltcl8.4${TCL_DBGX} ${LIBS}  \
+	${CC} ${CFLAGS} ${LDFLAGS} ${TCLSH_OBJS} -L/home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/tcl8.4.18/unix -ltcl8.4${TCL_DBGX} ${LIBS}  \
 		${CC_SEARCH_FLAGS} -o tclsh
 
 # Resetting the LIB_RUNTIME_DIR below is required so that
@@ -510,7 +510,7 @@ tcltest: ${TCLTEST_OBJS} ${TCL_LIB_FILE} ${BUILD_DLTEST}
 	$(MAKE) tcltest-real LIB_RUNTIME_DIR=`pwd`
 
 tcltest-real:
-	${CC} ${CFLAGS} ${LDFLAGS} ${TCLTEST_OBJS} -L/home/sarslan/Documents/dctcp-ns2/ns-2/ns-allinone-2.34/tcl8.4.18/unix -ltcl8.4${TCL_DBGX} ${LIBS}  \
+	${CC} ${CFLAGS} ${LDFLAGS} ${TCLTEST_OBJS} -L/home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/tcl8.4.18/unix -ltcl8.4${TCL_DBGX} ${LIBS}  \
 		${CC_SEARCH_FLAGS} -o tcltest
 
 # Note, in the target below TCL_LIBRARY needs to be set or else
@@ -1119,7 +1119,7 @@ $(DTRACE_OBJ): $(DTRACE_SRC) $(TCL_OBJS)
 xttest:  ${XTTEST_OBJS} ${GENERIC_OBJS} ${UNIX_OBJS} ${COMPAT_OBJS} \
 	tclLoadDl.o ${BUILD_DLTEST}
 	${CC} ${XTTEST_OBJS} ${GENERIC_OBJS} ${UNIX_OBJS} ${COMPAT_OBJS} \
-		tclLoadDl.o -L/home/sarslan/Documents/dctcp-ns2/ns-2/ns-allinone-2.34/tcl8.4.18/unix -ltcl8.4${TCL_DBGX} ${LIBS} \
+		tclLoadDl.o -L/home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/tcl8.4.18/unix -ltcl8.4${TCL_DBGX} ${LIBS} \
 		${CC_SEARCH_FLAGS} -L/usr/openwin/lib -lXt -o xttest
 
 tclXtNotify.o: $(UNIX_DIR)/tclXtNotify.c
