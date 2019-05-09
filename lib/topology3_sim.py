@@ -12,7 +12,7 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 #from matplotlib.backends.backend_pdf import PdfPages
 
-sys.path.append(os.path.expandvars('$BENCHMARK_NS2/bin/'))
+sys.path.append(os.path.expandvars('$DCTCP_NS2/bin/'))
 import benchmark_tools
 
 def main():
