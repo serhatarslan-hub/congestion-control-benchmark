@@ -25,11 +25,13 @@ def plot_rtt(algo_name, out_dir):
                 s = float(searchObj.groupdict()['rtt'])
                 rtt.append(s)
     plt.figure()
+    #plt.xlim(0,time[-1])
     plt.plot(time,rtt,'.', label=algo_name)
     plt.ylabel('RTT (usec)')
     plt.xlabel('Time (sec)')
     plt.title('RTT for '+algo_name+' experiment')
     plt.grid()
+    plt.yscale('log')
     plt.savefig(out_file)
     print "Saved plot: ", out_file
     plt.close()
@@ -39,6 +41,7 @@ def plot_rtt(algo_name, out_dir):
     yvals=np.arange(len(sorted_data))/float(len(sorted_data)-1)
     plt.figure()
     #plt.xlim(0,300)
+    #plt.xscale('log')
     plt.xlabel('RTT (usec)')
     plt.title('CDF of RTT for '+algo_name+' experiment')
     plt.plot(sorted_data, yvals, '.', label=algo_name)
@@ -93,11 +96,12 @@ def plot_allRTTcdf(out_dir, dctcp=None, vegas=None, timely=None, hopeSum=None, h
         plt.plot(hopeSquq[0], hopeSquq[1], '-', label='Hope-Squq')
 
     plt.legend(loc='lower right')
+    #plt.xscale('log')
     plt.savefig(allCDF_file)
     print "Saved plot: ", allCDF_file
     plt.close()
 
-def plot_throughput(algo_name, num_clients, out_dir, num_leaf=0, num_spine=1, num_server=1):
+def plot_throughput(algo_name, num_clients, out_dir, num_TOR=0, num_leaf=0, num_spine=1, num_server=1):
     
     tr_file = out_dir+algo_name+'.tr'
     out_file = out_dir+algo_name+'.thp.png'
@@ -105,7 +109,7 @@ def plot_throughput(algo_name, num_clients, out_dir, num_leaf=0, num_spine=1, nu
     clock = 0
     time = []
 
-    num_nodes = num_clients + num_leaf + num_spine + num_server
+    num_nodes = num_clients + num_TOR + num_leaf + num_spine + num_server
     throughputs = []
     sum_bytes = []
     last_seq = []
@@ -158,7 +162,7 @@ def plot_throughput(algo_name, num_clients, out_dir, num_leaf=0, num_spine=1, nu
     plt.ylabel('Throughput (Mbps)')
     plt.xlabel('Time (sec)')
     plt.title('Throughput for '+algo_name+' experiment')
-    plt.legend(bbox_to_anchor=(1.04,0.5), loc="center left", borderaxespad=0)
+    #plt.legend(bbox_to_anchor=(1.04,0.5), loc="center left", borderaxespad=0)
     plt.grid()
     plt.savefig(out_file, bbox_inches="tight")
     print "Saved plot: ", out_file
@@ -225,24 +229,39 @@ def plot_queue(algo_name, out_dir):
     in_file = out_dir+algo_name+'.queue.out'
     out_file = out_dir+algo_name+'.queue.png'
 
-    time = []
-    q_size = []
+    dst_nodes = []
+    times = []
+    q_sizes = []
+
+    #time = []
+    #q_size = []
     with open(in_file) as f:
         for line in f:
             searchObj = re.search(fmat, line)
             if searchObj is not None:
-                t = float(searchObj.groupdict()['time'])
-                time.append(t)
-                s = float(searchObj.groupdict()['q_size_p'])
-                q_size.append(s)
+		to_node = int(searchObj.groupdict()['to_node'])
+		t = float(searchObj.groupdict()['time'])
+		s = float(searchObj.groupdict()['q_size_p'])
+		if to_node in dst_nodes:
+		    idx = dst_nodes.index(to_node)
+                    times[idx].append(t)
+		    q_sizes[idx].append(s)
+		else:
+		    dst_nodes.append(to_node)
+		    times.append([t])
+		    q_sizes.append([s])
+                #time.append(t)
+                #q_size.append(s)
     
     plt.figure()
-    plt.plot(time,q_size,linestyle='-', marker='', label='Queue in packets')
+    for i in range(len(dst_nodes)):
+	queue_name = 'Queue Client_{}'.format(dst_nodes[i])
+	plt.plot(times[i],q_sizes[i],linestyle='-', marker='', label=queue_name)
+    #plt.plot(time,q_size,linestyle='-', marker='', label='Queue in packets')
     plt.yscale('log')
-    #plt.xscale('log')
-    #plt.xlim(0,0.2)
     plt.ylabel('Queue (packets)')
     plt.xlabel('Time (sec)')
+    #plt.legend(loc='lower right')
     plt.title('Queue size for '+algo_name+' experiment')
     plt.grid()
     plt.savefig(out_file, bbox_inches="tight")

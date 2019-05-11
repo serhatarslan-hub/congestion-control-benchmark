@@ -36,7 +36,7 @@ set link_delay 5us
 # tcp_window (pkts)
 set tcp_window 10000000
 # run_time (sec)
-set run_time 0.11
+set run_time 0.50
 # pktSize (bytes)
 set pktSize 1460
 
@@ -384,7 +384,7 @@ if {[string compare $congestion_alg "dctcp"] == 0} {
 	global ns rttFile       
 	
 	$self instvar node_
-	if {[$node_ id] == 9 || [$node_ id] == 10 } {
+	if {[$node_ id] != -1 } {
 	    set now [$ns now]
 	    #set rtt [$self set v_rtt_]
 	    set rtt [expr $rtt_t*1000000.0]
@@ -403,23 +403,25 @@ set qmon_size [$ns monitor-queue $leaf_switch(0) $server(0) $qf_size $samp_int]
 
 # Create random generator for starting the ftp connections
 set rng [new RNG]
-$rng seed 0
+$rng seed 1
 
 # Parameters for random variables to ftp start times
-set RVstart [new RandomVariable/Uniform]
-$RVstart set min_ 0.0001
-$RVstart set max_ 0.0020
-$RVstart use-rng $rng
+set RV_beg_fin [new RandomVariable/Uniform]
+$RV_beg_fin set min_ 0.0001
+$RV_beg_fin set max_ 0.1
+$RV_beg_fin use-rng $rng
 
 #Schedule events for the FTP agents
 for {set i 0} {$i < $num_clients} {incr i} {
     for {set j 0} {$j < $num_conn_per_client} {incr j} {
 	set conn_idx [expr $i*$num_conn_per_client+$j]        
 	
-	#set startT($conn_idx) [expr [$RVstart value]]
-	#$ns at $startT($conn_idx) "$ftp($conn_idx) start"
-	$ns at 0.0001 "$ftp($conn_idx) start"
-        $ns at [expr $run_time - 0.001] "$ftp($conn_idx) stop"
+	set startT($conn_idx) [expr [$RV_beg_fin value]]
+	$ns at $startT($conn_idx) "$ftp($conn_idx) start"
+	#$ns at 0.0001 "$ftp($conn_idx) start"
+	set finT($conn_idx) [expr [$RV_beg_fin value]]
+	$ns at [expr $run_time - $finT($conn_idx)] "$ftp($conn_idx) stop"
+        #$ns at [expr $run_time - 0.001] "$ftp($conn_idx) stop"
     }
 }
 
