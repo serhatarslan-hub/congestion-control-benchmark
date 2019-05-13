@@ -403,6 +403,7 @@ VegasTcpAgent::recv(Packet *pkt, Handler *)
 		/* Serhat's implementation of TIMELY and HOPE */
 		hdr_ip* iph = hdr_ip::access(pkt);
 		int hop_cnt = iph->HOPE_hop_cnt(); 
+		hop_cnt = hop_cnt/2; //Only consider forward path
 		double* hop_delay = iph->HOPE_hop_delay();
 
 		if(cong_signal_ == -1) {
@@ -451,9 +452,9 @@ VegasTcpAgent::recv(Packet *pkt, Handler *)
 				}
 				squ_delay = sqrt(squ_delay);
 				if (hope_collector_ == 0){
-					cong_signal_ = tot_delay;
+					cong_signal_ = squ_delay;
 				} else {
-					cong_signal_ = tot_delay* 8.0 / line_rate;
+					cong_signal_ = squ_delay* 8.0 / line_rate;
 				}
 			}
 

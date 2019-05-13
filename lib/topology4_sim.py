@@ -33,9 +33,9 @@ def main():
     parser.add_argument('--hope_squq', action='store_true', help="Simulates Hope-Squq in the topology-4 congestion scenario")
     args = parser.parse_args()
     
-    num_clients = 200
-    num_TORs = 10
-    num_leafs = 5
+    num_clients = 192
+    num_TORs = 8
+    num_leafs = 4
     num_servers = 0
     if (num_clients % num_TORs != 0 or num_TORs % num_leafs != 0):
 	print('ERROR: Please provide number of clients and number of TORs that are evenly distributable through number of leafs.')

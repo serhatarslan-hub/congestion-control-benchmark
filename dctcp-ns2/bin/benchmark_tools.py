@@ -96,7 +96,8 @@ def plot_allRTTcdf(out_dir, dctcp=None, vegas=None, timely=None, hopeSum=None, h
         plt.plot(hopeSquq[0], hopeSquq[1], '-', label='Hope-Squq')
 
     plt.legend(loc='lower right')
-    #plt.xscale('log')
+    plt.xscale('log')
+    #plt.xlim(0,700)
     plt.savefig(allCDF_file)
     print "Saved plot: ", allCDF_file
     plt.close()

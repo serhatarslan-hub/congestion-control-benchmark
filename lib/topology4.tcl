@@ -32,12 +32,13 @@ set q_size 200
 # link_cap (Mbps)
 set client_link_cap 1Gb
 set link_cap 10Gb
+set spine_link_cap 40Gb
 # link_delay (ms)
 set link_delay 5us
 # tcp_window (pkts)
 set tcp_window 10000000
 # run_time (sec)
-set run_time 1.0
+set run_time 0.1
 # pktSize (bytes)
 set pktSize 1460
 
@@ -52,11 +53,11 @@ set ackRatio 1
 #### Timely/Hope Parameters ####
 set timely_ewma_alpha 0.3
 set timely_t_low 0
-set timely_t_high 0.001
-set timely_additiveInc 1000000.0
+set timely_t_high 0.0005
+set timely_additiveInc 30000000.0
 set timely_decreaseFac 0.8
 set timely_HAI_thresh 5
-set timely_rate 250000000.0
+set timely_rate 750000000.0
 
 ##### Switch Parameters ####
 set drop_prio_ false
@@ -117,7 +118,7 @@ if {[string compare $congestion_alg "dctcp"] == 0} {
 # Create links between the nodes
 # Create links spine-leafs and leafs-TORs
 for {set i 0} {$i < $num_leafs} {incr i} {
-    $ns duplex-link $leaf_switch($i) $spine_switch $link_cap $link_delay $queue_type
+    $ns duplex-link $leaf_switch($i) $spine_switch $spine_link_cap $link_delay $queue_type
 
     for {set j 0} {$j < $TORperLeaf} {incr j} {
    	set conn_idx [expr $i*$TORperLeaf+$j]
@@ -150,7 +151,7 @@ $rng1 seed 1
 # Parameters for random variables to ftp start times
 set RV_host [new RandomVariable/Uniform]
 $RV_host set min_ 0
-$RV_host set max_ [expr $num_TORs-0.000001]
+$RV_host set max_ [expr $num_clients-0.000001]
 $RV_host use-rng $rng1
 
 # HOST options
@@ -181,13 +182,13 @@ if {[string compare $congestion_alg "dctcp"] == 0} {
     for {set i 0} {$i < $num_clients} {incr i} {
         for {set j 0} {$j < $num_conn_per_client} {incr j} {
 	    set conn_idx [expr $i*$num_conn_per_client+$j] 
-	    set dst($conn_idx) [expr (int(floor([$RV_host value])))*$clientPerTOR] 
+	    set dst($conn_idx) [expr (int(floor([$RV_host value])))] 
 
 	    if {$i == $dst($conn_idx)} {
 		if {$i == 0} {
-		    set dst($conn_idx) [expr $dst($conn_idx)+$clientPerTOR]
+		    set dst($conn_idx) [expr $dst($conn_idx)+1]
 		} else {
-		    set dst($conn_idx) [expr $dst($conn_idx)-$clientPerTOR]
+		    set dst($conn_idx) [expr $dst($conn_idx)-1]
 		}
 	    }    
 	
@@ -229,13 +230,13 @@ if {[string compare $congestion_alg "dctcp"] == 0} {
     for {set i 0} {$i < $num_clients} {incr i} {
         for {set j 0} {$j < $num_conn_per_client} {incr j} {
 	    set conn_idx [expr $i*$num_conn_per_client+$j]
-	    set dst($conn_idx) [expr (int(floor([$RV_host value])))*$clientPerTOR]  
+	    set dst($conn_idx) [expr (int(floor([$RV_host value])))]  
 
 	    if {$i == $dst($conn_idx)} {
 		if {$i == 0} {
-		    set dst($conn_idx) [expr $dst($conn_idx)+$clientPerTOR]
+		    set dst($conn_idx) [expr $dst($conn_idx)+1]
 		} else {
-		    set dst($conn_idx) [expr $dst($conn_idx)-$clientPerTOR]
+		    set dst($conn_idx) [expr $dst($conn_idx)-1]
 		}
 	    }      
 	
@@ -415,10 +416,12 @@ if {[string compare $congestion_alg "dctcp"] == 0} {
 
 # queue monitoring for first client in every Rack
 set qf_size [open $out_q_file w]
-for {set i 0} {$i < $num_TORs} {incr i} {
-    set node_idx [expr $i*$clientPerTOR]
-    set qmon_size [$ns monitor-queue $TOR_switch($i) $client($node_idx) $qf_size $samp_int]
-    [$ns link $TOR_switch($i) $client($node_idx)] queue-sample-timeout
+for {set i 0} {$i < $num_leafs} {incr i} {
+    for {set j 0} {$j < $TORperLeaf} {incr j} {
+        set node_idx [expr $i*$TORperLeaf+$j]
+        set qmon_size [$ns monitor-queue $leaf_switch($i) $TOR_switch($node_idx) $qf_size $samp_int]
+        [$ns link $leaf_switch($i) $TOR_switch($node_idx)] queue-sample-timeout
+    }
 }
 
 # Create random generator for starting the ftp connections
