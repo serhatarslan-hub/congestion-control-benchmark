@@ -45,32 +45,46 @@ def main():
 
     dctcp_cdf = None
     dctcp_thp = None
+    dctcp_fct = None
     timely_cdf = None
     timely_thp = None
+    timely_fct = None
     hopeSum_cdf = None
     hopeSum_thp = None
+    hopeSum_fct = None
     hopeMax_cdf = None
     hopeMax_thp = None
+    hopeMax_fct = None
     hopeMaxq_cdf = None
     hopeMaxq_thp = None
+    hopeMaxq_fct = None
     hopeMaxqd_cdf = None
     hopeMaxqd_thp = None
+    hopeMaxqd_fct = None
     hopeMaxe_cdf = None
     hopeMaxe_thp = None
+    hopeMaxe_fct = None
     hopeMaxed_cdf = None
     hopeMaxed_thp = None
+    hopeMaxed_fct = None
     hopeSumq_cdf = None
     hopeSumq_thp = None
+    hopeSumq_fct = None
     hopeSumqd_cdf = None
     hopeSumqd_thp = None
+    hopeSumqd_fct = None
     hopeSume_cdf = None
     hopeSume_thp = None
+    hopeSume_fct = None
     hopeSumed_cdf = None
     hopeSumed_thp = None
+    hopeSumed_fct = None
     hopeSqu_cdf = None
     hopeSqu_thp = None
+    hopeSqu_fct = None
     hopeSquq_cdf = None
     hopeSquq_thp = None
+    hopeSquq_fct = None
 
     if (args.dctcp):
 	congestion_alg = 'dctcp'
@@ -79,6 +93,7 @@ def main():
         dctcp_cdf = benchmark_tools.plot_rtt(congestion_alg, out_dir)
 	dctcp_thp = benchmark_tools.plot_throughput(congestion_alg, num_clients, out_dir, \
 			num_TOR=num_TORs, num_leaf=num_leafs, num_server=num_servers )
+	dctcp_fct = benchmark_tools.get_fct(congestion_alg, num_clients, out_dir)
 	benchmark_tools.plot_queue(congestion_alg, out_dir)
     if (args.timely):
 	congestion_alg = 'timely'
@@ -87,6 +102,7 @@ def main():
         timely_cdf = benchmark_tools.plot_rtt(congestion_alg, out_dir)
 	timely_thp = benchmark_tools.plot_throughput(congestion_alg, num_clients, out_dir, \
 			num_TOR=num_TORs, num_leaf=num_leafs, num_server=num_servers)
+	timely_fct = benchmark_tools.get_fct(congestion_alg, num_clients, out_dir)
 	benchmark_tools.plot_queue(congestion_alg, out_dir)
     if (args.hope_sum):
 	congestion_alg = 'hope_sum'
@@ -95,6 +111,7 @@ def main():
         hopeSum_cdf = benchmark_tools.plot_rtt(congestion_alg, out_dir)
 	hopeSum_thp = benchmark_tools.plot_throughput(congestion_alg, num_clients, out_dir, \
 			num_TOR=num_TORs, num_leaf=num_leafs, num_server=num_servers)
+	hopeSum_fct = benchmark_tools.get_fct(congestion_alg, num_clients, out_dir)
 	benchmark_tools.plot_queue(congestion_alg, out_dir)
     if (args.hope_max):
 	congestion_alg = 'hope_max'
@@ -103,6 +120,7 @@ def main():
         hopeMax_cdf = benchmark_tools.plot_rtt(congestion_alg, out_dir)
 	hopeMax_thp = benchmark_tools.plot_throughput(congestion_alg, num_clients, out_dir, \
 			num_TOR=num_TORs, num_leaf=num_leafs, num_server=num_servers)
+	hopeMax_fct = benchmark_tools.get_fct(congestion_alg, num_clients, out_dir)
 	benchmark_tools.plot_queue(congestion_alg, out_dir)
     if (args.hope_maxq):
 	congestion_alg = 'hope_maxq'
@@ -111,6 +129,7 @@ def main():
         hopeMaxq_cdf = benchmark_tools.plot_rtt(congestion_alg, out_dir)
 	hopeMaxq_thp = benchmark_tools.plot_throughput(congestion_alg, num_clients, out_dir, \
 			num_TOR=num_TORs, num_leaf=num_leafs, num_server=num_servers)
+	hopeMaxq_fct = benchmark_tools.get_fct(congestion_alg, num_clients, out_dir)
 	benchmark_tools.plot_queue(congestion_alg, out_dir)
     if (args.hope_maxqd):
 	congestion_alg = 'hope_maxqd'
@@ -119,6 +138,7 @@ def main():
         hopeMaxqd_cdf = benchmark_tools.plot_rtt(congestion_alg, out_dir)
 	hopeMaxqd_thp = benchmark_tools.plot_throughput(congestion_alg, num_clients, out_dir, \
 			num_TOR=num_TORs, num_leaf=num_leafs, num_server=num_servers)
+	hopeMaxqd_fct = benchmark_tools.get_fct(congestion_alg, num_clients, out_dir)
 	benchmark_tools.plot_queue(congestion_alg, out_dir)
     if (args.hope_maxe):
 	congestion_alg = 'hope_maxe'
@@ -127,6 +147,7 @@ def main():
         hopeMaxe_cdf = benchmark_tools.plot_rtt(congestion_alg, out_dir)
 	hopeMaxe_thp = benchmark_tools.plot_throughput(congestion_alg, num_clients, out_dir, \
 			num_TOR=num_TORs, num_leaf=num_leafs, num_server=num_servers)
+	hopeMaxe_fct = benchmark_tools.get_fct(congestion_alg, num_clients, out_dir)
 	benchmark_tools.plot_queue(congestion_alg, out_dir)
     if (args.hope_maxed):
 	congestion_alg = 'hope_maxed'
@@ -135,6 +156,7 @@ def main():
         hopeMaxed_cdf = benchmark_tools.plot_rtt(congestion_alg, out_dir)
 	hopeMaxed_thp = benchmark_tools.plot_throughput(congestion_alg, num_clients, out_dir, \
 			num_TOR=num_TORs, num_leaf=num_leafs, num_server=num_servers)
+	hopeMaxed_fct = benchmark_tools.get_fct(congestion_alg, num_clients, out_dir)
 	benchmark_tools.plot_queue(congestion_alg, out_dir)
     if (args.hope_sumq):
 	congestion_alg = 'hope_sumq'
@@ -143,6 +165,7 @@ def main():
         hopeSumq_cdf = benchmark_tools.plot_rtt(congestion_alg, out_dir)
 	hopeSumq_thp = benchmark_tools.plot_throughput(congestion_alg, num_clients, out_dir, \
 			num_TOR=num_TORs, num_leaf=num_leafs, num_server=num_servers)
+	hopeSumq_fct = benchmark_tools.get_fct(congestion_alg, num_clients, out_dir)
 	benchmark_tools.plot_queue(congestion_alg, out_dir)
     if (args.hope_sumqd):
 	congestion_alg = 'hope_sumqd'
@@ -151,6 +174,7 @@ def main():
         hopeSumqd_cdf = benchmark_tools.plot_rtt(congestion_alg, out_dir)
 	hopeSumqd_thp = benchmark_tools.plot_throughput(congestion_alg, num_clients, out_dir, \
 			num_TOR=num_TORs, num_leaf=num_leafs, num_server=num_servers)
+	hopeSumqd_fct = benchmark_tools.get_fct(congestion_alg, num_clients, out_dir)
 	benchmark_tools.plot_queue(congestion_alg, out_dir)
     if (args.hope_sume):
 	congestion_alg = 'hope_sume'
@@ -159,6 +183,7 @@ def main():
         hopeSume_cdf = benchmark_tools.plot_rtt(congestion_alg, out_dir)
 	hopeSume_thp = benchmark_tools.plot_throughput(congestion_alg, num_clients, out_dir, \
 			num_TOR=num_TORs, num_leaf=num_leafs, num_server=num_servers)
+	hopeSume_fct = benchmark_tools.get_fct(congestion_alg, num_clients, out_dir)
 	benchmark_tools.plot_queue(congestion_alg, out_dir)
     if (args.hope_sumed):
 	congestion_alg = 'hope_sumed'
@@ -167,6 +192,7 @@ def main():
         hopeSumed_cdf = benchmark_tools.plot_rtt(congestion_alg, out_dir)
 	hopeSumed_thp = benchmark_tools.plot_throughput(congestion_alg, num_clients, out_dir, \
 			num_TOR=num_TORs, num_leaf=num_leafs, num_server=num_servers)
+	hopeSumed_fct = benchmark_tools.get_fct(congestion_alg, num_clients, out_dir)
 	benchmark_tools.plot_queue(congestion_alg, out_dir)
     if (args.hope_squ):
 	congestion_alg = 'hope_squ'
@@ -175,6 +201,7 @@ def main():
         hopeSqu_cdf = benchmark_tools.plot_rtt(congestion_alg, out_dir)
 	hopeSqu_thp = benchmark_tools.plot_throughput(congestion_alg, num_clients, out_dir, \
 			num_TOR=num_TORs, num_leaf=num_leafs, num_server=num_servers)
+	hopeSqu_fct = benchmark_tools.get_fct(congestion_alg, num_clients, out_dir)
 	benchmark_tools.plot_queue(congestion_alg, out_dir)
     if (args.hope_squq):
 	congestion_alg = 'hope_squq'
@@ -183,6 +210,7 @@ def main():
         hopeSquq_cdf = benchmark_tools.plot_rtt(congestion_alg, out_dir)
 	hopeSquq_thp = benchmark_tools.plot_throughput(congestion_alg, num_clients, out_dir, \
 			num_TOR=num_TORs, num_leaf=num_leafs, num_server=num_servers)
+	hopeSquq_fct = benchmark_tools.get_fct(congestion_alg, num_clients, out_dir)
 	benchmark_tools.plot_queue(congestion_alg, out_dir)
 
     benchmark_tools.plot_allRTTcdf(out_dir, dctcp=dctcp_cdf, timely=timely_cdf, \
@@ -199,6 +227,13 @@ def main():
 				hopeSumq=hopeSumq_thp, hopeSumqd=hopeSumqd_thp, \
 				hopeSume=hopeSume_thp, hopeSumed=hopeSumed_thp, \
 				hopeSqu=hopeSqu_thp, hopeSquq=hopeSquq_thp)
+    benchmark_tools.plot_allFCT(out_dir, dctcp=dctcp_fct, timely=timely_fct, \
+				hopeMax=hopeMax_fct, hopeSum=hopeSum_fct, \
+				hopeMaxq=hopeMaxq_fct, hopeMaxqd=hopeMaxqd_fct, \
+				hopeMaxe=hopeMaxe_fct, hopeMaxed=hopeMaxed_fct, \
+				hopeSumq=hopeSumq_fct, hopeSumqd=hopeSumqd_fct, \
+				hopeSume=hopeSume_fct, hopeSumed=hopeSumed_fct, \
+				hopeSqu=hopeSqu_fct, hopeSquq=hopeSquq_fct)
 
 if __name__ == "__main__":
     main()

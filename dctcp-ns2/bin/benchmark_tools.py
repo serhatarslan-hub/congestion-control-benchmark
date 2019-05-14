@@ -269,3 +269,201 @@ def plot_queue(algo_name, out_dir):
     print "Saved plot: ", out_file
     plt.close()
 
+"""
+Get Flow Completion Times of flows
+"""
+def get_fct(algo_name, num_clients, out_dir):
+    
+    tr_file = out_dir+algo_name+'.tr'
+    s_flow_size = 50
+    m_flow_size = 500
+    l_flow_size = 1500
+
+    start_times = []
+    s_fct = [] #Short Flow Completion Time
+    m_fct = [] #Mid-Length Flow Completion Time
+    l_fct = [] #Long Flow Completion Time
+
+    for i in range(num_clients):
+	start_times.append(0.0)
+	s_fct.append(0.0)
+	m_fct.append(0.0)
+	l_fct.append(0.0)
+
+    with open(tr_file) as f:
+        for line in f:
+            split_line = line.split()
+	    
+            if ((split_line[0] == '+' \
+		  and split_line[4] == 'tcp' \
+		  and int(split_line[2]) < num_clients )):
+
+                t = float(split_line[1])
+		s = int(split_line[2]) #source node
+		seq = int(split_line[10]) #Sequence number
+
+		if ( seq == 0 and start_times[s] == 0 ):
+		    start_times[s] = t
+		elif ( (seq == s_flow_size+1 or seq == s_flow_size*1460+1) \
+			 and s_fct[s] == 0 ):
+		    s_fct[s] = t - start_times[s]
+		elif ( (seq == m_flow_size+1 or seq == m_flow_size*1460+1) \
+			 and m_fct[s] == 0 ):
+		    m_fct[s] = t - start_times[s]
+		elif ( (seq == l_flow_size+1 or seq == l_flow_size*1460+1) \
+			 and l_fct[s] == 0 ):
+		    l_fct[s] = t - start_times[s]
+
+    for i in range(num_clients-1,-1,-1):
+	# Remove uncompleted flows
+	if (s_fct[i] == 0):
+	    del s_fct[i]
+	if (m_fct[i] == 0):
+	    del m_fct[i]
+	if (l_fct[i] == 0):
+	    del l_fct[i]
+    if s_fct == []:
+	# Return 0 when no flow completed
+	s_fct = [0]
+    if m_fct == []:
+	# Return 0 when no flow completed
+	m_fct = [0]
+    if l_fct == []:
+	# Return 0 when no flow completed
+	l_fct = [0]
+
+    return s_fct, m_fct, l_fct
+
+"""
+Plot the given flow completion times in the same figure for easier comparison
+"""
+def plot_allFCT(out_dir, dctcp=None, vegas=None, timely=None, hopeSum=None, hopeMax=None, \
+			hopeMaxq=None, hopeMaxqd=None, hopeMaxe=None, hopeMaxed=None, \
+			hopeSumq=None, hopeSumqd=None, hopeSume=None, hopeSumed=None, \
+			hopeSqu=None, hopeSquq=None):
+
+    f_sizes = ['Short', 'Mid-Length', 'Long']    
+    allFCT_file = out_dir+'All.fct_benchmark.png'
+
+    plt.figure()
+    plt.subplot(len(f_sizes),1,1)
+    plt.title('CDF of Flow Completion Times')
+
+    for i in range(len(f_sizes)):
+	plt.subplot(len(f_sizes),1,i+1)
+	plt.ylabel("%s Flows"%f_sizes[i])
+    plt.xlabel('Time(sec)')
+
+    if dctcp is not None:
+        # Compute the CDF for all sizes
+	for i in range(len(f_sizes)):
+	    sorted_data = np.sort(dctcp[i])
+            yvals = np.arange(len(sorted_data))/float(len(sorted_data)-1)
+	    plt.subplot(len(f_sizes),1,i+1)
+	    plt.plot(sorted_data, yvals, '-', label='DCTCP')
+    if vegas is not None:
+        # Compute the CDF for all sizes
+	for i in range(len(f_sizes)):
+	    sorted_data = np.sort(vegas[i])
+            yvals = np.arange(len(sorted_data))/float(len(sorted_data)-1)
+	    plt.subplot(len(f_sizes),1,i+1)
+	    plt.plot(sorted_data, yvals, '-', label='Vegas')
+    if timely is not None:
+        # Compute the CDF for all sizes
+	for i in range(len(f_sizes)):
+	    sorted_data = np.sort(timely[i])
+            yvals = np.arange(len(sorted_data))/float(len(sorted_data)-1)
+	    plt.subplot(len(f_sizes),1,i+1)
+	    plt.plot(sorted_data, yvals, '-', label='Timely')
+    if hopeSum is not None:
+        # Compute the CDF for all sizes
+	for i in range(len(f_sizes)):
+	    sorted_data = np.sort(hopeSum[i])
+            yvals = np.arange(len(sorted_data))/float(len(sorted_data)-1)
+	    plt.subplot(len(f_sizes),1,i+1)
+	    plt.plot(sorted_data, yvals, '-', label='Hope-Sum')
+    if hopeMax is not None:
+        # Compute the CDF for all sizes
+	for i in range(len(f_sizes)):
+	    sorted_data = np.sort(hopeMax[i])
+            yvals = np.arange(len(sorted_data))/float(len(sorted_data)-1)
+	    plt.subplot(len(f_sizes),1,i+1)
+	    plt.plot(sorted_data, yvals, '-', label='Hope-Max')
+    if hopeMaxq is not None:
+        # Compute the CDF for all sizes
+	for i in range(len(f_sizes)):
+	    sorted_data = np.sort(hopeMaxq[i])
+            yvals = np.arange(len(sorted_data))/float(len(sorted_data)-1)
+	    plt.subplot(len(f_sizes),1,i+1)
+	    plt.plot(sorted_data, yvals, '-', label='Hope-Maxq')
+    if hopeMaxqd is not None:
+        # Compute the CDF for all sizes
+	for i in range(len(f_sizes)):
+	    sorted_data = np.sort(hopeMaxqd[i])
+            yvals = np.arange(len(sorted_data))/float(len(sorted_data)-1)
+	    plt.subplot(len(f_sizes),1,i+1)
+	    plt.plot(sorted_data, yvals, '-', label='Hope-Maxqd')
+    if hopeMaxe is not None:
+        # Compute the CDF for all sizes
+	for i in range(len(f_sizes)):
+	    sorted_data = np.sort(hopeMaxe[i])
+            yvals = np.arange(len(sorted_data))/float(len(sorted_data)-1)
+	    plt.subplot(len(f_sizes),1,i+1)
+	    plt.plot(sorted_data, yvals, '-', label='Hope-Maxe')
+    if hopeMaxed is not None:
+        # Compute the CDF for all sizes
+	for i in range(len(f_sizes)):
+	    sorted_data = np.sort(hopeMaxed[i])
+            yvals = np.arange(len(sorted_data))/float(len(sorted_data)-1)
+	    plt.subplot(len(f_sizes),1,i+1)
+	    plt.plot(sorted_data, yvals, '-', label='Hope-Maxed')
+    if hopeSumq is not None:
+        # Compute the CDF for all sizes
+	for i in range(len(f_sizes)):
+	    sorted_data = np.sort(hopeSumq[i])
+            yvals = np.arange(len(sorted_data))/float(len(sorted_data)-1)
+	    plt.subplot(len(f_sizes),1,i+1)
+	    plt.plot(sorted_data, yvals, '-', label='Hope-Sumq')
+    if hopeSumqd is not None:
+        # Compute the CDF for all sizes
+	for i in range(len(f_sizes)):
+	    sorted_data = np.sort(hopeSumqd[i])
+            yvals = np.arange(len(sorted_data))/float(len(sorted_data)-1)
+	    plt.subplot(len(f_sizes),1,i+1)
+	    plt.plot(sorted_data, yvals, '-', label='Hope-Sumqd')
+    if hopeSume is not None:
+        # Compute the CDF for all sizes
+	for i in range(len(f_sizes)):
+	    sorted_data = np.sort(hopeSume[i])
+            yvals = np.arange(len(sorted_data))/float(len(sorted_data)-1)
+	    plt.subplot(len(f_sizes),1,i+1)
+	    plt.plot(sorted_data, yvals, '-', label='Hope-Sume')
+    if hopeSumed is not None:
+        # Compute the CDF for all sizes
+	for i in range(len(f_sizes)):
+	    sorted_data = np.sort(hopeSumed[i])
+            yvals = np.arange(len(sorted_data))/float(len(sorted_data)-1)
+	    plt.subplot(len(f_sizes),1,i+1)
+	    plt.plot(sorted_data, yvals, '-', label='Hope-Sumed')
+    if hopeSqu is not None:
+        # Compute the CDF for all sizes
+	for i in range(len(f_sizes)):
+	    sorted_data = np.sort(hopeSqu[i])
+            yvals = np.arange(len(sorted_data))/float(len(sorted_data)-1)
+	    plt.subplot(len(f_sizes),1,i+1)
+	    plt.plot(sorted_data, yvals, '-', label='Hope-Squ')
+    if hopeSquq is not None:
+        # Compute the CDF for all sizes
+	for i in range(len(f_sizes)):
+	    sorted_data = np.sort(hopeSquq[i])
+            yvals = np.arange(len(sorted_data))/float(len(sorted_data)-1)
+	    plt.subplot(len(f_sizes),1,i+1)
+	    plt.plot(sorted_data, yvals, '-', label='Hope-Squq')
+
+    for i in range(len(f_sizes)):
+	plt.subplot(len(f_sizes),1,i+1)
+	plt.legend(loc='lower right')
+
+    plt.savefig(allFCT_file)
+    print "Saved plot: ", allFCT_file
+    plt.close()

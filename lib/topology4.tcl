@@ -246,7 +246,7 @@ if {[string compare $congestion_alg "dctcp"] == 0} {
             $ns attach-agent $client($dst($conn_idx)) $sink($conn_idx)
             $ns connect $tcp($conn_idx) $sink($conn_idx)
 
-	    $tcp($conn_idx) set timely_packetSize_ $pktSize
+	    $tcp($conn_idx) set timely_packetSize_ [expr $pktSize+40]
 	    $tcp($conn_idx) set timely_ewma_alpha_ $timely_ewma_alpha
 	    $tcp($conn_idx) set timely_t_low_ $timely_t_low
 	    $tcp($conn_idx) set timely_t_high_ $timely_t_high
@@ -394,11 +394,15 @@ if {[string compare $congestion_alg "dctcp"] == 0} {
 	    set conn_idx [expr $i*$num_conn_per_client+$j]
 
 	    # set up FTP connections
-	    set ftp($conn_idx) [new Application/FTP]
-	    $ftp($conn_idx) set packet_Size_ $pktSize
-	    $ftp($conn_idx) set interval_ 0.000001
+	    set ftp($conn_idx) [$tcp($conn_idx) attach-source FTP]
             $ftp($conn_idx) set type_ FTP 
-	    $ftp($conn_idx) attach-agent $tcp($conn_idx)
+
+	    ## set up FTP connections
+	    #set ftp($conn_idx) [new Application/FTP]
+	    #$ftp($conn_idx) set packet_Size_ $pktSize
+	    #$ftp($conn_idx) set interval_ 0.000001
+            #$ftp($conn_idx) set type_ FTP 
+	    #$ftp($conn_idx) attach-agent $tcp($conn_idx)
         }
     }
     Agent/TCP/Vegas instproc recv {rtt_t cong_signal_t hop_cnt_t} {
