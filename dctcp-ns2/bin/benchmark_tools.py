@@ -54,7 +54,8 @@ def plot_rtt(algo_name, out_dir):
 """
     Plot the given CDFs on the same figure for easier comparison
 """
-def plot_allRTTcdf(out_dir, dctcp=None, vegas=None, timely=None, hopeSum=None, hopeMax=None, \
+def plot_allRTTcdf(out_dir, log_plot=True, \
+			dctcp=None, vegas=None, timely=None, hopeSum=None, hopeMax=None, \
 			hopeMaxq=None, hopeMaxqd=None, hopeMaxe=None, hopeMaxed=None, \
 			hopeSumq=None, hopeSumqd=None, hopeSume=None, hopeSumed=None, \
 			hopeSqu=None, hopeSquq=None):
@@ -96,13 +97,14 @@ def plot_allRTTcdf(out_dir, dctcp=None, vegas=None, timely=None, hopeSum=None, h
         plt.plot(hopeSquq[0], hopeSquq[1], '-', label='Hope-Squq')
 
     plt.legend(loc='lower right')
-    plt.xscale('log')
+    if(log_plot):
+	plt.xscale('log')
     #plt.xlim(0,700)
     plt.savefig(allCDF_file)
     print "Saved plot: ", allCDF_file
     plt.close()
 
-def plot_throughput(algo_name, num_clients, out_dir, num_TOR=0, num_leaf=0, num_spine=1, num_server=1):
+def plot_throughput(algo_name, num_clients, out_dir):
     
     tr_file = out_dir+algo_name+'.tr'
     out_file = out_dir+algo_name+'.thp.png'
@@ -110,11 +112,10 @@ def plot_throughput(algo_name, num_clients, out_dir, num_TOR=0, num_leaf=0, num_
     clock = 0
     time = []
 
-    num_nodes = num_clients + num_TOR + num_leaf + num_spine + num_server
     throughputs = []
     sum_bytes = []
     last_seq = []
-    for i in range(num_nodes):
+    for i in range(num_clients):
 	throughputs.append([])
 	sum_bytes.append(0.0)
 	last_seq.append(0.0)
@@ -122,7 +123,10 @@ def plot_throughput(algo_name, num_clients, out_dir, num_TOR=0, num_leaf=0, num_
     with open(tr_file) as f:
         for line in f:
             split_line = line.split()
-            if ((split_line[0] == '-' and split_line[4] == 'tcp')):
+            if ((split_line[0] == '-' \
+		 and split_line[4] == 'tcp' \
+		 and int(split_line[2]) < num_clients)):
+
                 t = float(split_line[1])
 		s = int(split_line[2]) #source node
 		if ( t-clock < granularity):
@@ -135,14 +139,14 @@ def plot_throughput(algo_name, num_clients, out_dir, num_TOR=0, num_leaf=0, num_
 		    time.append(t)
 		    clock += granularity
 		    
-		    for i in range(num_nodes):
+		    for i in range(num_clients):
 			dummy_thp = sum_bytes[i] * 8 /granularity /1000000
 			throughputs[i].append(dummy_thp)
 			sum_bytes[i] = 0.0
 		    
 		    sum_bytes[s] += int(split_line[5])
     time.append(t)
-    for i in range(num_nodes):
+    for i in range(num_clients):
 	dummy_thp = sum_bytes[i] * 8 /granularity /1000000
 	throughputs[i].append(dummy_thp)
 
@@ -467,3 +471,119 @@ def plot_allFCT(out_dir, dctcp=None, vegas=None, timely=None, hopeSum=None, hope
     plt.savefig(allFCT_file)
     print "Saved plot: ", allFCT_file
     plt.close()
+
+"""
+Report the given flow completion times of algorithms for 1 client simulations
+"""
+def print_1ClientFCT(out_dir, dctcp=None, vegas=None, timely=None, hopeSum=None, hopeMax=None, \
+			hopeMaxq=None, hopeMaxqd=None, hopeMaxe=None, hopeMaxed=None, \
+			hopeSumq=None, hopeSumqd=None, hopeSume=None, hopeSumed=None, \
+			hopeSqu=None, hopeSquq=None):
+
+    f_sizes = ['Short', 'Mid-Length', 'Long']    
+    allFCT_file = out_dir+'All.fct_benchmark.txt'
+
+    report = "\n****** Flow Completion Times ******\n"
+    report += "{:>12} ".format("Algorithm")
+    for size in f_sizes:
+	report += "| {0: >16} ".format(size+' Flows')
+    report += "\n"
+
+    if dctcp is not None:
+	report += "{:>12} ".format("DCTCP")
+	for i in range(len(f_sizes)):
+	    size = dctcp[i][0]*1000
+	    report += "| {0: >16} ".format(size)
+	report += "\n"
+    if vegas is not None:
+        report += "{:>12} ".format("Vegas")
+	for i in range(len(f_sizes)):
+	    size = vegas[i][0]*1000
+	    report += "| {0: >16} ".format(size)
+	report += "\n"
+    if timely is not None:
+        report += "{:>12} ".format("Timely")
+	for i in range(len(f_sizes)):
+	    size = timely[i][0]*1000
+	    report += "| {0: >16} ".format(size)
+	report += "\n"
+    if hopeSum is not None:
+        report += "{:>12} ".format("Hope-Sum")
+	for i in range(len(f_sizes)):
+	    size = hopeSum[i][0]*1000
+	    report += "| {0: >16} ".format(size)
+	report += "\n"
+    if hopeMax is not None:
+        report += "{:>12} ".format("Hope-Max")
+	for i in range(len(f_sizes)):
+	    size = hopeMax[i][0]*1000
+	    report += "| {0: >16} ".format(size)
+	report += "\n"
+    if hopeMaxq is not None:
+        report += "{:>12} ".format("Hope-Maxq")
+	for i in range(len(f_sizes)):
+	    size = hopeMaxq[i][0]*1000
+	    report += "| {0: >16} ".format(size)
+	report += "\n"
+    if hopeMaxqd is not None:
+        report += "{:>12} ".format("Hope-Maxqd")
+	for i in range(len(f_sizes)):
+	    size = hopeMaxqd[i][0]*1000
+	    report += "| {0: >16} ".format(size)
+	report += "\n"
+    if hopeMaxe is not None:
+        report += "{:>12} ".format("Hope-Maxe")
+	for i in range(len(f_sizes)):
+	    size = hopeMaxe[i][0]*1000
+	    report += "| {0: >16} ".format(size)
+	report += "\n"
+    if hopeMaxed is not None:
+        report += "{:>12} ".format("Hope-Maxed")
+	for i in range(len(f_sizes)):
+	    size = hopeMaxed[i][0]*1000
+	    report += "| {0: >16} ".format(size)
+	report += "\n"
+    if hopeSumq is not None:
+        report += "{:>12} ".format("Hope-Sumq")
+	for i in range(len(f_sizes)):
+	    size = hopeSumq[i][0]*1000
+	    report += "| {0: >16} ".format(size)
+	report += "\n"
+    if hopeSumqd is not None:
+        report += "{:>12} ".format("Hope-Sumqd")
+	for i in range(len(f_sizes)):
+	    size = hopeSumqd[i][0]*1000
+	    report += "| {0: >16} ".format(size)
+	report += "\n"
+    if hopeSume is not None:
+        report += "{:>12} ".format("Hope-Sume")
+	for i in range(len(f_sizes)):
+	    size = hopeSume[i][0]*1000
+	    report += "| {0: >16} ".format(size)
+	report += "\n"
+    if hopeSumed is not None:
+        report += "{:>12} ".format("Hope-Sumed")
+	for i in range(len(f_sizes)):
+	    size = hopeSumed[i][0]*1000
+	    report += "| {0: >16} ".format(size)
+	report += "\n"
+    if hopeSqu is not None:
+        report += "{:>12} ".format("Hope-Squ")
+	for i in range(len(f_sizes)):
+	    size = hopeSqu[i][0]*1000
+	    report += "| {0: >16} ".format(size)
+	report += "\n"
+    if hopeSquq is not None:
+        report += "{:>12} ".format("Hope-Squq")
+	for i in range(len(f_sizes)):
+	    size = hopeSquq[i][0]*1000
+	    report += "| {0: >16} ".format(size)
+	report += "\n"
+
+    report += "*All the times are given in miliseconds.\n\n"
+
+    print(report)
+    fo = open(allFCT_file,"w")
+    fo.write(report) 
+    fo.close() 
+    print "Saved report: ", allFCT_file
