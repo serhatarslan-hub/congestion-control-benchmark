@@ -17,16 +17,18 @@ set out_rtt_file $out_dir$congestion_alg.rtt.out
 set rttFile [open $out_rtt_file w]
 set out_q_file $out_dir$congestion_alg.queue.out
 
+# Number of switches along the skinny path
+set n_switch 3
 # Number of connections at the crowded node
-set n_conn 3
+set n_crowd 5
 
 # samp_int (sec)
 set samp_int 0.0001
 # q_size (pkts)
 set q_size 200
-set short_q_size 100
 # link_cap (Mbps)
 set link_cap 10Gb
+set other_link_cap 10Gb
 # link_delay (ms)
 set link_delay 5us
 # tcp_window (pkts)
@@ -49,9 +51,9 @@ set timely_ewma_alpha 0.3
 set timely_t_low 0
 set timely_t_high 0.0005
 set timely_additiveInc 30000000.0
-set timely_decreaseFac 0.7
+set timely_decreaseFac 0.8
 set timely_HAI_thresh 5
-set timely_rate 300000000.0
+set timely_rate 3000000000.0
 
 ##### Switch Parameters ####
 set drop_prio_ false
@@ -62,6 +64,10 @@ set ns [new Simulator]
 $ns color 1 Red
 $ns color 2 Blue
 $ns color 3 Green
+$ns color 4 Blue
+$ns color 5 Green
+$ns color 6 Orange
+$ns color 7 Brown
 
 #Open the Trace files
 set tracefile [open $out_dir$congestion_alg.tr w]
@@ -75,14 +81,14 @@ $ns namtrace-all $nf
 set my_src [$ns node]
 $ns at 0.0 "$my_src label \"Source\""
 
-for {set i 0} {$i < 3} {incr i} {
+for {set i 0} {$i < $n_switch} {incr i} {
     set switch($i) [$ns node]
 }
 
 set my_dst [$ns node]
 $ns at 0.0 "$my_dst label \"Destination\""
 
-for {set i 0} {$i < 4} {incr i} {
+for {set i 0} {$i < $n_switch} {incr i} {
     set others($i) [$ns node]
 }
 
@@ -113,19 +119,22 @@ if {[string compare $congestion_alg "dctcp"] == 0} {
 
 # Create links between the nodes
 $ns duplex-link $my_src $switch(0) $link_cap $link_delay $queue_type
-$ns duplex-link $switch(0) $switch(1) $link_cap $link_delay $queue_type
-$ns duplex-link $switch(1) $switch(2) $link_cap $link_delay $queue_type
-$ns duplex-link $switch(2) $my_dst $link_cap $link_delay $queue_type
+set last_sw [expr $n_switch-1]
+for {set i 0} {$i < $last_sw} {incr i} {
+    set next_sw [expr $i+1]
+    $ns duplex-link $switch($i) $switch($next_sw) $link_cap $link_delay $queue_type
+}
+$ns duplex-link $switch($last_sw) $my_dst $link_cap $link_delay $queue_type
 
-$ns duplex-link $switch(0) $others(0) $link_cap $link_delay $queue_type
-$ns duplex-link $switch(1) $others(1) $link_cap $link_delay $queue_type
-$ns duplex-link $switch(1) $others(2) $link_cap $link_delay $queue_type
-$ns duplex-link $switch(2) $others(3) $link_cap $link_delay $queue_type
+for {set i 0} {$i < $n_switch} {incr i} {
+    $ns duplex-link $switch($i) $others($i) $other_link_cap $link_delay $queue_type
+}
 
 #Monitor the queue for link. (for NAM)
-$ns duplex-link-op $switch(0) $switch(1) queuePos 0.5
-$ns duplex-link-op $switch(1) $switch(2) queuePos 0.5
-$ns duplex-link-op $switch(2) $my_dst queuePos 0.5
+for {set i 0} {$i < $last_sw} {incr i} {
+    set next_sw [expr $i+1]
+    $ns duplex-link-op $switch($i) $switch($next_sw) queuePos 0.5
+}
 
 # HOST options
 Agent/TCP set window_ $tcp_window
@@ -260,15 +269,38 @@ if {[string compare $congestion_alg "dctcp"] == 0} {
 }
 
 # Connect "others"
-set other_tcp(0) [new Agent/TCP/Vegas]
-$ns attach-agent $others(0) $other_tcp(0)
-set other_sink(0) [new Agent/TCPSink]
-$ns attach-agent $others(1) $other_sink(0)
-$ns connect $other_tcp(0) $other_sink(0)
-$other_tcp(0) set fid_ 2
-set other_ftp(0) [new Application/FTP]
-$other_ftp(0) attach-agent $other_tcp(0)
-$other_ftp(0) set type_ FTP
+for {set i 0} {$i < $last_sw} {incr i} {
+    if { $i < [expr $last_sw-1] } {
+
+	set other_tcp($i) [new Agent/TCP/Vegas]
+	$ns attach-agent $others($i) $other_tcp($i)
+	set other_sink($i) [new Agent/TCPSink]
+	$ns attach-agent $others([expr $i+1]) $other_sink($i)
+	$ns connect $other_tcp($i) $other_sink($i)
+	$other_tcp($i) set fid_ [expr $i+2]
+	set other_ftp($i) [new Application/FTP]
+	$other_ftp($i) attach-agent $other_tcp($i)
+	$other_ftp($i) set type_ FTP
+
+    } else {
+
+	for {set j 0} {$j < $n_crowd} {incr j} {
+	    set indx [expr $i+$j]
+    	    set other_tcp($indx) [new Agent/TCP/Vegas]
+	    $ns attach-agent $others($i) $other_tcp($indx)
+    	    set other_sink($indx) [new Agent/TCPSink]
+    	    $ns attach-agent $others($last_sw) $other_sink($indx)
+    	    $ns connect $other_tcp($indx) $other_sink($indx)
+    	    $other_tcp($indx) set fid_ [expr $indx+2]
+    	    set other_ftp($indx) [new Application/FTP]
+    	    $other_ftp($indx) attach-agent $other_tcp($indx)
+    	    $other_ftp($indx) set type_ FTP
+
+	}
+
+    }
+}
+
 
 #set other_udp [new Agent/UDP]
 #$ns attach-agent $others(2) $other_udp
@@ -281,25 +313,16 @@ $other_ftp(0) set type_ FTP
 #$other_cbr set packetSize_ $pktSize
 #$other_cbr set rate_ 0.7Gb
 #$other_cbr set random_ false
-for {set i 1} {$i <= $n_conn} {incr i} {
-    set other_tcp($i) [new Agent/TCP/Vegas]
-    $ns attach-agent $others(2) $other_tcp($i)
-    set other_sink($i) [new Agent/TCPSink]
-    $ns attach-agent $others(3) $other_sink($i)
-    $ns connect $other_tcp($i) $other_sink($i)
-    $other_tcp($i) set fid_ [expr $i+2]
-    set other_ftp($i) [new Application/FTP]
-    $other_ftp($i) attach-agent $other_tcp($i)
-    $other_ftp($i) set type_ FTP
-}
+
 
 # queue monitoring
 set qf_size [open $out_q_file w]
 
-set qmon_size [$ns monitor-queue $switch(0) $switch(1) $qf_size $samp_int]
-[$ns link $switch(0) $switch(1)] queue-sample-timeout
-set qmon_size [$ns monitor-queue $switch(1) $switch(2) $qf_size $samp_int]
-[$ns link $switch(1) $switch(2)] queue-sample-timeout
+for {set i 0} {$i < $last_sw} {incr i} {
+    set next_sw [expr $i+1]
+    set qmon_size [$ns monitor-queue $switch($i) $switch($next_sw) $qf_size $samp_int]
+    [$ns link $switch($i) $switch($next_sw)] queue-sample-timeout
+}
 
 #Schedule events for the FTP agents
 
@@ -308,7 +331,7 @@ set qmon_size [$ns monitor-queue $switch(1) $switch(2) $qf_size $samp_int]
 #$ns at 0 "$other_cbr start"
 #$ns at $run_time "$other_cbr stop"
 
-for {set i 0} {$i <= $n_conn} {incr i} {
+for {set i 0} {$i < [expr $n_switch+$n_crowd-2]} {incr i} {
     $ns at 0 "$other_ftp($i) start"
     $ns at $run_time "$other_ftp($i) stop"
 }
