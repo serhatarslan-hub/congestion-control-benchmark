@@ -18,9 +18,11 @@ set rttFile [open $out_rtt_file w]
 set out_q_file $out_dir$congestion_alg.queue.out
 
 # Number of switches along the skinny path
-set n_switch 3
+set n_switch 6
+set last_sw [expr $n_switch-1]
 # Number of connections at the crowded node
-set n_crowd 5
+set n_crowd 6
+set second_crowd [expr int($n_crowd/2)]
 
 # samp_int (sec)
 set samp_int 0.0001
@@ -34,7 +36,7 @@ set link_delay 5us
 # tcp_window (pkts)
 set tcp_window 10000000
 # run_time (sec)
-set run_time 0.5
+set run_time 0.3
 # pktSize (bytes)
 set pktSize 1460
 
@@ -50,10 +52,10 @@ set ackRatio 1
 set timely_ewma_alpha 0.3
 set timely_t_low 0
 set timely_t_high 0.0005
-set timely_additiveInc 30000000.0
+set timely_additiveInc 60000000.0
 set timely_decreaseFac 0.8
 set timely_HAI_thresh 5
-set timely_rate 3000000000.0
+set timely_rate 1000000000.0
 
 ##### Switch Parameters ####
 set drop_prio_ false
@@ -62,12 +64,16 @@ set deque_prio_ false
 #Create a simulator object
 set ns [new Simulator]
 $ns color 1 Red
-$ns color 2 Blue
-$ns color 3 Green
+$ns color 2 Green
+$ns color 3 Black
 $ns color 4 Blue
-$ns color 5 Green
-$ns color 6 Orange
-$ns color 7 Brown
+$ns color 5 Orange
+$ns color 6 Brown
+$ns color 7 Green
+$ns color 8 Black
+$ns color 9 Blue
+$ns color 10 Orange
+
 
 #Open the Trace files
 set tracefile [open $out_dir$congestion_alg.tr w]
@@ -90,6 +96,10 @@ $ns at 0.0 "$my_dst label \"Destination\""
 
 for {set i 0} {$i < $n_switch} {incr i} {
     set others($i) [$ns node]
+}
+for {set i 1} {$i < $last_sw} {incr i} {
+    set indx [expr $last_sw+$i]
+    set others($indx) [$ns node]
 }
 
 # Queue options
@@ -119,7 +129,6 @@ if {[string compare $congestion_alg "dctcp"] == 0} {
 
 # Create links between the nodes
 $ns duplex-link $my_src $switch(0) $link_cap $link_delay $queue_type
-set last_sw [expr $n_switch-1]
 for {set i 0} {$i < $last_sw} {incr i} {
     set next_sw [expr $i+1]
     $ns duplex-link $switch($i) $switch($next_sw) $link_cap $link_delay $queue_type
@@ -128,6 +137,10 @@ $ns duplex-link $switch($last_sw) $my_dst $link_cap $link_delay $queue_type
 
 for {set i 0} {$i < $n_switch} {incr i} {
     $ns duplex-link $switch($i) $others($i) $other_link_cap $link_delay $queue_type
+}
+for {set i 1} {$i < $last_sw} {incr i} {
+    set indx [expr $last_sw+$i]
+    $ns duplex-link $switch($i) $others($indx) $other_link_cap $link_delay $queue_type
 }
 
 #Monitor the queue for link. (for NAM)
@@ -194,6 +207,68 @@ if {[string compare $congestion_alg "dctcp"] == 0} {
     $ns connect $my_tcp $my_sink
     $my_tcp set fid_ 1
 
+    if {[string compare $congestion_alg "vegas"] == 0} {    
+        set timely 0
+	set hope_type 0
+	set hope_collector 0
+    } elseif {[string compare $congestion_alg "timely"] == 0} { 
+	set timely 1
+	set hope_type 0 
+	set hope_collector 0  
+    } elseif {[string compare $congestion_alg "hope_sum"] == 0} {
+	set timely 0
+	set hope_type 2 
+	set hope_collector 0    
+    } elseif {[string compare $congestion_alg "hope_max"] == 0} { 
+	set timely 0   
+	set hope_type 1 
+	set hope_collector 0 
+    } elseif {[string compare $congestion_alg "hope_maxq"] == 0} {
+	set timely 0    
+	set hope_type 1 
+	set hope_collector 1 
+    } elseif {[string compare $congestion_alg "hope_maxqd"] == 0} { 
+	set timely 0   
+	set hope_type 1 
+	set hope_collector 2 
+    } elseif {[string compare $congestion_alg "hope_maxe"] == 0} { 
+	set timely 0
+	set hope_type 1 
+	set hope_collector 3  
+	set timely_t_low -10  
+    } elseif {[string compare $congestion_alg "hope_maxed"] == 0} {
+	set timely 0 
+	set hope_type 1 
+	set hope_collector 4  
+	set timely_t_low -10   
+    } elseif {[string compare $congestion_alg "hope_sumq"] == 0} { 
+	set timely 0
+	set hope_type 2 
+	set hope_collector 1    
+    } elseif {[string compare $congestion_alg "hope_sumqd"] == 0} {
+	set timely 0
+	set hope_type 2 
+	set hope_collector 2     
+    } elseif {[string compare $congestion_alg "hope_sume"] == 0} {
+	set timely 0
+	set hope_type 2 
+	set hope_collector 3  
+	set timely_t_low -10    
+    } elseif {[string compare $congestion_alg "hope_sumed"] == 0} {
+	set timely 0
+	set hope_type 2 
+	set hope_collector 4  
+	set timely_t_low -10    
+    } elseif {[string compare $congestion_alg "hope_squ"] == 0} {
+	set timely 0 
+	set hope_type 3 
+	set hope_collector 0   
+    } elseif {[string compare $congestion_alg "hope_squq"] == 0} {
+	set timely 0
+	set hope_type 3 
+	set hope_collector 1    
+    }
+
     $my_tcp set timely_packetSize_ [expr $pktSize+40]
     $my_tcp set timely_ewma_alpha_ $timely_ewma_alpha
     $my_tcp set timely_t_low_ $timely_t_low
@@ -202,54 +277,9 @@ if {[string compare $congestion_alg "dctcp"] == 0} {
     $my_tcp set timely_decreaseFac_ $timely_decreaseFac
     $my_tcp set timely_HAI_thresh_ $timely_HAI_thresh
     $my_tcp set timely_rate_ $timely_rate
-
-    if {[string compare $congestion_alg "vegas"] == 0} {    
-        $my_tcp set timely_ 0
-	$my_tcp set hope_type_ 0
-    } elseif {[string compare $congestion_alg "timely"] == 0} { 
-	$my_tcp set timely_ 1
-	$my_tcp set hope_type_ 0   
-    } elseif {[string compare $congestion_alg "hope_sum"] == 0} {
-	$my_tcp set hope_type_ 2 
-	$my_tcp set hope_collector_ 0    
-    } elseif {[string compare $congestion_alg "hope_max"] == 0} {    
-	$my_tcp set hope_type_ 1 
-	$my_tcp set hope_collector_ 0 
-    } elseif {[string compare $congestion_alg "hope_maxq"] == 0} {    
-	$my_tcp set hope_type_ 1 
-	$my_tcp set hope_collector_ 1 
-    } elseif {[string compare $congestion_alg "hope_maxqd"] == 0} {    
-	$my_tcp set hope_type_ 1 
-	$my_tcp set hope_collector_ 2 
-    } elseif {[string compare $congestion_alg "hope_maxe"] == 0} { 
-	$my_tcp set hope_type_ 1 
-	$my_tcp set hope_collector_ 3  
-	$my_tcp set timely_t_low_ -10  
-    } elseif {[string compare $congestion_alg "hope_maxed"] == 0} { 
-	$my_tcp set hope_type_ 1 
-	$my_tcp set hope_collector_ 4  
-	$my_tcp set timely_t_low_ -10   
-    } elseif {[string compare $congestion_alg "hope_sumq"] == 0} { 
-	$my_tcp set hope_type_ 2 
-	$my_tcp set hope_collector_ 1    
-    } elseif {[string compare $congestion_alg "hope_sumqd"] == 0} {
-	$my_tcp set hope_type_ 2 
-	$my_tcp set hope_collector_ 2     
-    } elseif {[string compare $congestion_alg "hope_sume"] == 0} {
-	$my_tcp set hope_type_ 2 
-	$my_tcp set hope_collector_ 3  
-	$my_tcp set timely_t_low_ -10    
-    } elseif {[string compare $congestion_alg "hope_sumed"] == 0} {
-	$my_tcp set hope_type_ 2 
-	$my_tcp set hope_collector_ 4  
-	$my_tcp set timely_t_low_ -10    
-    } elseif {[string compare $congestion_alg "hope_squ"] == 0} { 
-	$my_tcp set hope_type_ 3 
-	$my_tcp set hope_collector_ 0   
-    } elseif {[string compare $congestion_alg "hope_squq"] == 0} {
-	$my_tcp set hope_type_ 3 
-	$my_tcp set hope_collector_ 1    
-    }
+    $my_tcp set timely_ $timely
+    $my_tcp set hope_type_ $hope_type
+    $my_tcp set hope_collector_ $hope_collector 
 
     # set up FTP connections
     set my_ftp [$my_tcp attach-source FTP]
@@ -270,22 +300,42 @@ if {[string compare $congestion_alg "dctcp"] == 0} {
 
 # Connect "others"
 for {set i 0} {$i < $last_sw} {incr i} {
-    if { $i < [expr $last_sw-1] } {
+    if { $i < [expr $last_sw-2] } {
 
 	set other_tcp($i) [new Agent/TCP/Vegas]
 	$ns attach-agent $others($i) $other_tcp($i)
 	set other_sink($i) [new Agent/TCPSink]
-	$ns attach-agent $others([expr $i+1]) $other_sink($i)
+	$ns attach-agent $others([expr $i+$n_switch]) $other_sink($i)
 	$ns connect $other_tcp($i) $other_sink($i)
 	$other_tcp($i) set fid_ [expr $i+2]
 	set other_ftp($i) [new Application/FTP]
 	$other_ftp($i) attach-agent $other_tcp($i)
 	$other_ftp($i) set type_ FTP
+	$other_tcp($i) set timely_ 0
+	$other_tcp($i) set hope_type_ 0
+
+    } elseif { $i < [expr $last_sw-1] } {
+
+	for {set j 0} {$j < $second_crowd} {incr j} {
+	    set indx [expr $i+$j]
+    	    set other_tcp($indx) [new Agent/TCP/Vegas]
+	    $ns attach-agent $others($i) $other_tcp($indx)
+    	    set other_sink($indx) [new Agent/TCPSink]
+    	    $ns attach-agent $others([expr $i+$n_switch]) $other_sink($indx)
+    	    $ns connect $other_tcp($indx) $other_sink($indx)
+    	    $other_tcp($indx) set fid_ [expr $indx+2]
+    	    set other_ftp($indx) [new Application/FTP]
+    	    $other_ftp($indx) attach-agent $other_tcp($indx)
+    	    $other_ftp($indx) set type_ FTP
+	    $other_tcp($indx) set timely_ 0
+	    $other_tcp($indx) set hope_type_ 0
+
+	}
 
     } else {
 
 	for {set j 0} {$j < $n_crowd} {incr j} {
-	    set indx [expr $i+$j]
+	    set indx [expr $second_crowd+$i-1+$j]
     	    set other_tcp($indx) [new Agent/TCP/Vegas]
 	    $ns attach-agent $others($i) $other_tcp($indx)
     	    set other_sink($indx) [new Agent/TCPSink]
@@ -295,25 +345,26 @@ for {set i 0} {$i < $last_sw} {incr i} {
     	    set other_ftp($indx) [new Application/FTP]
     	    $other_ftp($indx) attach-agent $other_tcp($indx)
     	    $other_ftp($indx) set type_ FTP
+	    $other_tcp($indx) set timely_ 0
+	    $other_tcp($indx) set hope_type_ 0
 
 	}
 
     }
 }
-
-
-#set other_udp [new Agent/UDP]
-#$ns attach-agent $others(2) $other_udp
-#set other_null [new Agent/Null]
-#$ns attach-agent $others(3) $other_null
-#$ns connect $other_udp $other_null
-#set other_cbr [new Application/Traffic/CBR]
-#$other_cbr attach-agent $other_udp
-#$other_cbr set type_ CBR
-#$other_cbr set packetSize_ $pktSize
-#$other_cbr set rate_ 0.7Gb
-#$other_cbr set random_ false
-
+#for {set i 0} {$i < [expr $n_switch+$second_crowd+$n_crowd-3]} {incr i} {
+#    $other_tcp($i) set timely_packetSize_ [expr $pktSize+40]
+#    $other_tcp($i) set timely_ewma_alpha_ $timely_ewma_alpha
+#    $other_tcp($i) set timely_t_low_ $timely_t_low
+#    $other_tcp($i) set timely_t_high_ $timely_t_high
+#    $other_tcp($i) set timely_additiveInc_ $timely_additiveInc
+#    $other_tcp($i) set timely_decreaseFac_ $timely_decreaseFac
+#    $other_tcp($i) set timely_HAI_thresh_ $timely_HAI_thresh
+#    $other_tcp($i) set timely_rate_ $timely_rate
+#    $other_tcp($i) set timely_ $timely
+#    $other_tcp($i) set hope_type_ $hope_type
+#    $other_tcp($i) set hope_collector_ $hope_collector 
+#}
 
 # queue monitoring
 set qf_size [open $out_q_file w]
@@ -326,12 +377,7 @@ for {set i 0} {$i < $last_sw} {incr i} {
 
 #Schedule events for the FTP agents
 
-#$ns at 0 "$other_ftp start"
-#$ns at $run_time "$other_ftp stop"
-#$ns at 0 "$other_cbr start"
-#$ns at $run_time "$other_cbr stop"
-
-for {set i 0} {$i < [expr $n_switch+$n_crowd-2]} {incr i} {
+for {set i 0} {$i < [expr $n_switch+$second_crowd+$n_crowd-3]} {incr i} {
     $ns at 0 "$other_ftp($i) start"
     $ns at $run_time "$other_ftp($i) stop"
 }

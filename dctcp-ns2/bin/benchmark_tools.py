@@ -7,7 +7,7 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
-def plot_rtt(algo_name, out_dir):
+def plot_rtt(algo_name, out_dir, log_plot=True):
     fmat = r"(?P<time>[\d.]*) (?P<rtt>[\d.]*)"
 
     in_file = out_dir+algo_name+'.rtt.out'
@@ -31,7 +31,8 @@ def plot_rtt(algo_name, out_dir):
     plt.xlabel('Time (sec)')
     plt.title('RTT for '+algo_name+' experiment')
     plt.grid()
-    plt.yscale('log')
+    if(log_plot):
+	plt.yscale('log')
     plt.savefig(out_file)
     print "Saved plot: ", out_file
     plt.close()

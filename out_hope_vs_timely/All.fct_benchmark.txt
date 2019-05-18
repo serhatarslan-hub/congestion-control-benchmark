@@ -1,8 +1,8 @@
 
 ****** Flow Completion Times ******
    Algorithm |      Short Flows | Mid-Length Flows |       Long Flows 
-      Timely |             0.31 |             3.98 |           11.529 
-    Hope-Max |            0.295 |            3.259 |            9.745 
-    Hope-Squ |            0.298 |            3.508 |           10.996 
+      Timely |            0.783 |            6.166 |           14.708 
+    Hope-Max |            0.713 |            4.456 |           10.323 
+    Hope-Squ |            0.717 |            4.889 |           11.106 
 *All the times are given in miliseconds.
 
