@@ -8,3 +8,6 @@
 
 # Trace Files
 *.tr
+
+# Sublime SFTP
+sftp-config.json
