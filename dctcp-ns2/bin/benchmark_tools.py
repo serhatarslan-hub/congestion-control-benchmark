@@ -32,7 +32,7 @@ def plot_rtt(algo_name, out_dir, log_plot=True):
     plt.title('RTT for '+algo_name+' experiment')
     plt.grid()
     if(log_plot):
-	plt.yscale('log')
+        plt.yscale('log')
     plt.savefig(out_file)
     print "Saved plot: ", out_file
     plt.close()
@@ -55,11 +55,11 @@ def plot_rtt(algo_name, out_dir, log_plot=True):
 """
     Plot the given CDFs on the same figure for easier comparison
 """
-def plot_allRTTcdf(out_dir, log_plot=True, \
-			dctcp=None, vegas=None, timely=None, hopeSum=None, hopeMax=None, \
-			hopeMaxq=None, hopeMaxqd=None, hopeMaxe=None, hopeMaxed=None, \
-			hopeSumq=None, hopeSumqd=None, hopeSume=None, hopeSumed=None, \
-			hopeSqu=None, hopeSquq=None):
+def plot_allRTTcdf(out_dir, log_plot=True, dctcp=None, vegas=None, timely=None,
+                   hopeSum=None, hopeMax=None, \
+                   hopeMaxq=None, hopeMaxqd=None, hopeMaxe=None, hopeMaxed=None, \
+                   hopeSumq=None, hopeSumqd=None, hopeSume=None, hopeSumed=None, \
+                   hopeSqu=None, hopeSquq=None):
     
     allCDF_file = out_dir+'All.rttCDF_benchmark.png'
     plt.figure()
@@ -67,9 +67,9 @@ def plot_allRTTcdf(out_dir, log_plot=True, \
     plt.title('CDF of RTT for benchmarked congestion control algorithms')
 
     if dctcp is not None:
-	plt.plot(dctcp[0], dctcp[1], '--', label='DCTCP')
+        plt.plot(dctcp[0], dctcp[1], '--', label='DCTCP')
     if vegas is not None:
-	plt.plot(vegas[0], vegas[1], ':', label='Vegas')
+        plt.plot(vegas[0], vegas[1], ':', label='Vegas')
     if timely is not None:
         plt.plot(timely[0], timely[1], '-', label='Timely')
     if hopeSum is not None:
@@ -99,7 +99,7 @@ def plot_allRTTcdf(out_dir, log_plot=True, \
 
     plt.legend(loc='lower right')
     if(log_plot):
-	plt.xscale('log')
+        plt.xscale('log')
     #plt.xlim(0,700)
     plt.savefig(allCDF_file)
     print "Saved plot: ", allCDF_file
@@ -117,53 +117,54 @@ def plot_throughput(algo_name, num_clients, out_dir):
     sum_bytes = []
     last_seq = []
     for i in range(num_clients):
-	throughputs.append([])
-	sum_bytes.append(0.0)
-	last_seq.append(0.0)
+        throughputs.append([])
+        sum_bytes.append(0.0)
+        last_seq.append(0.0)
 
     with open(tr_file) as f:
         for line in f:
             split_line = line.split()
+            # dequeued packets only
             if ((split_line[0] == '-' \
-		 and split_line[4] == 'tcp' \
-		 and int(split_line[2]) < num_clients)):
+                 and split_line[4] == 'tcp' \
+                 and int(split_line[2]) < num_clients)):
 
                 t = float(split_line[1])
-		s = int(split_line[2]) #source node
-		if ( t-clock < granularity):
-		    # Don't count for retransmissions
-		    if ( int(split_line[10]) > last_seq[s] ):
-		        sum_bytes[s] += int(split_line[5])
-			last_seq[s] = int(split_line[10])
-		
-		else:
-		    time.append(t)
-		    clock += granularity
-		    
-		    for i in range(num_clients):
-			dummy_thp = sum_bytes[i] * 8 /granularity /1000000
-			throughputs[i].append(dummy_thp)
-			sum_bytes[i] = 0.0
-		    
-		    sum_bytes[s] += int(split_line[5])
+                s = int(split_line[2]) #source node
+                if ( t-clock < granularity):
+                    # Don't count for retransmissions
+                    if ( int(split_line[10]) > last_seq[s] ):
+                        sum_bytes[s] += int(split_line[5])
+                        last_seq[s] = int(split_line[10])
+                
+                else:
+                    time.append(t)
+                    clock += granularity
+                    
+                    for i in range(num_clients):
+                        dummy_thp = sum_bytes[i] * 8 /granularity /1000000
+                        throughputs[i].append(dummy_thp)
+                        sum_bytes[i] = 0.0
+                    
+                    sum_bytes[s] += int(split_line[5])
     time.append(t)
     for i in range(num_clients):
-	dummy_thp = sum_bytes[i] * 8 /granularity /1000000
-	throughputs[i].append(dummy_thp)
+        dummy_thp = sum_bytes[i] * 8 /granularity /1000000
+        throughputs[i].append(dummy_thp)
 
     total_thp = []
     for n in range(len(time)):
-	total_thp.append(0.0)
-	for i in range(num_clients):
-	    total_thp[n] += throughputs[i][n]
+        total_thp.append(0.0)
+        for i in range(num_clients):
+            total_thp[n] += throughputs[i][n]
 
     plt.figure()
     for i in range(num_clients):
-	node_name = 'Client_{}'.format(i)
+        node_name = 'Client_{}'.format(i)
         plt.plot(time,throughputs[i],linestyle='-', marker='', label=node_name)
 
     plt.plot(time,total_thp,linestyle='-', marker='', label='Total')
-	
+        
     plt.yscale('log')
     plt.ylabel('Throughput (Mbps)')
     plt.xlabel('Time (sec)')
@@ -180,9 +181,9 @@ def plot_throughput(algo_name, num_clients, out_dir):
    Plot the given throughputs in the same figure for easier comparison
 """
 def plot_allTotalThp(out_dir, dctcp=None, vegas=None, timely=None, hopeSum=None, hopeMax=None, \
-			hopeMaxq=None, hopeMaxqd=None, hopeMaxe=None, hopeMaxed=None, \
-			hopeSumq=None, hopeSumqd=None, hopeSume=None, hopeSumed=None, \
-			hopeSqu=None, hopeSquq=None):
+                        hopeMaxq=None, hopeMaxqd=None, hopeMaxe=None, hopeMaxed=None, \
+                        hopeSumq=None, hopeSumqd=None, hopeSume=None, hopeSumed=None, \
+                        hopeSqu=None, hopeSquq=None):
     
     allThp_file = out_dir+'All.thp_benchmark.png'
     plt.figure()
@@ -191,9 +192,9 @@ def plot_allTotalThp(out_dir, dctcp=None, vegas=None, timely=None, hopeSum=None,
     plt.title('Total throughputs for benchmarked congestion control algorithms')
 
     if dctcp is not None:
-	plt.plot(dctcp[0][:-2], dctcp[1][:-2], '-', label='DCTCP')
+        plt.plot(dctcp[0][:-2], dctcp[1][:-2], '-', label='DCTCP')
     if vegas is not None:
-	plt.plot(vegas[0][:-2], vegas[1][:-2], ':', label='Vegas')
+        plt.plot(vegas[0][:-2], vegas[1][:-2], ':', label='Vegas')
     if timely is not None:
         plt.plot(timely[0][:-2], timely[1][:-2], '-', label='Timely')
     if hopeSum is not None:
@@ -245,24 +246,24 @@ def plot_queue(algo_name, out_dir):
         for line in f:
             searchObj = re.search(fmat, line)
             if searchObj is not None:
-		to_node = int(searchObj.groupdict()['to_node'])
-		t = float(searchObj.groupdict()['time'])
-		s = float(searchObj.groupdict()['q_size_p'])
-		if to_node in dst_nodes:
-		    idx = dst_nodes.index(to_node)
+                to_node = int(searchObj.groupdict()['to_node'])
+                t = float(searchObj.groupdict()['time'])
+                s = float(searchObj.groupdict()['q_size_p'])
+                if to_node in dst_nodes:
+                    idx = dst_nodes.index(to_node)
                     times[idx].append(t)
-		    q_sizes[idx].append(s)
-		else:
-		    dst_nodes.append(to_node)
-		    times.append([t])
-		    q_sizes.append([s])
+                    q_sizes[idx].append(s)
+                else:
+                    dst_nodes.append(to_node)
+                    times.append([t])
+                    q_sizes.append([s])
                 #time.append(t)
                 #q_size.append(s)
     
     plt.figure()
     for i in range(len(dst_nodes)):
-	queue_name = 'Queue Client_{}'.format(dst_nodes[i])
-	plt.plot(times[i],q_sizes[i],linestyle='-', marker='', label=queue_name)
+        queue_name = 'Queue Client_{}'.format(dst_nodes[i])
+        plt.plot(times[i],q_sizes[i],linestyle='-', marker='', label=queue_name)
     #plt.plot(time,q_size,linestyle='-', marker='', label='Queue in packets')
     plt.yscale('log')
     plt.ylabel('Queue (packets)')
@@ -290,52 +291,52 @@ def get_fct(algo_name, num_clients, out_dir):
     l_fct = [] #Long Flow Completion Time
 
     for i in range(num_clients):
-	start_times.append(0.0)
-	s_fct.append(0.0)
-	m_fct.append(0.0)
-	l_fct.append(0.0)
+        start_times.append(0.0)
+        s_fct.append(0.0)
+        m_fct.append(0.0)
+        l_fct.append(0.0)
 
     with open(tr_file) as f:
         for line in f:
             split_line = line.split()
-	    
+            
             if ((split_line[0] == '+' \
-		  and split_line[4] == 'tcp' \
-		  and int(split_line[2]) < num_clients )):
+                  and split_line[4] == 'tcp' \
+                  and int(split_line[2]) < num_clients )):
 
                 t = float(split_line[1])
-		s = int(split_line[2]) #source node
-		seq = int(split_line[10]) #Sequence number
+                s = int(split_line[2]) #source node
+                seq = int(split_line[10]) #Sequence number
 
-		if ( seq == 0 and start_times[s] == 0 ):
-		    start_times[s] = t
-		elif ( (seq == s_flow_size+1 or seq == s_flow_size*1460+1) \
-			 and s_fct[s] == 0 ):
-		    s_fct[s] = t - start_times[s]
-		elif ( (seq == m_flow_size+1 or seq == m_flow_size*1460+1) \
-			 and m_fct[s] == 0 ):
-		    m_fct[s] = t - start_times[s]
-		elif ( (seq == l_flow_size+1 or seq == l_flow_size*1460+1) \
-			 and l_fct[s] == 0 ):
-		    l_fct[s] = t - start_times[s]
+                if ( seq == 0 and start_times[s] == 0 ):
+                    start_times[s] = t
+                elif ( (seq == s_flow_size+1 or seq == s_flow_size*1460+1) \
+                         and s_fct[s] == 0 ):
+                    s_fct[s] = t - start_times[s]
+                elif ( (seq == m_flow_size+1 or seq == m_flow_size*1460+1) \
+                         and m_fct[s] == 0 ):
+                    m_fct[s] = t - start_times[s]
+                elif ( (seq == l_flow_size+1 or seq == l_flow_size*1460+1) \
+                         and l_fct[s] == 0 ):
+                    l_fct[s] = t - start_times[s]
 
     for i in range(num_clients-1,-1,-1):
-	# Remove uncompleted flows
-	if (s_fct[i] == 0):
-	    del s_fct[i]
-	if (m_fct[i] == 0):
-	    del m_fct[i]
-	if (l_fct[i] == 0):
-	    del l_fct[i]
+        # Remove uncompleted flows
+        if (s_fct[i] == 0):
+            del s_fct[i]
+        if (m_fct[i] == 0):
+            del m_fct[i]
+        if (l_fct[i] == 0):
+            del l_fct[i]
     if s_fct == []:
-	# Return 0 when no flow completed
-	s_fct = [0]
+        # Return 0 when no flow completed
+        s_fct = [0]
     if m_fct == []:
-	# Return 0 when no flow completed
-	m_fct = [0]
+        # Return 0 when no flow completed
+        m_fct = [0]
     if l_fct == []:
-	# Return 0 when no flow completed
-	l_fct = [0]
+        # Return 0 when no flow completed
+        l_fct = [0]
 
     return s_fct, m_fct, l_fct
 
@@ -343,9 +344,9 @@ def get_fct(algo_name, num_clients, out_dir):
 Plot the given flow completion times in the same figure for easier comparison
 """
 def plot_allFCT(out_dir, dctcp=None, vegas=None, timely=None, hopeSum=None, hopeMax=None, \
-			hopeMaxq=None, hopeMaxqd=None, hopeMaxe=None, hopeMaxed=None, \
-			hopeSumq=None, hopeSumqd=None, hopeSume=None, hopeSumed=None, \
-			hopeSqu=None, hopeSquq=None):
+                        hopeMaxq=None, hopeMaxqd=None, hopeMaxe=None, hopeMaxed=None, \
+                        hopeSumq=None, hopeSumqd=None, hopeSume=None, hopeSumed=None, \
+                        hopeSqu=None, hopeSquq=None):
 
     f_sizes = ['Short', 'Mid-Length', 'Long']    
     allFCT_file = out_dir+'All.fct_benchmark.png'
@@ -355,119 +356,119 @@ def plot_allFCT(out_dir, dctcp=None, vegas=None, timely=None, hopeSum=None, hope
     plt.title('CDF of Flow Completion Times')
 
     for i in range(len(f_sizes)):
-	plt.subplot(len(f_sizes),1,i+1)
-	plt.ylabel("%s Flows"%f_sizes[i])
+        plt.subplot(len(f_sizes),1,i+1)
+        plt.ylabel("%s Flows"%f_sizes[i])
     plt.xlabel('Time(sec)')
 
     if dctcp is not None:
         # Compute the CDF for all sizes
-	for i in range(len(f_sizes)):
-	    sorted_data = np.sort(dctcp[i])
+        for i in range(len(f_sizes)):
+            sorted_data = np.sort(dctcp[i])
             yvals = np.arange(len(sorted_data))/float(len(sorted_data)-1)
-	    plt.subplot(len(f_sizes),1,i+1)
-	    plt.plot(sorted_data, yvals, '-', label='DCTCP')
+            plt.subplot(len(f_sizes),1,i+1)
+            plt.plot(sorted_data, yvals, '-', label='DCTCP')
     if vegas is not None:
         # Compute the CDF for all sizes
-	for i in range(len(f_sizes)):
-	    sorted_data = np.sort(vegas[i])
+        for i in range(len(f_sizes)):
+            sorted_data = np.sort(vegas[i])
             yvals = np.arange(len(sorted_data))/float(len(sorted_data)-1)
-	    plt.subplot(len(f_sizes),1,i+1)
-	    plt.plot(sorted_data, yvals, '-', label='Vegas')
+            plt.subplot(len(f_sizes),1,i+1)
+            plt.plot(sorted_data, yvals, '-', label='Vegas')
     if timely is not None:
         # Compute the CDF for all sizes
-	for i in range(len(f_sizes)):
-	    sorted_data = np.sort(timely[i])
+        for i in range(len(f_sizes)):
+            sorted_data = np.sort(timely[i])
             yvals = np.arange(len(sorted_data))/float(len(sorted_data)-1)
-	    plt.subplot(len(f_sizes),1,i+1)
-	    plt.plot(sorted_data, yvals, '-', label='Timely')
+            plt.subplot(len(f_sizes),1,i+1)
+            plt.plot(sorted_data, yvals, '-', label='Timely')
     if hopeSum is not None:
         # Compute the CDF for all sizes
-	for i in range(len(f_sizes)):
-	    sorted_data = np.sort(hopeSum[i])
+        for i in range(len(f_sizes)):
+            sorted_data = np.sort(hopeSum[i])
             yvals = np.arange(len(sorted_data))/float(len(sorted_data)-1)
-	    plt.subplot(len(f_sizes),1,i+1)
-	    plt.plot(sorted_data, yvals, '-', label='Hope-Sum')
+            plt.subplot(len(f_sizes),1,i+1)
+            plt.plot(sorted_data, yvals, '-', label='Hope-Sum')
     if hopeMax is not None:
         # Compute the CDF for all sizes
-	for i in range(len(f_sizes)):
-	    sorted_data = np.sort(hopeMax[i])
+        for i in range(len(f_sizes)):
+            sorted_data = np.sort(hopeMax[i])
             yvals = np.arange(len(sorted_data))/float(len(sorted_data)-1)
-	    plt.subplot(len(f_sizes),1,i+1)
-	    plt.plot(sorted_data, yvals, '-', label='Hope-Max')
+            plt.subplot(len(f_sizes),1,i+1)
+            plt.plot(sorted_data, yvals, '-', label='Hope-Max')
     if hopeMaxq is not None:
         # Compute the CDF for all sizes
-	for i in range(len(f_sizes)):
-	    sorted_data = np.sort(hopeMaxq[i])
+        for i in range(len(f_sizes)):
+            sorted_data = np.sort(hopeMaxq[i])
             yvals = np.arange(len(sorted_data))/float(len(sorted_data)-1)
-	    plt.subplot(len(f_sizes),1,i+1)
-	    plt.plot(sorted_data, yvals, '-', label='Hope-Maxq')
+            plt.subplot(len(f_sizes),1,i+1)
+            plt.plot(sorted_data, yvals, '-', label='Hope-Maxq')
     if hopeMaxqd is not None:
         # Compute the CDF for all sizes
-	for i in range(len(f_sizes)):
-	    sorted_data = np.sort(hopeMaxqd[i])
+        for i in range(len(f_sizes)):
+            sorted_data = np.sort(hopeMaxqd[i])
             yvals = np.arange(len(sorted_data))/float(len(sorted_data)-1)
-	    plt.subplot(len(f_sizes),1,i+1)
-	    plt.plot(sorted_data, yvals, '-', label='Hope-Maxqd')
+            plt.subplot(len(f_sizes),1,i+1)
+            plt.plot(sorted_data, yvals, '-', label='Hope-Maxqd')
     if hopeMaxe is not None:
         # Compute the CDF for all sizes
-	for i in range(len(f_sizes)):
-	    sorted_data = np.sort(hopeMaxe[i])
+        for i in range(len(f_sizes)):
+            sorted_data = np.sort(hopeMaxe[i])
             yvals = np.arange(len(sorted_data))/float(len(sorted_data)-1)
-	    plt.subplot(len(f_sizes),1,i+1)
-	    plt.plot(sorted_data, yvals, '-', label='Hope-Maxe')
+            plt.subplot(len(f_sizes),1,i+1)
+            plt.plot(sorted_data, yvals, '-', label='Hope-Maxe')
     if hopeMaxed is not None:
         # Compute the CDF for all sizes
-	for i in range(len(f_sizes)):
-	    sorted_data = np.sort(hopeMaxed[i])
+        for i in range(len(f_sizes)):
+            sorted_data = np.sort(hopeMaxed[i])
             yvals = np.arange(len(sorted_data))/float(len(sorted_data)-1)
-	    plt.subplot(len(f_sizes),1,i+1)
-	    plt.plot(sorted_data, yvals, '-', label='Hope-Maxed')
+            plt.subplot(len(f_sizes),1,i+1)
+            plt.plot(sorted_data, yvals, '-', label='Hope-Maxed')
     if hopeSumq is not None:
         # Compute the CDF for all sizes
-	for i in range(len(f_sizes)):
-	    sorted_data = np.sort(hopeSumq[i])
+        for i in range(len(f_sizes)):
+            sorted_data = np.sort(hopeSumq[i])
             yvals = np.arange(len(sorted_data))/float(len(sorted_data)-1)
-	    plt.subplot(len(f_sizes),1,i+1)
-	    plt.plot(sorted_data, yvals, '-', label='Hope-Sumq')
+            plt.subplot(len(f_sizes),1,i+1)
+            plt.plot(sorted_data, yvals, '-', label='Hope-Sumq')
     if hopeSumqd is not None:
         # Compute the CDF for all sizes
-	for i in range(len(f_sizes)):
-	    sorted_data = np.sort(hopeSumqd[i])
+        for i in range(len(f_sizes)):
+            sorted_data = np.sort(hopeSumqd[i])
             yvals = np.arange(len(sorted_data))/float(len(sorted_data)-1)
-	    plt.subplot(len(f_sizes),1,i+1)
-	    plt.plot(sorted_data, yvals, '-', label='Hope-Sumqd')
+            plt.subplot(len(f_sizes),1,i+1)
+            plt.plot(sorted_data, yvals, '-', label='Hope-Sumqd')
     if hopeSume is not None:
         # Compute the CDF for all sizes
-	for i in range(len(f_sizes)):
-	    sorted_data = np.sort(hopeSume[i])
+        for i in range(len(f_sizes)):
+            sorted_data = np.sort(hopeSume[i])
             yvals = np.arange(len(sorted_data))/float(len(sorted_data)-1)
-	    plt.subplot(len(f_sizes),1,i+1)
-	    plt.plot(sorted_data, yvals, '-', label='Hope-Sume')
+            plt.subplot(len(f_sizes),1,i+1)
+            plt.plot(sorted_data, yvals, '-', label='Hope-Sume')
     if hopeSumed is not None:
         # Compute the CDF for all sizes
-	for i in range(len(f_sizes)):
-	    sorted_data = np.sort(hopeSumed[i])
+        for i in range(len(f_sizes)):
+            sorted_data = np.sort(hopeSumed[i])
             yvals = np.arange(len(sorted_data))/float(len(sorted_data)-1)
-	    plt.subplot(len(f_sizes),1,i+1)
-	    plt.plot(sorted_data, yvals, '-', label='Hope-Sumed')
+            plt.subplot(len(f_sizes),1,i+1)
+            plt.plot(sorted_data, yvals, '-', label='Hope-Sumed')
     if hopeSqu is not None:
         # Compute the CDF for all sizes
-	for i in range(len(f_sizes)):
-	    sorted_data = np.sort(hopeSqu[i])
+        for i in range(len(f_sizes)):
+            sorted_data = np.sort(hopeSqu[i])
             yvals = np.arange(len(sorted_data))/float(len(sorted_data)-1)
-	    plt.subplot(len(f_sizes),1,i+1)
-	    plt.plot(sorted_data, yvals, '-', label='Hope-Squ')
+            plt.subplot(len(f_sizes),1,i+1)
+            plt.plot(sorted_data, yvals, '-', label='Hope-Squ')
     if hopeSquq is not None:
         # Compute the CDF for all sizes
-	for i in range(len(f_sizes)):
-	    sorted_data = np.sort(hopeSquq[i])
+        for i in range(len(f_sizes)):
+            sorted_data = np.sort(hopeSquq[i])
             yvals = np.arange(len(sorted_data))/float(len(sorted_data)-1)
-	    plt.subplot(len(f_sizes),1,i+1)
-	    plt.plot(sorted_data, yvals, '-', label='Hope-Squq')
+            plt.subplot(len(f_sizes),1,i+1)
+            plt.plot(sorted_data, yvals, '-', label='Hope-Squq')
 
     for i in range(len(f_sizes)):
-	plt.subplot(len(f_sizes),1,i+1)
-	plt.legend(loc='lower right')
+        plt.subplot(len(f_sizes),1,i+1)
+        plt.legend(loc='lower right')
 
     plt.savefig(allFCT_file)
     print "Saved plot: ", allFCT_file
@@ -477,9 +478,9 @@ def plot_allFCT(out_dir, dctcp=None, vegas=None, timely=None, hopeSum=None, hope
 Report the given flow completion times of algorithms for 1 client simulations
 """
 def print_1ClientFCT(out_dir, dctcp=None, vegas=None, timely=None, hopeSum=None, hopeMax=None, \
-			hopeMaxq=None, hopeMaxqd=None, hopeMaxe=None, hopeMaxed=None, \
-			hopeSumq=None, hopeSumqd=None, hopeSume=None, hopeSumed=None, \
-			hopeSqu=None, hopeSquq=None):
+                        hopeMaxq=None, hopeMaxqd=None, hopeMaxe=None, hopeMaxed=None, \
+                        hopeSumq=None, hopeSumqd=None, hopeSume=None, hopeSumed=None, \
+                        hopeSqu=None, hopeSquq=None):
 
     f_sizes = ['Short', 'Mid-Length', 'Long']    
     allFCT_file = out_dir+'All.fct_benchmark.txt'
@@ -487,99 +488,99 @@ def print_1ClientFCT(out_dir, dctcp=None, vegas=None, timely=None, hopeSum=None,
     report = "\n****** Flow Completion Times ******\n"
     report += "{:>12} ".format("Algorithm")
     for size in f_sizes:
-	report += "| {0: >16} ".format(size+' Flows')
+        report += "| {0: >16} ".format(size+' Flows')
     report += "\n"
 
     if dctcp is not None:
-	report += "{:>12} ".format("DCTCP")
-	for i in range(len(f_sizes)):
-	    size = dctcp[i][0]*1000
-	    report += "| {0: >16} ".format(size)
-	report += "\n"
+        report += "{:>12} ".format("DCTCP")
+        for i in range(len(f_sizes)):
+            size = dctcp[i][0]*1000
+            report += "| {0: >16} ".format(size)
+        report += "\n"
     if vegas is not None:
         report += "{:>12} ".format("Vegas")
-	for i in range(len(f_sizes)):
-	    size = vegas[i][0]*1000
-	    report += "| {0: >16} ".format(size)
-	report += "\n"
+        for i in range(len(f_sizes)):
+            size = vegas[i][0]*1000
+            report += "| {0: >16} ".format(size)
+        report += "\n"
     if timely is not None:
         report += "{:>12} ".format("Timely")
-	for i in range(len(f_sizes)):
-	    size = timely[i][0]*1000
-	    report += "| {0: >16} ".format(size)
-	report += "\n"
+        for i in range(len(f_sizes)):
+            size = timely[i][0]*1000
+            report += "| {0: >16} ".format(size)
+        report += "\n"
     if hopeSum is not None:
         report += "{:>12} ".format("Hope-Sum")
-	for i in range(len(f_sizes)):
-	    size = hopeSum[i][0]*1000
-	    report += "| {0: >16} ".format(size)
-	report += "\n"
+        for i in range(len(f_sizes)):
+            size = hopeSum[i][0]*1000
+            report += "| {0: >16} ".format(size)
+        report += "\n"
     if hopeMax is not None:
         report += "{:>12} ".format("Hope-Max")
-	for i in range(len(f_sizes)):
-	    size = hopeMax[i][0]*1000
-	    report += "| {0: >16} ".format(size)
-	report += "\n"
+        for i in range(len(f_sizes)):
+            size = hopeMax[i][0]*1000
+            report += "| {0: >16} ".format(size)
+        report += "\n"
     if hopeMaxq is not None:
         report += "{:>12} ".format("Hope-Maxq")
-	for i in range(len(f_sizes)):
-	    size = hopeMaxq[i][0]*1000
-	    report += "| {0: >16} ".format(size)
-	report += "\n"
+        for i in range(len(f_sizes)):
+            size = hopeMaxq[i][0]*1000
+            report += "| {0: >16} ".format(size)
+        report += "\n"
     if hopeMaxqd is not None:
         report += "{:>12} ".format("Hope-Maxqd")
-	for i in range(len(f_sizes)):
-	    size = hopeMaxqd[i][0]*1000
-	    report += "| {0: >16} ".format(size)
-	report += "\n"
+        for i in range(len(f_sizes)):
+            size = hopeMaxqd[i][0]*1000
+            report += "| {0: >16} ".format(size)
+        report += "\n"
     if hopeMaxe is not None:
         report += "{:>12} ".format("Hope-Maxe")
-	for i in range(len(f_sizes)):
-	    size = hopeMaxe[i][0]*1000
-	    report += "| {0: >16} ".format(size)
-	report += "\n"
+        for i in range(len(f_sizes)):
+            size = hopeMaxe[i][0]*1000
+            report += "| {0: >16} ".format(size)
+        report += "\n"
     if hopeMaxed is not None:
         report += "{:>12} ".format("Hope-Maxed")
-	for i in range(len(f_sizes)):
-	    size = hopeMaxed[i][0]*1000
-	    report += "| {0: >16} ".format(size)
-	report += "\n"
+        for i in range(len(f_sizes)):
+            size = hopeMaxed[i][0]*1000
+            report += "| {0: >16} ".format(size)
+        report += "\n"
     if hopeSumq is not None:
         report += "{:>12} ".format("Hope-Sumq")
-	for i in range(len(f_sizes)):
-	    size = hopeSumq[i][0]*1000
-	    report += "| {0: >16} ".format(size)
-	report += "\n"
+        for i in range(len(f_sizes)):
+            size = hopeSumq[i][0]*1000
+            report += "| {0: >16} ".format(size)
+        report += "\n"
     if hopeSumqd is not None:
         report += "{:>12} ".format("Hope-Sumqd")
-	for i in range(len(f_sizes)):
-	    size = hopeSumqd[i][0]*1000
-	    report += "| {0: >16} ".format(size)
-	report += "\n"
+        for i in range(len(f_sizes)):
+            size = hopeSumqd[i][0]*1000
+            report += "| {0: >16} ".format(size)
+        report += "\n"
     if hopeSume is not None:
         report += "{:>12} ".format("Hope-Sume")
-	for i in range(len(f_sizes)):
-	    size = hopeSume[i][0]*1000
-	    report += "| {0: >16} ".format(size)
-	report += "\n"
+        for i in range(len(f_sizes)):
+            size = hopeSume[i][0]*1000
+            report += "| {0: >16} ".format(size)
+        report += "\n"
     if hopeSumed is not None:
         report += "{:>12} ".format("Hope-Sumed")
-	for i in range(len(f_sizes)):
-	    size = hopeSumed[i][0]*1000
-	    report += "| {0: >16} ".format(size)
-	report += "\n"
+        for i in range(len(f_sizes)):
+            size = hopeSumed[i][0]*1000
+            report += "| {0: >16} ".format(size)
+        report += "\n"
     if hopeSqu is not None:
         report += "{:>12} ".format("Hope-Squ")
-	for i in range(len(f_sizes)):
-	    size = hopeSqu[i][0]*1000
-	    report += "| {0: >16} ".format(size)
-	report += "\n"
+        for i in range(len(f_sizes)):
+            size = hopeSqu[i][0]*1000
+            report += "| {0: >16} ".format(size)
+        report += "\n"
     if hopeSquq is not None:
         report += "{:>12} ".format("Hope-Squq")
-	for i in range(len(f_sizes)):
-	    size = hopeSquq[i][0]*1000
-	    report += "| {0: >16} ".format(size)
-	report += "\n"
+        for i in range(len(f_sizes)):
+            size = hopeSquq[i][0]*1000
+            report += "| {0: >16} ".format(size)
+        report += "\n"
 
     report += "*All the times are given in miliseconds.\n\n"
 
