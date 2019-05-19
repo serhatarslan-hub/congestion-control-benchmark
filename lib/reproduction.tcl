@@ -139,9 +139,9 @@ if {[string compare $congestion_alg "dctcp"] == 0} {
 
     for {set i 0} {$i < $num_clients} {incr i} {
         for {set j 0} {$j < $num_conn_per_client} {incr j} {
-	    set conn_idx [expr $i*$num_conn_per_client+$j]        
-	
-	    set tcp($conn_idx) [new Agent/TCP/FullTcp]
+        set conn_idx [expr $i*$num_conn_per_client+$j]        
+    
+        set tcp($conn_idx) [new Agent/TCP/FullTcp]
             set sink($conn_idx) [new Agent/TCP/FullTcp]
             $ns attach-agent $client($i) $tcp($conn_idx)
             $ns attach-agent $server_node $sink($conn_idx)
@@ -154,83 +154,83 @@ if {[string compare $congestion_alg "dctcp"] == 0} {
     }
     for {set i 0} {$i < $num_clients} {incr i} {
         for {set j 0} {$j < $num_conn_per_client} {incr j} {
-	    set conn_idx [expr $i*$num_conn_per_client+$j]
+        set conn_idx [expr $i*$num_conn_per_client+$j]
 
-	    # set up FTP connections
-	    set ftp($conn_idx) [$tcp($conn_idx) attach-source FTP]
+        # set up FTP connections
+        set ftp($conn_idx) [$tcp($conn_idx) attach-source FTP]
             $ftp($conn_idx) set type_ FTP 
 
         }
     }
     # The following procedure is called when ever a packet is received 
     Agent/TCP/FullTcp instproc recv {rtt_t} {
-	global ns rttFile 
-	#puts $rttFile "A packet received"       
-	
-	$self instvar node_
-	if {[$node_ id] == 2 } {
-	    set now [$ns now]
-	    set rtt [$self set rtt_]
-	    #set rtt [$self set t_rtt_]
-	
-	    puts $rttFile "$now $rtt"
-	    #puts $rttFile "[$node_ id] $now $rtt"
-	    #puts $rttFile "[$self set node] $now $rtt"
-	}
+    global ns rttFile 
+    #puts $rttFile "A packet received"       
+    
+    $self instvar node_
+    if {[$node_ id] == 2 } {
+        set now [$ns now]
+        set rtt [$self set rtt_]
+        #set rtt [$self set t_rtt_]
+    
+        puts $rttFile "$now $rtt"
+        #puts $rttFile "[$node_ id] $now $rtt"
+        #puts $rttFile "[$self set node] $now $rtt"
+    }
     }
 
 } elseif {[string compare $congestion_alg "vegas"] == 0} {    
     for {set i 0} {$i < $num_clients} {incr i} {
         for {set j 0} {$j < $num_conn_per_client} {incr j} {
-	    set conn_idx [expr $i*$num_conn_per_client+$j]        
-	
-	    set tcp($conn_idx) [new Agent/TCP/Vegas]
-            set sink($conn_idx) [new Agent/TCPSink]
-            $ns attach-agent $client($i) $tcp($conn_idx)
-            $ns attach-agent $server_node $sink($conn_idx)
-            #$tcp($conn_idx) set fid_ [expr $conn_idx]
-            #$sink($conn_idx) set fid_ [expr $conn_idx]
-            $ns connect $tcp($conn_idx) $sink($conn_idx)
-            ## set up TCP-level connections
-            #$sink($conn_idx) listen
+            set conn_idx [expr $i*$num_conn_per_client+$j]        
+        
+            set tcp($conn_idx) [new Agent/TCP/Vegas]
+                set sink($conn_idx) [new Agent/TCPSink]
+                $ns attach-agent $client($i) $tcp($conn_idx)
+                $ns attach-agent $server_node $sink($conn_idx)
+                #$tcp($conn_idx) set fid_ [expr $conn_idx]
+                #$sink($conn_idx) set fid_ [expr $conn_idx]
+                $ns connect $tcp($conn_idx) $sink($conn_idx)
+                ## set up TCP-level connections
+                #$sink($conn_idx) listen
 
-	    $tcp($conn_idx) set timely_ 0
+            $tcp($conn_idx) set timely_ 0
 
         }
     }
     for {set i 0} {$i < $num_clients} {incr i} {
         for {set j 0} {$j < $num_conn_per_client} {incr j} {
-	    set conn_idx [expr $i*$num_conn_per_client+$j]
+        set conn_idx [expr $i*$num_conn_per_client+$j]
 
-	    # set up FTP connections
-	    set ftp($conn_idx) [new Application/FTP]
-	    $ftp($conn_idx) set packet_Size_ $pktSize
-	    $ftp($conn_idx) set interval_ 0.000001
+        # set up FTP connections
+        set ftp($conn_idx) [new Application/FTP]
+        $ftp($conn_idx) set packet_Size_ $pktSize
+        $ftp($conn_idx) set interval_ 0.000001
             $ftp($conn_idx) set type_ FTP 
-	    $ftp($conn_idx) attach-agent $tcp($conn_idx)
+        $ftp($conn_idx) attach-agent $tcp($conn_idx)
         }
     }
     Agent/TCP/Vegas instproc recv {rtt_t cong_signal_t hopCnt_t} {
-	global ns rttFile       
-	
-	$self instvar node_
-	if {[$node_ id] == 2 } {
-	    set now [$ns now]
-	    #set rtt [$self set v_rtt_]
-	    set rtt [expr $rtt_t*1000000.0]
-	
-	    puts $rttFile "$now $rtt"
-	    #puts $rttFile "[$node_ id] $now $rtt"
-	    #puts $rttFile "[$self set node] $now $rtt"
-	}
+    global ns rttFile       
+    
+    $self instvar node_
+    if {[$node_ id] == 2 } {
+        set now [$ns now]
+        #set rtt [$self set v_rtt_]
+        set rtt [expr $rtt_t*1000000.0]
+    
+        puts $rttFile "$now $rtt"
+        #puts $rttFile "[$node_ id] $now $rtt"
+        #puts $rttFile "[$self set node] $now $rtt"
+    }
     }
 
 } elseif {[string compare $congestion_alg "timely"] == 0} {    
     for {set i 0} {$i < $num_clients} {incr i} {
         for {set j 0} {$j < $num_conn_per_client} {incr j} {
-	    set conn_idx [expr $i*$num_conn_per_client+$j]        
-	
-	    set tcp($conn_idx) [new Agent/TCP/Vegas]
+        set conn_idx [expr $i*$num_conn_per_client+$j]        
+    
+        set tcp($conn_idx) [new Agent/TCP/Vegas]
             set sink($conn_idx) [new Agent/TCPSink]
             $ns attach-agent $client($i) $tcp($conn_idx)
             $ns attach-agent $server_node $sink($conn_idx)
@@ -240,54 +240,54 @@ if {[string compare $congestion_alg "dctcp"] == 0} {
             ## set up TCP-level connections
             #$sink($conn_idx) listen
 
-	    $tcp($conn_idx) set timely_ 1
-	    $tcp($conn_idx) set hope_ 0
-	    $tcp($conn_idx) set timely_packetSize_ $pktSize
-	    $tcp($conn_idx) set timely_ewma_alpha_ 0.3
-	    $tcp($conn_idx) set timely_t_low_ 0
-	    $tcp($conn_idx) set timely_t_high_ 0.0001
-	    $tcp($conn_idx) set timely_additiveInc_ 20000000.0
-	    $tcp($conn_idx) set timely_decreaseFac_ 0.8
-	    $tcp($conn_idx) set timely_HAI_thresh_ 5
-	    $tcp($conn_idx) set timely_rate_ 7000000000
+        $tcp($conn_idx) set timely_ 1
+        $tcp($conn_idx) set hope_ 0
+        $tcp($conn_idx) set timely_packetSize_ $pktSize
+        $tcp($conn_idx) set timely_ewma_alpha_ 0.3
+        $tcp($conn_idx) set timely_t_low_ 0
+        $tcp($conn_idx) set timely_t_high_ 0.0001
+        $tcp($conn_idx) set timely_additiveInc_ 20000000.0
+        $tcp($conn_idx) set timely_decreaseFac_ 0.8
+        $tcp($conn_idx) set timely_HAI_thresh_ 5
+        $tcp($conn_idx) set timely_rate_ 7000000000
 
         }
     }
     for {set i 0} {$i < $num_clients} {incr i} {
         for {set j 0} {$j < $num_conn_per_client} {incr j} {
-	    set conn_idx [expr $i*$num_conn_per_client+$j]
+        set conn_idx [expr $i*$num_conn_per_client+$j]
 
-	    # set up FTP connections
-	    set ftp($conn_idx) [new Application/FTP]
-	    $ftp($conn_idx) set packet_Size_ $pktSize
-	    $ftp($conn_idx) set interval_ 0.000001
+        # set up FTP connections
+        set ftp($conn_idx) [new Application/FTP]
+        $ftp($conn_idx) set packet_Size_ $pktSize
+        $ftp($conn_idx) set interval_ 0.000001
             $ftp($conn_idx) set type_ FTP 
-	    $ftp($conn_idx) attach-agent $tcp($conn_idx)
+        $ftp($conn_idx) attach-agent $tcp($conn_idx)
         }
     }
     Agent/TCP/Vegas instproc recv {rtt_t cong_signal_t hopCnt_t} {
-	global ns rttFile        
-	
-	$self instvar node_
-	if {[$node_ id] == 2 } {
-	    set now [$ns now]
-	    #set rtt [$self set v_rtt_]
-	    set rtt [expr $rtt_t*1000000.0]
-	
-	    puts $rttFile "$now $rtt"
-	    #puts "$now rtt: $rtt cwnd: [$self set cwnd_] rate: [$self set timely_rate_]"
-	    #puts $rttFile "[$node_ id] $now $rtt"
-	    #puts $rttFile "[$self set node] $now $rtt"
-	}
+    global ns rttFile        
+    
+    $self instvar node_
+    if {[$node_ id] == 2 } {
+        set now [$ns now]
+        #set rtt [$self set v_rtt_]
+        set rtt [expr $rtt_t*1000000.0]
+    
+        puts $rttFile "$now $rtt"
+        #puts "$now rtt: $rtt cwnd: [$self set cwnd_] rate: [$self set timely_rate_]"
+        #puts $rttFile "[$node_ id] $now $rtt"
+        #puts $rttFile "[$self set node] $now $rtt"
+    }
     }
 
 } else {
     puts "Unknown TCP Protocol! Tahao is used instead..."
     for {set i 0} {$i < $num_clients} {incr i} {
         for {set j 0} {$j < $num_conn_per_client} {incr j} {
-	    set conn_idx [expr $i*$num_conn_per_client+$j]        
-	
-	    set tcp($conn_idx) [new Agent/TCP]
+        set conn_idx [expr $i*$num_conn_per_client+$j]        
+    
+        set tcp($conn_idx) [new Agent/TCP]
             set sink($conn_idx) [new Agent/TCPSink]
             $ns attach-agent $client($i) $tcp($conn_idx)
             $ns attach-agent $server_node $sink($conn_idx)
@@ -300,14 +300,14 @@ if {[string compare $congestion_alg "dctcp"] == 0} {
     }
     for {set i 0} {$i < $num_clients} {incr i} {
         for {set j 0} {$j < $num_conn_per_client} {incr j} {
-	    set conn_idx [expr $i*$num_conn_per_client+$j]
+        set conn_idx [expr $i*$num_conn_per_client+$j]
 
-	    # set up FTP connections
-	    set ftp($conn_idx) [new Application/FTP]
-	    $ftp($conn_idx) set packet_Size_ $pktSize
-	    $ftp($conn_idx) set interval_ 0.0001
+        # set up FTP connections
+        set ftp($conn_idx) [new Application/FTP]
+        $ftp($conn_idx) set packet_Size_ $pktSize
+        $ftp($conn_idx) set interval_ 0.0001
             $ftp($conn_idx) set type_ FTP 
-	    $ftp($conn_idx) attach-agent $tcp($conn_idx)
+        $ftp($conn_idx) attach-agent $tcp($conn_idx)
         }
     }
 }
@@ -330,22 +330,22 @@ $RVstart use-rng $rng
 #Schedule events for the FTP agents
 for {set i 0} {$i < $num_clients} {incr i} {
     for {set j 0} {$j < $num_conn_per_client} {incr j} {
-	set conn_idx [expr $i*$num_conn_per_client+$j]        
-	
-	#set startT($conn_idx) [expr [$RVstart value]]
-	#$ns at $startT($conn_idx) "$ftp($conn_idx) start"
-	$ns at 0.0001 "$ftp($conn_idx) start"
+    set conn_idx [expr $i*$num_conn_per_client+$j]        
+    
+    #set startT($conn_idx) [expr [$RVstart value]]
+    #$ns at $startT($conn_idx) "$ftp($conn_idx) start"
+    $ns at 0.0001 "$ftp($conn_idx) start"
         $ns at [expr $run_time - 0.01] "$ftp($conn_idx) stop"
     }
 }
 
 #proc plotRTT {tcpSource file} {
-#	global ns 
-#	set time 0.00002
-#	set now [$ns now]
-#	set rtt [$tcpSource set rtt_]
-#	puts $file "$now $rtt"
-#	$ns at [expr $now+$time] "plotRTT $tcpSource $file"
+#   global ns 
+#   set time 0.00002
+#   set now [$ns now]
+#   set rtt [$tcpSource set rtt_]
+#   puts $file "$now $rtt"
+#   $ns at [expr $now+$time] "plotRTT $tcpSource $file"
 #}
 #$ns at 0.1 "plotRTT $tcp(0) $rttFile"
 
