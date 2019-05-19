@@ -19,7 +19,7 @@ set rttFile [open $out_rtt_file w]
 set out_q_file $repro_dir$congestion_alg.queue.out
 
 set num_clients [lindex $argv 2]
-set num_conn_per_client 1
+set num_conn_per_client 4
 
 # samp_int (sec)
 set samp_int 0.0001
@@ -102,7 +102,7 @@ for {set i 0} {$i < $num_clients} {incr i} {
     $ns duplex-link $client($i) $TOR_switch_node $link_cap $link_delay $queue_type
 }
 
-#Monitor the queue for link (s1-h3). (for NAM)
+# Monitor the queue for link (s1-h3). (for NAM)
 $ns duplex-link-op $TOR_switch_node $server_node queuePos 0.5
 
 ##Set error model on link n3 to n2
@@ -188,8 +188,8 @@ if {[string compare $congestion_alg "dctcp"] == 0} {
                 set sink($conn_idx) [new Agent/TCPSink]
                 $ns attach-agent $client($i) $tcp($conn_idx)
                 $ns attach-agent $server_node $sink($conn_idx)
-                #$tcp($conn_idx) set fid_ [expr $conn_idx]
-                #$sink($conn_idx) set fid_ [expr $conn_idx]
+                $tcp($conn_idx) set fid_ [expr $conn_idx]
+                $sink($conn_idx) set fid_ [expr $conn_idx]
                 $ns connect $tcp($conn_idx) $sink($conn_idx)
                 ## set up TCP-level connections
                 #$sink($conn_idx) listen
@@ -211,74 +211,75 @@ if {[string compare $congestion_alg "dctcp"] == 0} {
         }
     }
     Agent/TCP/Vegas instproc recv {rtt_t cong_signal_t hopCnt_t} {
-    global ns rttFile       
-    
-    $self instvar node_
-    if {[$node_ id] == 2 } {
-        set now [$ns now]
-        #set rtt [$self set v_rtt_]
-        set rtt [expr $rtt_t*1000000.0]
-    
-        puts $rttFile "$now $rtt"
-        #puts $rttFile "[$node_ id] $now $rtt"
-        #puts $rttFile "[$self set node] $now $rtt"
-    }
+        global ns rttFile       
+        
+        $self instvar node_
+        if {[$node_ id] == 2 } {
+            set now [$ns now]
+            #set rtt [$self set v_rtt_]
+            set rtt [expr $rtt_t*1000000.0]
+        
+            puts $rttFile "$now $rtt"
+            #puts $rttFile "[$node_ id] $now $rtt"
+            #puts $rttFile "[$self set node] $now $rtt"
+        }
     }
 
 } elseif {[string compare $congestion_alg "timely"] == 0} {    
     for {set i 0} {$i < $num_clients} {incr i} {
         for {set j 0} {$j < $num_conn_per_client} {incr j} {
-        set conn_idx [expr $i*$num_conn_per_client+$j]        
-    
-        set tcp($conn_idx) [new Agent/TCP/Vegas]
+            set conn_idx [expr $i*$num_conn_per_client+$j]        
+        
+            set tcp($conn_idx) [new Agent/TCP/Vegas]
             set sink($conn_idx) [new Agent/TCPSink]
             $ns attach-agent $client($i) $tcp($conn_idx)
             $ns attach-agent $server_node $sink($conn_idx)
-            #$tcp($conn_idx) set fid_ [expr $conn_idx]
-            #$sink($conn_idx) set fid_ [expr $conn_idx]
+            $tcp($conn_idx) set fid_ [expr $conn_idx]
+            $sink($conn_idx) set fid_ [expr $conn_idx]
             $ns connect $tcp($conn_idx) $sink($conn_idx)
             ## set up TCP-level connections
             #$sink($conn_idx) listen
 
-        $tcp($conn_idx) set timely_ 1
-        $tcp($conn_idx) set hope_ 0
-        $tcp($conn_idx) set timely_packetSize_ $pktSize
-        $tcp($conn_idx) set timely_ewma_alpha_ 0.3
-        $tcp($conn_idx) set timely_t_low_ 0
-        $tcp($conn_idx) set timely_t_high_ 0.0001
-        $tcp($conn_idx) set timely_additiveInc_ 20000000.0
-        $tcp($conn_idx) set timely_decreaseFac_ 0.8
-        $tcp($conn_idx) set timely_HAI_thresh_ 5
-        $tcp($conn_idx) set timely_rate_ 7000000000
+            $tcp($conn_idx) set timely_ 1
+            $tcp($conn_idx) set hope_ 0
+            $tcp($conn_idx) set timely_packetSize_ $pktSize
+            $tcp($conn_idx) set timely_ewma_alpha_ 0.3
+            $tcp($conn_idx) set timely_t_low_ 0
+            $tcp($conn_idx) set timely_t_high_ 0.0001
+            $tcp($conn_idx) set timely_additiveInc_ 20000000.0
+            $tcp($conn_idx) set timely_decreaseFac_ 0.8
+            $tcp($conn_idx) set timely_HAI_thresh_ 5
+            $tcp($conn_idx) set timely_rate_ 7000000000
 
         }
     }
     for {set i 0} {$i < $num_clients} {incr i} {
         for {set j 0} {$j < $num_conn_per_client} {incr j} {
-        set conn_idx [expr $i*$num_conn_per_client+$j]
+            set conn_idx [expr $i*$num_conn_per_client+$j]
 
-        # set up FTP connections
-        set ftp($conn_idx) [new Application/FTP]
-        $ftp($conn_idx) set packet_Size_ $pktSize
-        $ftp($conn_idx) set interval_ 0.000001
-            $ftp($conn_idx) set type_ FTP 
-        $ftp($conn_idx) attach-agent $tcp($conn_idx)
+            # set up FTP connections
+            set ftp($conn_idx) [new Application/FTP]
+            $ftp($conn_idx) set packet_Size_ $pktSize
+            $ftp($conn_idx) set interval_ 0.000001
+                $ftp($conn_idx) set type_ FTP 
+            $ftp($conn_idx) attach-agent $tcp($conn_idx)
         }
     }
+    # Timely implementation is also contained in vegas
     Agent/TCP/Vegas instproc recv {rtt_t cong_signal_t hopCnt_t} {
-    global ns rttFile        
-    
-    $self instvar node_
-    if {[$node_ id] == 2 } {
-        set now [$ns now]
-        #set rtt [$self set v_rtt_]
-        set rtt [expr $rtt_t*1000000.0]
-    
-        puts $rttFile "$now $rtt"
-        #puts "$now rtt: $rtt cwnd: [$self set cwnd_] rate: [$self set timely_rate_]"
-        #puts $rttFile "[$node_ id] $now $rtt"
-        #puts $rttFile "[$self set node] $now $rtt"
-    }
+        global ns rttFile        
+        
+        $self instvar node_
+        if {[$node_ id] == 2 } {
+            set now [$ns now]
+            #set rtt [$self set v_rtt_]
+            set rtt [expr $rtt_t*1000000.0]
+        
+            puts $rttFile "$now $rtt"
+            #puts "$now rtt: $rtt cwnd: [$self set cwnd_] rate: [$self set timely_rate_]"
+            #puts $rttFile "[$node_ id] $now $rtt"
+            #puts $rttFile "[$self set node] $now $rtt"
+        }
     }
 
 } else {
