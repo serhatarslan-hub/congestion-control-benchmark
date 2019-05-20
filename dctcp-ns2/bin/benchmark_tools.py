@@ -18,11 +18,11 @@ def plot_rtt(algo_name, out_dir, log_plot=True):
     rtt = []
     with open(in_file) as f:
         for line in f:
-            searchObj = re.search(fmat, line)
-            if searchObj is not None:
-                t = float(searchObj.groupdict()['time'])
+            result = re.search(fmat, line)
+            if result is not None:
+                t = float(result.groupdict()['time'])
                 time.append(t)
-                s = float(searchObj.groupdict()['rtt'])
+                s = float(result.groupdict()['rtt'])
                 rtt.append(s)
     plt.figure()
     #plt.xlim(0,time[-1])
@@ -52,15 +52,15 @@ def plot_rtt(algo_name, out_dir, log_plot=True):
 
     return sorted_data, yvals
 
-"""
-    Plot the given CDFs on the same figure for easier comparison
-"""
+
 def plot_allRTTcdf(out_dir, log_plot=True, dctcp=None, vegas=None, timely=None,
                    hopeSum=None, hopeMax=None, \
                    hopeMaxq=None, hopeMaxqd=None, hopeMaxe=None, hopeMaxed=None, \
                    hopeSumq=None, hopeSumqd=None, hopeSume=None, hopeSumed=None, \
                    hopeSqu=None, hopeSquq=None):
-    
+    """
+    Plot the given CDFs on the same figure for easier comparison
+    """    
     allCDF_file = out_dir+'All.rttCDF_benchmark.png'
     plt.figure()
     plt.xlabel('RTT (usec)')
@@ -105,65 +105,74 @@ def plot_allRTTcdf(out_dir, log_plot=True, dctcp=None, vegas=None, timely=None,
     print "Saved plot: ", allCDF_file
     plt.close()
 
-def plot_throughput(algo_name, num_clients, out_dir):
-    
+
+def plot_throughput(algo_name, num_clients, out_dir, conn_per_client=1):
+    """
+    Plots the throughput for the first num_clients clients, assuming
+    each client serves conn_per_client connections.
+
+    Assumes client IDs are in range {0, 1, ...} and that connection IDs are
+    numbered {0, ..., num_clients*conn_per_client-1} client-by-client.
+    """
     tr_file = out_dir+algo_name+'.tr'
     out_file = out_dir+algo_name+'.thp.png'
     granularity = 0.001
     clock = 0
-    time = []
 
-    throughputs = []
-    sum_bytes = []
-    last_seq = []
-    for i in range(num_clients):
-        throughputs.append([])
-        sum_bytes.append(0.0)
-        last_seq.append(0.0)
+    thp_sums = np.zeros((num_clients, conn_per_client))
+    seqs = np.zeros((num_clients, conn_per_client))
+    throughputs = []  # becomes [time x num_clients x conn_per_client]
+    times = []
 
-    with open(tr_file) as f:
+    # Parse the trace file per schema explained here:
+    # https://ns2blogger.blogspot.com/p/the-file-written-by-application-or-by.html
+    with open(tr_file, 'r') as f:
         for line in f:
-            split_line = line.split()
-            # dequeued packets only
-            if ((split_line[0] == '-' \
-                 and split_line[4] == 'tcp' \
-                 and int(split_line[2]) < num_clients)):
+            event, time, from_node, to_node, pkt_type, pkt_size, flags, fid, \
+                src_addr, dst_addr, seq_num, pkt_id = line.split()
 
-                t = float(split_line[1])
-                s = int(split_line[2]) #source node
-                if ( t-clock < granularity):
-                    # Don't count for retransmissions
-                    if ( int(split_line[10]) > last_seq[s] ):
-                        sum_bytes[s] += int(split_line[5])
-                        last_seq[s] = int(split_line[10])
+            # Given time, source node, and flow ID
+            t = float(time)
+            s = int(from_node)
+            f = int(fid)
+
+            # Consider dequeued packets that fit our spec only
+            if event == '-' and pkt_type == 'tcp' \
+                and s < num_clients and f < num_clients*conn_per_client:
+                # Let f only be the residual
+                f -= s*conn_per_client
+
+                # Only counting non-retransmissions
+                if int(seq_num) > seqs[s, f]:
+                    thp_sums[s, f] += int(pkt_size)
+                    seqs[s, f] = int(seq_num)
                 
-                else:
-                    time.append(t)
+                # Compute throughout in a sliding window of size granularity
+                if t-clock >= granularity:
+                    times.append(t)
+                    throughputs.append(thp_sums * 8 / (t-clock) / 1000000)
                     clock += granularity
-                    
-                    for i in range(num_clients):
-                        dummy_thp = sum_bytes[i] * 8 /granularity /1000000
-                        throughputs[i].append(dummy_thp)
-                        sum_bytes[i] = 0.0
-                    
-                    sum_bytes[s] += int(split_line[5])
-    time.append(t)
-    for i in range(num_clients):
-        dummy_thp = sum_bytes[i] * 8 /granularity /1000000
-        throughputs[i].append(dummy_thp)
 
-    total_thp = []
-    for n in range(len(time)):
-        total_thp.append(0.0)
-        for i in range(num_clients):
-            total_thp[n] += throughputs[i][n]
+                    # Zero out
+                    thp_sums.fill(0)
+    # Last step
+    throughputs.append(thp_sums * 8 / (t-clock) / 1000000)
+    times.append(t)
 
+    # Aggregate
+    times = np.array(times)
+    throughputs = np.array(throughputs)
+    total_thp = np.sum(throughputs, axis=(1, 2))
+
+    # Plot individual throughputs
     plt.figure()
     for i in range(num_clients):
-        node_name = 'Client_{}'.format(i)
-        plt.plot(time,throughputs[i],linestyle='-', marker='', label=node_name)
+        for j in range(conn_per_client):
+            node_name = ('Client%d_connection_%d' % (i, j))
+            plt.plot(times, throughputs[:, i, j], linestyle='-', marker='', label=node_name)
 
-    plt.plot(time,total_thp,linestyle='-', marker='', label='Total')
+    # Plot total
+    plt.plot(times,total_thp,linestyle='-', marker='', label='Total')
         
     plt.yscale('log')
     plt.ylabel('Throughput (Mbps)')
@@ -175,16 +184,15 @@ def plot_throughput(algo_name, num_clients, out_dir):
     print "Saved plot: ", out_file
     plt.close()
 
-    return time,total_thp
+    return times, total_thp
 
-"""
-   Plot the given throughputs in the same figure for easier comparison
-"""
 def plot_allTotalThp(out_dir, dctcp=None, vegas=None, timely=None, hopeSum=None, hopeMax=None, \
                         hopeMaxq=None, hopeMaxqd=None, hopeMaxe=None, hopeMaxed=None, \
                         hopeSumq=None, hopeSumqd=None, hopeSume=None, hopeSumed=None, \
                         hopeSqu=None, hopeSquq=None):
-    
+    """
+    Plot the given throughputs in the same figure for easier comparison
+    """
     allThp_file = out_dir+'All.thp_benchmark.png'
     plt.figure()
     plt.ylabel('Throughput (Mbps)')
@@ -227,12 +235,11 @@ def plot_allTotalThp(out_dir, dctcp=None, vegas=None, timely=None, hopeSum=None,
     print "Saved plot: ", allThp_file
     plt.close()
 
-"""
-Parse the sampled queue size output file and plot the queue size over time
-"""
 def plot_queue(algo_name, out_dir):
     fmat = r"(?P<time>[\d.]*) (?P<from_node>[\d]*) (?P<to_node>[\d]*) (?P<q_size_B>[\d.]*) (?P<q_size_p>[\d.]*) (?P<arr_p>[\d.]*) (?P<dep_p>[\d.]*) (?P<drop_p>[\d.]*) (?P<arr_B>[\d.]*) (?P<dep_B>[\d.]*) (?P<drop_B>[\d.]*)"
-
+    """
+    Parse the sampled queue size output file and plot the queue size over time
+    """
     in_file = out_dir+algo_name+'.queue.out'
     out_file = out_dir+algo_name+'.queue.png'
 
@@ -244,11 +251,11 @@ def plot_queue(algo_name, out_dir):
     #q_size = []
     with open(in_file) as f:
         for line in f:
-            searchObj = re.search(fmat, line)
-            if searchObj is not None:
-                to_node = int(searchObj.groupdict()['to_node'])
-                t = float(searchObj.groupdict()['time'])
-                s = float(searchObj.groupdict()['q_size_p'])
+            result = re.search(fmat, line)
+            if result is not None:
+                to_node = int(result.groupdict()['to_node'])
+                t = float(result.groupdict()['time'])
+                s = float(result.groupdict()['q_size_p'])
                 if to_node in dst_nodes:
                     idx = dst_nodes.index(to_node)
                     times[idx].append(t)
@@ -275,20 +282,19 @@ def plot_queue(algo_name, out_dir):
     print "Saved plot: ", out_file
     plt.close()
 
-"""
-Get Flow Completion Times of flows
-"""
 def get_fct(algo_name, num_clients, out_dir):
-    
+    """
+    Get Flow Completion Times of flows
+    """
     tr_file = out_dir+algo_name+'.tr'
     s_flow_size = 50
     m_flow_size = 500
     l_flow_size = 1500
 
     start_times = []
-    s_fct = [] #Short Flow Completion Time
-    m_fct = [] #Mid-Length Flow Completion Time
-    l_fct = [] #Long Flow Completion Time
+    s_fct = []  # Short Flow Completion Time
+    m_fct = []  # Mid-Length Flow Completion Time
+    l_fct = []  # Long Flow Completion Time
 
     for i in range(num_clients):
         start_times.append(0.0)
@@ -300,33 +306,33 @@ def get_fct(algo_name, num_clients, out_dir):
         for line in f:
             split_line = line.split()
             
-            if ((split_line[0] == '+' \
+            if split_line[0] == '+' \
                   and split_line[4] == 'tcp' \
-                  and int(split_line[2]) < num_clients )):
+                  and int(split_line[2]) < num_clients:
 
                 t = float(split_line[1])
                 s = int(split_line[2]) #source node
                 seq = int(split_line[10]) #Sequence number
 
-                if ( seq == 0 and start_times[s] == 0 ):
+                if  seq == 0 and start_times[s] == 0:
                     start_times[s] = t
-                elif ( (seq == s_flow_size+1 or seq == s_flow_size*1460+1) \
-                         and s_fct[s] == 0 ):
+                elif (seq == s_flow_size+1 or seq == s_flow_size*1460+1) \
+                         and s_fct[s] == 0:
                     s_fct[s] = t - start_times[s]
-                elif ( (seq == m_flow_size+1 or seq == m_flow_size*1460+1) \
-                         and m_fct[s] == 0 ):
+                elif (seq == m_flow_size+1 or seq == m_flow_size*1460+1) \
+                         and m_fct[s] == 0:
                     m_fct[s] = t - start_times[s]
-                elif ( (seq == l_flow_size+1 or seq == l_flow_size*1460+1) \
-                         and l_fct[s] == 0 ):
+                elif (seq == l_flow_size+1 or seq == l_flow_size*1460+1) \
+                         and l_fct[s] == 0:
                     l_fct[s] = t - start_times[s]
 
     for i in range(num_clients-1,-1,-1):
         # Remove uncompleted flows
-        if (s_fct[i] == 0):
+        if s_fct[i] == 0:
             del s_fct[i]
-        if (m_fct[i] == 0):
+        if m_fct[i] == 0:
             del m_fct[i]
-        if (l_fct[i] == 0):
+        if l_fct[i] == 0:
             del l_fct[i]
     if s_fct == []:
         # Return 0 when no flow completed
@@ -340,14 +346,13 @@ def get_fct(algo_name, num_clients, out_dir):
 
     return s_fct, m_fct, l_fct
 
-"""
-Plot the given flow completion times in the same figure for easier comparison
-"""
 def plot_allFCT(out_dir, dctcp=None, vegas=None, timely=None, hopeSum=None, hopeMax=None, \
-                        hopeMaxq=None, hopeMaxqd=None, hopeMaxe=None, hopeMaxed=None, \
-                        hopeSumq=None, hopeSumqd=None, hopeSume=None, hopeSumed=None, \
-                        hopeSqu=None, hopeSquq=None):
-
+                hopeMaxq=None, hopeMaxqd=None, hopeMaxe=None, hopeMaxed=None, \
+                hopeSumq=None, hopeSumqd=None, hopeSume=None, hopeSumed=None, \
+                hopeSqu=None, hopeSquq=None):
+    """
+    Plot the given flow completion times in the same figure for easier comparison
+    """
     f_sizes = ['Short', 'Mid-Length', 'Long']    
     allFCT_file = out_dir+'All.fct_benchmark.png'
 
@@ -474,14 +479,13 @@ def plot_allFCT(out_dir, dctcp=None, vegas=None, timely=None, hopeSum=None, hope
     print "Saved plot: ", allFCT_file
     plt.close()
 
-"""
-Report the given flow completion times of algorithms for 1 client simulations
-"""
 def print_1ClientFCT(out_dir, dctcp=None, vegas=None, timely=None, hopeSum=None, hopeMax=None, \
-                        hopeMaxq=None, hopeMaxqd=None, hopeMaxe=None, hopeMaxed=None, \
-                        hopeSumq=None, hopeSumqd=None, hopeSume=None, hopeSumed=None, \
-                        hopeSqu=None, hopeSquq=None):
-
+                     hopeMaxq=None, hopeMaxqd=None, hopeMaxe=None, hopeMaxed=None, \
+                     hopeSumq=None, hopeSumqd=None, hopeSume=None, hopeSumed=None, \
+                     hopeSqu=None, hopeSquq=None):
+    """
+    Report the given flow completion times of algorithms for 1 client simulations
+    """
     f_sizes = ['Short', 'Mid-Length', 'Long']    
     allFCT_file = out_dir+'All.fct_benchmark.txt'
 
@@ -585,7 +589,7 @@ def print_1ClientFCT(out_dir, dctcp=None, vegas=None, timely=None, hopeSum=None,
     report += "*All the times are given in miliseconds.\n\n"
 
     print(report)
-    fo = open(allFCT_file,"w")
-    fo.write(report) 
-    fo.close() 
-    print "Saved report: ", allFCT_file
+    with open(allFCT_file,"w") as fo:
+        fo.write(report) 
+
+    print("Saved report to %s" % allFCT_file)
