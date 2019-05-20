@@ -265,7 +265,7 @@ if {[string compare $congestion_alg "dctcp"] == 0} {
             $ftp($conn_idx) attach-agent $tcp($conn_idx)
         }
     }
-    # Timely implementation is also contained in vegas
+    # Timely implementation is also contained in vegas.cc
     Agent/TCP/Vegas instproc recv {rtt_t cong_signal_t hopCnt_t} {
         global ns rttFile        
         
