@@ -14,7 +14,7 @@ set congestion_alg [lindex $argv 0]
 set out_dir [lindex $argv 1]
 
 set out_rtt_file $out_dir$congestion_alg.rtt.out
-set rttFile [open $out_rtt_file w]
+set rtt_file [open $out_rtt_file w]
 set out_q_file $out_dir$congestion_alg.queue.out
 
 # Number of switches along the skinny path
@@ -188,14 +188,14 @@ if {[string compare $congestion_alg "dctcp"] == 0} {
     
     # The following procedure is called whenever a packet is received 
     Agent/TCP/FullTcp instproc recv {rtt_t} {
-	global ns rttFile       
+	global ns rtt_file       
 	
 	$self instvar node_
 	if {[$node_ id] == 0 } {
 	    set now [$ns now]
 	    set rtt [$self set rtt_]
 	
-	    puts $rttFile "$now $rtt"
+	    puts $rtt_file "$now $rtt"
 	}
     }
 
@@ -286,14 +286,14 @@ if {[string compare $congestion_alg "dctcp"] == 0} {
     $my_ftp set type_ FTP
     
     Agent/TCP/Vegas instproc recv {rtt_t cong_signal_t hop_cnt_t} {
-	global ns rttFile       
+	global ns rtt_file       
 	
 	$self instvar node_
 	if {[$node_ id] == 0 } {
 	    set now [$ns now]
 	    set rtt [expr $rtt_t*1000000.0]
 	
-	    puts $rttFile "$now $rtt"
+	    puts $rtt_file "$now $rtt"
 	}
     }
 }
@@ -389,12 +389,12 @@ $ns at $run_time "finish"
 
 #Define a 'finish' procedure
 proc finish {} {
-    global congestion_alg ns tracefile rttFile qf_size out_dir nf
+    global congestion_alg ns tracefile rtt_file qf_size out_dir nf
     $ns flush-trace
     # Close the NAM trace file
     close $nf
     close $tracefile
-    close $rttFile 
+    close $rtt_file 
     close $qf_size
     # Execute NAM on the trace file
     exec nam $out_dir$congestion_alg.nam &

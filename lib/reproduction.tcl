@@ -15,7 +15,7 @@ set congestion_alg [lindex $argv 0]
 set repro_dir [lindex $argv 1]
 
 set out_rtt_file $repro_dir$congestion_alg.rtt.out
-set rttFile [open $out_rtt_file w]
+set rtt_file [open $out_rtt_file w]
 set out_q_file $repro_dir$congestion_alg.queue.out
 
 set num_clients [lindex $argv 2]
@@ -164,19 +164,15 @@ if {[string compare $congestion_alg "dctcp"] == 0} {
     }
     # The following procedure is called when ever a packet is received 
     Agent/TCP/FullTcp instproc recv {rtt_t} {
-    global ns rttFile 
-    #puts $rttFile "A packet received"       
-    
-    $self instvar node_
-    if {[$node_ id] == 2 } {
-        set now [$ns now]
-        set rtt [$self set rtt_]
-        #set rtt [$self set t_rtt_]
-    
-        puts $rttFile "$now $rtt"
-        #puts $rttFile "[$node_ id] $now $rtt"
-        #puts $rttFile "[$self set node] $now $rtt"
-    }
+        global ns rtt_file 
+        
+        $self instvar node_
+        if {[$node_ id] == 2 } {
+            set now [$ns now]
+            set rtt [$self set rtt_]
+        
+            puts $rtt_file "$now $rtt"
+        }
     }
 
 } elseif {[string compare $congestion_alg "vegas"] == 0} {    
@@ -211,7 +207,7 @@ if {[string compare $congestion_alg "dctcp"] == 0} {
         }
     }
     Agent/TCP/Vegas instproc recv {rtt_t cong_signal_t hopCnt_t} {
-        global ns rttFile       
+        global ns rtt_file       
         
         $self instvar node_
         if {[$node_ id] == 2 } {
@@ -219,9 +215,7 @@ if {[string compare $congestion_alg "dctcp"] == 0} {
             #set rtt [$self set v_rtt_]
             set rtt [expr $rtt_t*1000000.0]
         
-            puts $rttFile "$now $rtt"
-            #puts $rttFile "[$node_ id] $now $rtt"
-            #puts $rttFile "[$self set node] $now $rtt"
+            puts $rtt_file "$now $rtt"
         }
     }
 
@@ -267,18 +261,14 @@ if {[string compare $congestion_alg "dctcp"] == 0} {
     }
     # Timely implementation is also contained in vegas.cc
     Agent/TCP/Vegas instproc recv {rtt_t cong_signal_t hopCnt_t} {
-        global ns rttFile        
+        global ns rtt_file        
         
         $self instvar node_
         if {[$node_ id] == 2 } {
             set now [$ns now]
-            #set rtt [$self set v_rtt_]
             set rtt [expr $rtt_t*1000000.0]
         
-            puts $rttFile "$now $rtt"
-            #puts "$now rtt: $rtt cwnd: [$self set cwnd_] rate: [$self set timely_rate_]"
-            #puts $rttFile "[$node_ id] $now $rtt"
-            #puts $rttFile "[$self set node] $now $rtt"
+            puts $rtt_file "$now $rtt"
         }
     }
 
@@ -328,7 +318,7 @@ $RVstart set min_ 0.0001
 $RVstart set max_ 0.0020
 $RVstart use-rng $rng
 
-#Schedule events for the FTP agents
+# Schedule events for the FTP agents
 for {set i 0} {$i < $num_clients} {incr i} {
     for {set j 0} {$j < $num_conn_per_client} {incr j} {
     set conn_idx [expr $i*$num_conn_per_client+$j]        
@@ -340,27 +330,17 @@ for {set i 0} {$i < $num_clients} {incr i} {
     }
 }
 
-#proc plotRTT {tcpSource file} {
-#   global ns 
-#   set time 0.00002
-#   set now [$ns now]
-#   set rtt [$tcpSource set rtt_]
-#   puts $file "$now $rtt"
-#   $ns at [expr $now+$time] "plotRTT $tcpSource $file"
-#}
-#$ns at 0.1 "plotRTT $tcp(0) $rttFile"
-
-#Call the finish procedure after run_time seconds of simulation time
+# Call the finish procedure after run_time seconds of simulation time
 $ns at $run_time "finish"
 
-#Define a 'finish' procedure
+# Define a 'finish' procedure
 proc finish {} {
-    global congestion_alg ns nf tracefile rttFile qf_size repro_dir
+    global congestion_alg ns nf tracefile rtt_file qf_size repro_dir
     $ns flush-trace
     # Close the NAM trace file
     close $nf
     close $tracefile
-    close $rttFile 
+    close $rtt_file 
     close $qf_size
     # Execute NAM on the trace file
     exec nam $repro_dir$congestion_alg.nam &

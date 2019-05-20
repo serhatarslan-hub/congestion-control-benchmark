@@ -14,7 +14,7 @@ set congestion_alg [lindex $argv 0]
 set out_dir [lindex $argv 1]
 
 set out_rtt_file $out_dir$congestion_alg.rtt.out
-set rttFile [open $out_rtt_file w]
+set rtt_file [open $out_rtt_file w]
 set out_q_file $out_dir$congestion_alg.queue.out
 
 set num_clients [lindex $argv 2]
@@ -121,15 +121,15 @@ for {set i 0} {$i < $num_leafs} {incr i} {
     $ns duplex-link $leaf_switch($i) $spine_switch $spine_link_cap $link_delay $queue_type
 
     for {set j 0} {$j < $TORperLeaf} {incr j} {
-   	set conn_idx [expr $i*$TORperLeaf+$j]
-	$ns duplex-link $TOR_switch($conn_idx) $leaf_switch($i) $link_cap $link_delay $queue_type
+    set conn_idx [expr $i*$TORperLeaf+$j]
+    $ns duplex-link $TOR_switch($conn_idx) $leaf_switch($i) $link_cap $link_delay $queue_type
     }
 }
 
 # Create links between the clients and the TORs
 for {set i 0} {$i < $num_TORs} {incr i} {
     for {set j 0} {$j < $clientPerTOR} {incr j} {
-	set conn_idx [expr $i*$clientPerTOR+$j]
+    set conn_idx [expr $i*$clientPerTOR+$j]
 
         $ns duplex-link $client($conn_idx) $TOR_switch($i) $client_link_cap $link_delay $queue_type
     }
@@ -138,7 +138,7 @@ for {set i 0} {$i < $num_TORs} {incr i} {
 ##Monitor the queue for link. (for NAM)
 #for {set i 0} {$i < $num_TORs} {incr i} {
 #    for {set j 0} {$j < $clientPerTOR} {incr j} {
-#	set conn_idx [expr $i*$clientPerTOR+$j]
+#   set conn_idx [expr $i*$clientPerTOR+$j]
 #
 #        $ns duplex-link-op $client($conn_idx) $TOR_switch($i) queuePos 0.5
 #    }
@@ -181,18 +181,18 @@ if {[string compare $congestion_alg "dctcp"] == 0} {
 
     for {set i 0} {$i < $num_clients} {incr i} {
         for {set j 0} {$j < $num_conn_per_client} {incr j} {
-	    set conn_idx [expr $i*$num_conn_per_client+$j] 
-	    set dst($conn_idx) [expr (int(floor([$RV_host value])))] 
+        set conn_idx [expr $i*$num_conn_per_client+$j] 
+        set dst($conn_idx) [expr (int(floor([$RV_host value])))] 
 
-	    if {$i == $dst($conn_idx)} {
-		if {$i == 0} {
-		    set dst($conn_idx) [expr $dst($conn_idx)+1]
-		} else {
-		    set dst($conn_idx) [expr $dst($conn_idx)-1]
-		}
-	    }    
-	
-	    set tcp($conn_idx) [new Agent/TCP/FullTcp]
+        if {$i == $dst($conn_idx)} {
+        if {$i == 0} {
+            set dst($conn_idx) [expr $dst($conn_idx)+1]
+        } else {
+            set dst($conn_idx) [expr $dst($conn_idx)-1]
+        }
+        }    
+    
+        set tcp($conn_idx) [new Agent/TCP/FullTcp]
             set sink($conn_idx) [new Agent/TCP/FullTcp]
             $ns attach-agent $client($i) $tcp($conn_idx)
             $ns attach-agent $client($dst($conn_idx)) $sink($conn_idx)
@@ -205,216 +205,216 @@ if {[string compare $congestion_alg "dctcp"] == 0} {
     }
     for {set i 0} {$i < $num_clients} {incr i} {
         for {set j 0} {$j < $num_conn_per_client} {incr j} {
-	    set conn_idx [expr $i*$num_conn_per_client+$j]
+        set conn_idx [expr $i*$num_conn_per_client+$j]
 
-	    # set up FTP connections
-	    set ftp($conn_idx) [$tcp($conn_idx) attach-source FTP]
+        # set up FTP connections
+        set ftp($conn_idx) [$tcp($conn_idx) attach-source FTP]
             $ftp($conn_idx) set type_ FTP 
 
         }
     }
     # The following procedure is called whenever a packet is received 
     Agent/TCP/FullTcp instproc recv {rtt_t} {
-	global ns rttFile       
-	
-	$self instvar node_
-	if {[$node_ id] != -1 } {
-	    set now [$ns now]
-	    set rtt [$self set rtt_]
-	
-	    puts $rttFile "$now $rtt"
-	}
+    global ns rtt_file       
+    
+    $self instvar node_
+    if {[$node_ id] != -1 } {
+        set now [$ns now]
+        set rtt [$self set rtt_]
+    
+        puts $rtt_file "$now $rtt"
+    }
     }
 
 } else {
     for {set i 0} {$i < $num_clients} {incr i} {
         for {set j 0} {$j < $num_conn_per_client} {incr j} {
-	    set conn_idx [expr $i*$num_conn_per_client+$j]
-	    set dst($conn_idx) [expr (int(floor([$RV_host value])))]  
+        set conn_idx [expr $i*$num_conn_per_client+$j]
+        set dst($conn_idx) [expr (int(floor([$RV_host value])))]  
 
-	    if {$i == $dst($conn_idx)} {
-		if {$i == 0} {
-		    set dst($conn_idx) [expr $dst($conn_idx)+1]
-		} else {
-		    set dst($conn_idx) [expr $dst($conn_idx)-1]
-		}
-	    }      
-	
-	    set tcp($conn_idx) [new Agent/TCP/Vegas]
+        if {$i == $dst($conn_idx)} {
+        if {$i == 0} {
+            set dst($conn_idx) [expr $dst($conn_idx)+1]
+        } else {
+            set dst($conn_idx) [expr $dst($conn_idx)-1]
+        }
+        }      
+    
+        set tcp($conn_idx) [new Agent/TCP/Vegas]
             set sink($conn_idx) [new Agent/TCPSink]
             $ns attach-agent $client($i) $tcp($conn_idx)
             $ns attach-agent $client($dst($conn_idx)) $sink($conn_idx)
             $ns connect $tcp($conn_idx) $sink($conn_idx)
 
-	    $tcp($conn_idx) set timely_packetSize_ [expr $pktSize+40]
-	    $tcp($conn_idx) set timely_ewma_alpha_ $timely_ewma_alpha
-	    $tcp($conn_idx) set timely_t_low_ $timely_t_low
-	    $tcp($conn_idx) set timely_t_high_ $timely_t_high
-	    $tcp($conn_idx) set timely_additiveInc_ $timely_additiveInc
-	    $tcp($conn_idx) set timely_decreaseFac_ $timely_decreaseFac
-	    $tcp($conn_idx) set timely_HAI_thresh_ $timely_HAI_thresh
-	    $tcp($conn_idx) set timely_rate_ $timely_rate
+        $tcp($conn_idx) set timely_packetSize_ [expr $pktSize+40]
+        $tcp($conn_idx) set timely_ewma_alpha_ $timely_ewma_alpha
+        $tcp($conn_idx) set timely_t_low_ $timely_t_low
+        $tcp($conn_idx) set timely_t_high_ $timely_t_high
+        $tcp($conn_idx) set timely_additiveInc_ $timely_additiveInc
+        $tcp($conn_idx) set timely_decreaseFac_ $timely_decreaseFac
+        $tcp($conn_idx) set timely_HAI_thresh_ $timely_HAI_thresh
+        $tcp($conn_idx) set timely_rate_ $timely_rate
         }
     }
 
     if {[string compare $congestion_alg "vegas"] == 0} {    
         for {set i 0} {$i < $num_clients} {incr i} {
             for {set j 0} {$j < $num_conn_per_client} {incr j} {
-	        set conn_idx [expr $i*$num_conn_per_client+$j]        
+            set conn_idx [expr $i*$num_conn_per_client+$j]        
 
-	        $tcp($conn_idx) set timely_ 0
-	        $tcp($conn_idx) set hope_type_ 0
+            $tcp($conn_idx) set timely_ 0
+            $tcp($conn_idx) set hope_type_ 0
             }
         }
     } elseif {[string compare $congestion_alg "timely"] == 0} {    
         for {set i 0} {$i < $num_clients} {incr i} {
             for {set j 0} {$j < $num_conn_per_client} {incr j} {
-	        set conn_idx [expr $i*$num_conn_per_client+$j]        
+            set conn_idx [expr $i*$num_conn_per_client+$j]        
 
-	        $tcp($conn_idx) set timely_ 1
-	        $tcp($conn_idx) set hope_type_ 0
+            $tcp($conn_idx) set timely_ 1
+            $tcp($conn_idx) set hope_type_ 0
             }
         }
     } elseif {[string compare $congestion_alg "hope_sum"] == 0} {    
         for {set i 0} {$i < $num_clients} {incr i} {
             for {set j 0} {$j < $num_conn_per_client} {incr j} {
-	        set conn_idx [expr $i*$num_conn_per_client+$j]        
+            set conn_idx [expr $i*$num_conn_per_client+$j]        
 
-	        $tcp($conn_idx) set hope_type_ 2
-	        $tcp($conn_idx) set hope_collector_ 0
+            $tcp($conn_idx) set hope_type_ 2
+            $tcp($conn_idx) set hope_collector_ 0
             }
         }
     } elseif {[string compare $congestion_alg "hope_max"] == 0} {    
         for {set i 0} {$i < $num_clients} {incr i} {
             for {set j 0} {$j < $num_conn_per_client} {incr j} {
-	        set conn_idx [expr $i*$num_conn_per_client+$j]        
+            set conn_idx [expr $i*$num_conn_per_client+$j]        
 
-	        $tcp($conn_idx) set hope_type_ 1
-	        $tcp($conn_idx) set hope_collector_ 0
+            $tcp($conn_idx) set hope_type_ 1
+            $tcp($conn_idx) set hope_collector_ 0
             }
         }
     } elseif {[string compare $congestion_alg "hope_maxq"] == 0} {    
         for {set i 0} {$i < $num_clients} {incr i} {
             for {set j 0} {$j < $num_conn_per_client} {incr j} {
-	        set conn_idx [expr $i*$num_conn_per_client+$j]        
+            set conn_idx [expr $i*$num_conn_per_client+$j]        
 
-	        $tcp($conn_idx) set hope_type_ 1
-	        $tcp($conn_idx) set hope_collector_ 1
+            $tcp($conn_idx) set hope_type_ 1
+            $tcp($conn_idx) set hope_collector_ 1
             }
         }
     } elseif {[string compare $congestion_alg "hope_maxqd"] == 0} {    
         for {set i 0} {$i < $num_clients} {incr i} {
             for {set j 0} {$j < $num_conn_per_client} {incr j} {
-	        set conn_idx [expr $i*$num_conn_per_client+$j]        
+            set conn_idx [expr $i*$num_conn_per_client+$j]        
 
-	        $tcp($conn_idx) set hope_type_ 1
-	        $tcp($conn_idx) set hope_collector_ 2
+            $tcp($conn_idx) set hope_type_ 1
+            $tcp($conn_idx) set hope_collector_ 2
             }
         }
     } elseif {[string compare $congestion_alg "hope_maxe"] == 0} {    
         for {set i 0} {$i < $num_clients} {incr i} {
             for {set j 0} {$j < $num_conn_per_client} {incr j} {
-	        set conn_idx [expr $i*$num_conn_per_client+$j]        
+            set conn_idx [expr $i*$num_conn_per_client+$j]        
 
-	        $tcp($conn_idx) set hope_type_ 1
-	        $tcp($conn_idx) set hope_collector_ 3
-	        $tcp($conn_idx) set timely_t_low_ -10
+            $tcp($conn_idx) set hope_type_ 1
+            $tcp($conn_idx) set hope_collector_ 3
+            $tcp($conn_idx) set timely_t_low_ -10
             }
         }
     } elseif {[string compare $congestion_alg "hope_maxed"] == 0} {    
         for {set i 0} {$i < $num_clients} {incr i} {
             for {set j 0} {$j < $num_conn_per_client} {incr j} {
-	        set conn_idx [expr $i*$num_conn_per_client+$j]        
+            set conn_idx [expr $i*$num_conn_per_client+$j]        
 
-	        $tcp($conn_idx) set hope_type_ 1
-	        $tcp($conn_idx) set hope_collector_ 4
-	        $tcp($conn_idx) set timely_t_low_ -10
+            $tcp($conn_idx) set hope_type_ 1
+            $tcp($conn_idx) set hope_collector_ 4
+            $tcp($conn_idx) set timely_t_low_ -10
             }
         }
     } elseif {[string compare $congestion_alg "hope_sumq"] == 0} {    
         for {set i 0} {$i < $num_clients} {incr i} {
             for {set j 0} {$j < $num_conn_per_client} {incr j} {
-	        set conn_idx [expr $i*$num_conn_per_client+$j]        
+            set conn_idx [expr $i*$num_conn_per_client+$j]        
 
-	        $tcp($conn_idx) set hope_type_ 2
-	        $tcp($conn_idx) set hope_collector_ 1
+            $tcp($conn_idx) set hope_type_ 2
+            $tcp($conn_idx) set hope_collector_ 1
             }
         }
     } elseif {[string compare $congestion_alg "hope_sumqd"] == 0} {    
         for {set i 0} {$i < $num_clients} {incr i} {
             for {set j 0} {$j < $num_conn_per_client} {incr j} {
-	        set conn_idx [expr $i*$num_conn_per_client+$j]        
+            set conn_idx [expr $i*$num_conn_per_client+$j]        
 
-	        $tcp($conn_idx) set hope_type_ 2
-	        $tcp($conn_idx) set hope_collector_ 2
+            $tcp($conn_idx) set hope_type_ 2
+            $tcp($conn_idx) set hope_collector_ 2
             }
         }
     } elseif {[string compare $congestion_alg "hope_sume"] == 0} {    
         for {set i 0} {$i < $num_clients} {incr i} {
             for {set j 0} {$j < $num_conn_per_client} {incr j} {
-	        set conn_idx [expr $i*$num_conn_per_client+$j]        
+            set conn_idx [expr $i*$num_conn_per_client+$j]        
 
-	        $tcp($conn_idx) set hope_type_ 2
-	        $tcp($conn_idx) set hope_collector_ 3
-	        $tcp($conn_idx) set timely_t_low_ -10
+            $tcp($conn_idx) set hope_type_ 2
+            $tcp($conn_idx) set hope_collector_ 3
+            $tcp($conn_idx) set timely_t_low_ -10
             }
         }
     } elseif {[string compare $congestion_alg "hope_sumed"] == 0} {    
         for {set i 0} {$i < $num_clients} {incr i} {
             for {set j 0} {$j < $num_conn_per_client} {incr j} {
-	        set conn_idx [expr $i*$num_conn_per_client+$j]        
+            set conn_idx [expr $i*$num_conn_per_client+$j]        
 
-	        $tcp($conn_idx) set hope_type_ 2
-	        $tcp($conn_idx) set hope_collector_ 4
-	        $tcp($conn_idx) set timely_t_low_ -10
+            $tcp($conn_idx) set hope_type_ 2
+            $tcp($conn_idx) set hope_collector_ 4
+            $tcp($conn_idx) set timely_t_low_ -10
             }
         }
     } elseif {[string compare $congestion_alg "hope_squ"] == 0} {    
         for {set i 0} {$i < $num_clients} {incr i} {
             for {set j 0} {$j < $num_conn_per_client} {incr j} {
-	        set conn_idx [expr $i*$num_conn_per_client+$j]        
+            set conn_idx [expr $i*$num_conn_per_client+$j]        
 
-	        $tcp($conn_idx) set hope_type_ 3
-	        $tcp($conn_idx) set hope_collector_ 0
+            $tcp($conn_idx) set hope_type_ 3
+            $tcp($conn_idx) set hope_collector_ 0
             }
         }
     } elseif {[string compare $congestion_alg "hope_squq"] == 0} {    
         for {set i 0} {$i < $num_clients} {incr i} {
             for {set j 0} {$j < $num_conn_per_client} {incr j} {
-	        set conn_idx [expr $i*$num_conn_per_client+$j]        
+            set conn_idx [expr $i*$num_conn_per_client+$j]        
 
-	        $tcp($conn_idx) set hope_type_ 3
-	        $tcp($conn_idx) set hope_collector_ 1
+            $tcp($conn_idx) set hope_type_ 3
+            $tcp($conn_idx) set hope_collector_ 1
             }
         }
     }
 
     for {set i 0} {$i < $num_clients} {incr i} {
         for {set j 0} {$j < $num_conn_per_client} {incr j} {
-	    set conn_idx [expr $i*$num_conn_per_client+$j]
+        set conn_idx [expr $i*$num_conn_per_client+$j]
 
-	    # set up FTP connections
-	    set ftp($conn_idx) [$tcp($conn_idx) attach-source FTP]
+        # set up FTP connections
+        set ftp($conn_idx) [$tcp($conn_idx) attach-source FTP]
             $ftp($conn_idx) set type_ FTP 
 
-	    ## set up FTP connections
-	    #set ftp($conn_idx) [new Application/FTP]
-	    #$ftp($conn_idx) set packet_Size_ $pktSize
-	    #$ftp($conn_idx) set interval_ 0.000001
+        ## set up FTP connections
+        #set ftp($conn_idx) [new Application/FTP]
+        #$ftp($conn_idx) set packet_Size_ $pktSize
+        #$ftp($conn_idx) set interval_ 0.000001
             #$ftp($conn_idx) set type_ FTP 
-	    #$ftp($conn_idx) attach-agent $tcp($conn_idx)
+        #$ftp($conn_idx) attach-agent $tcp($conn_idx)
         }
     }
     Agent/TCP/Vegas instproc recv {rtt_t cong_signal_t hop_cnt_t} {
-	global ns rttFile       
-	
-	$self instvar node_
-	if {[$node_ id] != -1 } {
-	    set now [$ns now]
-	    set rtt [expr $rtt_t*1000000.0]
-	
-	    puts $rttFile "$now $rtt"
-	}
+    global ns rtt_file       
+    
+    $self instvar node_
+    if {[$node_ id] != -1 } {
+        set now [$ns now]
+        set rtt [expr $rtt_t*1000000.0]
+    
+        puts $rtt_file "$now $rtt"
+    }
     }
 }
 
@@ -441,13 +441,13 @@ $RV_beg_fin use-rng $rng2
 #Schedule events for the FTP agents
 for {set i 0} {$i < $num_clients} {incr i} {
     for {set j 0} {$j < $num_conn_per_client} {incr j} {
-	set conn_idx [expr $i*$num_conn_per_client+$j]        
-	
-	set startT($conn_idx) [expr [$RV_beg_fin value]]
-	$ns at $startT($conn_idx) "$ftp($conn_idx) start"
-	#$ns at 0.0001 "$ftp($conn_idx) start"
-	set finT($conn_idx) [expr [$RV_beg_fin value]]
-	$ns at [expr $run_time - $finT($conn_idx)] "$ftp($conn_idx) stop"
+    set conn_idx [expr $i*$num_conn_per_client+$j]        
+    
+    set startT($conn_idx) [expr [$RV_beg_fin value]]
+    $ns at $startT($conn_idx) "$ftp($conn_idx) start"
+    #$ns at 0.0001 "$ftp($conn_idx) start"
+    set finT($conn_idx) [expr [$RV_beg_fin value]]
+    $ns at [expr $run_time - $finT($conn_idx)] "$ftp($conn_idx) stop"
         #$ns at [expr $run_time - 0.001] "$ftp($conn_idx) stop"
     }
 }
@@ -457,12 +457,12 @@ $ns at $run_time "finish"
 
 #Define a 'finish' procedure
 proc finish {} {
-    global congestion_alg ns tracefile rttFile qf_size out_dir
+    global congestion_alg ns tracefile rtt_file qf_size out_dir
     $ns flush-trace
     # Close the NAM trace file
 #    close $nf
     close $tracefile
-    close $rttFile 
+    close $rtt_file 
     close $qf_size
     # Execute NAM on the trace file
 #    exec nam $out_dir$congestion_alg.nam &
