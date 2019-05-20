@@ -6,6 +6,9 @@ import argparse
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+from collections import defaultdict
+from random import sample
+
 
 def plot_rtt(algo_name, out_dir, log_plot=True):
     fmat = r"(?P<time>[\d.]*) (?P<rtt>[\d.]*)"
@@ -34,7 +37,7 @@ def plot_rtt(algo_name, out_dir, log_plot=True):
     if(log_plot):
         plt.yscale('log')
     plt.savefig(out_file)
-    print "Saved plot: ", out_file
+    print("Saved plot: %s" % out_file)
     plt.close()
 
     # Compute the CDF
@@ -103,6 +106,55 @@ def plot_allRTTcdf(out_dir, log_plot=True, dctcp=None, vegas=None, timely=None,
     #plt.xlim(0,700)
     plt.savefig(allCDF_file)
     print "Saved plot: ", allCDF_file
+    plt.close()
+
+
+def plot_rate(algo_name, num_clients, out_dir, conn_per_client=1, nplot=4):
+    """
+    Plots a sample of the output rates for the given connections to reproduce
+    Figure 13 of the TIMELY paper.
+
+    Assumes that connection IDs are numbered
+    {0, ..., num_clients*conn_per_client-1} client-by-client.
+    """
+    nflows = num_clients*conn_per_client
+
+    rate_file = out_dir+algo_name+'.rate.out'
+    out_file = out_dir+algo_name+'.rate.png'
+
+    rates = defaultdict(lambda: ([])) 
+
+    with open(rate_file, "r") as f:
+        for line in f:
+            time, fid, rate = line.split()
+            t = float(time)
+            f = int(fid)
+            r = float(rate) / 1000000.0  # in mbps
+            rates[f].append((t, r))
+
+    rates = [np.array(rates[f]) for f in range(nflows)]
+    rates = [r for r in rates if r.shape[0] > 0]
+    print("Plotting rates. %d of %d flows had rates set" % (len(rates), nflows))
+
+    # Just pick a subset of nplot
+    plot_rates = sample(rates, nplot)
+
+    plt.figure()
+    for idx, data in enumerate(plot_rates):
+        print(data.shape)
+        mean = np.mean(data[:, 1])
+        std = np.std(data[:, 1])
+        label = ("(%d, %d)" % (round(mean), round(std)))
+        plt.plot(data[:, 0], data[:, 1], linestyle='-', marker='', label=label)
+
+    plt.yscale('log')
+    plt.ylabel('Rate (Mbps)')
+    plt.xlabel('Time (sec)')
+    plt.title('Queue size for '+algo_name+' experiment')
+    plt.grid()
+    plt.legend(bbox_to_anchor=(1.04,0.5), loc="center left", borderaxespad=0)
+    plt.savefig(out_file, bbox_inches="tight")
+    print("Saved plot: %s" % out_file)
     plt.close()
 
 
@@ -181,7 +233,7 @@ def plot_throughput(algo_name, num_clients, out_dir, conn_per_client=1):
     #plt.legend(bbox_to_anchor=(1.04,0.5), loc="center left", borderaxespad=0)
     plt.grid()
     plt.savefig(out_file, bbox_inches="tight")
-    print "Saved plot: ", out_file
+    print("Saved plot: %s" % out_file)
     plt.close()
 
     return times, total_thp
@@ -279,7 +331,7 @@ def plot_queue(algo_name, out_dir):
     plt.title('Queue size for '+algo_name+' experiment')
     plt.grid()
     plt.savefig(out_file, bbox_inches="tight")
-    print "Saved plot: ", out_file
+    print("Saved plot: %s" % out_file)
     plt.close()
 
 def get_fct(algo_name, num_clients, out_dir):
