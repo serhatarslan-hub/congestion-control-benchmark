@@ -147,7 +147,7 @@ def plot_rate(algo_name, num_clients, out_dir, conn_per_client=1, nplot=4):
         label = ("(%d, %d)" % (round(mean), round(std)))
         plt.plot(data[:, 0], data[:, 1], linestyle='-', marker='', label=label)
 
-    plt.yscale('log')
+    plt.ylim([0,750])
     plt.ylabel('Rate (Mbps)')
     plt.xlabel('Time (sec)')
     plt.title('Queue size for '+algo_name+' experiment')
