@@ -268,15 +268,16 @@ if {[string compare $congestion_alg "dctcp"] == 0} {
         
         $self instvar node_
         set now [$ns now]
-        if {[$node_ id] == 2 } {
+        set node_id [$node_ id]
+        if {$node_id == 2 } {
             set rtt [expr $rtt_t * 1000000.0]
             puts $rtt_file "$now $rtt"
         }
 
-        # Write current timely send rate, in bits!
+        # Write current timely send rate, in bits per second!
         set timely_rate [expr $timely_rate_t * $pktSize * 8.0]
     
-        puts $rate_file "$now $node_ id $timely_rate"
+        puts $rate_file "$now $node_id $timely_rate"
     }
 
 } else {
