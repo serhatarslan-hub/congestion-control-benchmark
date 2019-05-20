@@ -6,8 +6,8 @@
 # in "TIMELY: RTT-based Congestion Control for the Datacenter"
 # paper by Radhika Mittal et. al.
 
-if {$argc != 3} {
-    puts "wrong number of arguments, expected 3, got $argc"
+if {$argc != 4} {
+    puts "wrong number of arguments, expected 4, got $argc"
     exit 0
 }
 
@@ -19,7 +19,7 @@ set rttFile [open $out_rtt_file w]
 set out_q_file $repro_dir$congestion_alg.queue.out
 
 set num_clients [lindex $argv 2]
-set num_conn_per_client 4
+set num_conn_per_client [lindex $argv 3]
 
 # samp_int (sec)
 set samp_int 0.0001
@@ -65,9 +65,9 @@ for {set i 0} {$i < $num_clients} {incr i} {
 }
 
 set TOR_switch_node [$ns node]
-$ns at 0.001 "$TOR_switch_node label \"TOR\""
+$ns at 0 "$TOR_switch_node label \"TOR\""
 set server_node [$ns node]
-$ns at 0.001 "$server_node label \"Server\""
+$ns at 0 "$server_node label \"Server\""
 
 # Queue options
 Queue set limit_ $q_size
@@ -139,9 +139,9 @@ if {[string compare $congestion_alg "dctcp"] == 0} {
 
     for {set i 0} {$i < $num_clients} {incr i} {
         for {set j 0} {$j < $num_conn_per_client} {incr j} {
-        set conn_idx [expr $i*$num_conn_per_client+$j]        
+            set conn_idx [expr $i*$num_conn_per_client+$j]        
     
-        set tcp($conn_idx) [new Agent/TCP/FullTcp]
+            set tcp($conn_idx) [new Agent/TCP/FullTcp]
             set sink($conn_idx) [new Agent/TCP/FullTcp]
             $ns attach-agent $client($i) $tcp($conn_idx)
             $ns attach-agent $server_node $sink($conn_idx)
@@ -154,10 +154,10 @@ if {[string compare $congestion_alg "dctcp"] == 0} {
     }
     for {set i 0} {$i < $num_clients} {incr i} {
         for {set j 0} {$j < $num_conn_per_client} {incr j} {
-        set conn_idx [expr $i*$num_conn_per_client+$j]
+            set conn_idx [expr $i*$num_conn_per_client+$j]
 
-        # set up FTP connections
-        set ftp($conn_idx) [$tcp($conn_idx) attach-source FTP]
+            # set up FTP connections
+            set ftp($conn_idx) [$tcp($conn_idx) attach-source FTP]
             $ftp($conn_idx) set type_ FTP 
 
         }
@@ -206,7 +206,7 @@ if {[string compare $congestion_alg "dctcp"] == 0} {
         set ftp($conn_idx) [new Application/FTP]
         $ftp($conn_idx) set packet_Size_ $pktSize
         $ftp($conn_idx) set interval_ 0.000001
-            $ftp($conn_idx) set type_ FTP 
+        $ftp($conn_idx) set type_ FTP 
         $ftp($conn_idx) attach-agent $tcp($conn_idx)
         }
     }
@@ -249,7 +249,7 @@ if {[string compare $congestion_alg "dctcp"] == 0} {
             $tcp($conn_idx) set timely_additiveInc_ 20000000.0
             $tcp($conn_idx) set timely_decreaseFac_ 0.8
             $tcp($conn_idx) set timely_HAI_thresh_ 5
-            $tcp($conn_idx) set timely_rate_ 7000000000
+            $tcp($conn_idx) set timely_rate_ 500000000
 
         }
     }
