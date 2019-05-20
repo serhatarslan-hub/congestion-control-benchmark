@@ -275,9 +275,7 @@ if {[string compare $congestion_alg "dctcp"] == 0} {
         }
 
         # Write current timely send rate, in bits per second!
-        set timely_rate [expr $timely_rate_t * $pktSize * 8.0]
-    
-        puts $rate_file "$now $node_id $timely_rate"
+        puts $rate_file "$now $node_id $timely_rate_t"
     }
 
 } else {
