@@ -208,7 +208,8 @@ if {[string compare $congestion_alg "dctcp"] == 0} {
             $ftp($conn_idx) attach-agent $tcp($conn_idx)
         }
     }
-    Agent/TCP/Vegas instproc recv {rtt_t cong_signal_t hopCnt_t} {
+    # In vegas, timely_rate_ is just ignored. Hack hack hack.
+    Agent/TCP/Vegas instproc recv {rtt_t cong_signal_t hopCnt_t timely_rate_t} {
         global ns rtt_file
         
         $self instvar node_
@@ -263,19 +264,19 @@ if {[string compare $congestion_alg "dctcp"] == 0} {
     }
     # Timely implementation is also contained in vegas.cc
     Agent/TCP/Vegas instproc recv {rtt_t cong_signal_t hopCnt_t timely_rate_t} {
-        global ns rtt_file rate_file      
+        global ns rtt_file rate_file pktSize
         
         $self instvar node_
+        set now [$ns now]
         if {[$node_ id] == 2 } {
-            set now [$ns now]
             set rtt [expr $rtt_t * 1000000.0]
-
-            # Write current timely send rate, in bits!
-            set timely_rate [expr $timely_rate_t * $pktSize * 8.0]
-        
             puts $rtt_file "$now $rtt"
-            puts $rate_file "$now $timely_rate"
         }
+
+        # Write current timely send rate, in bits!
+        set timely_rate [expr $timely_rate_t * $pktSize * 8.0]
+    
+        puts $rate_file "$now $node_ id $timely_rate"
     }
 
 } else {
