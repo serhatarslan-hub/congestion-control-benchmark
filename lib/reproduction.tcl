@@ -34,7 +34,8 @@ set link_delay 5us
 # tcp_window (pkts)
 set tcp_window 10000000
 # run_time (sec)
-set run_time 0.11
+set run_time 1.0
+# 0.11
 # pktSize (bytes)
 set pktSize 1460
 
