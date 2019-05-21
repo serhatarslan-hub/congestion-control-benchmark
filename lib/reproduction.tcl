@@ -28,7 +28,7 @@ set samp_int 0.0001
 # q_size (pkts)
 set q_size 200
 # link_cap (Mbps)
-set link_cap 10Gb
+set link_cap 20Gb
 # link_delay (ms)
 set link_delay 5us
 # tcp_window (pkts)
