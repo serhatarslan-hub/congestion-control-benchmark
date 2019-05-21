@@ -10,7 +10,7 @@ from collections import defaultdict
 from random import sample
 
 
-def plot_rtt(algo_name, out_dir, log_plot=True, nplot=20):
+def plot_rtt(algo_name, out_dir, log_plot=True, nplot=4):
     """
     Plots connection RTTs from nplot sampled connections.
 
@@ -247,15 +247,14 @@ def plot_throughput(algo_name, num_clients, out_dir, conn_per_client=1):
             node_name = ('Client%d_connection_%d' % (i, j))
             plt.plot(times, throughputs[:, i, j], linestyle='-', marker='', label=node_name)
 
-    # Plot total
-    plt.plot(times,total_thp,linestyle='-', marker='', label='Total')
+    # # Plot total
+    # plt.plot(times,total_thp,linestyle='-', marker='', label='Total')
         
-    plt.yscale('log')
     plt.ylabel('Throughput (Mbps)')
     plt.xlabel('Time (sec)')
     plt.title('Throughput for '+algo_name+' experiment')
     #plt.legend(bbox_to_anchor=(1.04,0.5), loc="center left", borderaxespad=0)
-    plt.ylim([0,750])
+    # plt.ylim([0,750])
     plt.grid()
     plt.savefig(out_file, bbox_inches="tight")
     print("Saved plot: %s" % out_file)
