@@ -16,6 +16,8 @@ set repro_dir [lindex $argv 1]
 
 set out_rtt_file $repro_dir$congestion_alg.rtt.out
 set rtt_file [open $out_rtt_file w]
+set out_rate_file $repro_dir$congestion_alg.rate.out
+set rate_file [open $out_rate_file w]
 set out_q_file $repro_dir$congestion_alg.queue.out
 
 set num_clients [lindex $argv 2]
@@ -26,7 +28,7 @@ set samp_int 0.0001
 # q_size (pkts)
 set q_size 200
 # link_cap (Mbps)
-set link_cap 10Gb
+set link_cap 20Gb
 # link_delay (ms)
 set link_delay 5us
 # tcp_window (pkts)
@@ -165,14 +167,11 @@ if {[string compare $congestion_alg "dctcp"] == 0} {
     # The following procedure is called when ever a packet is received 
     Agent/TCP/FullTcp instproc recv {rtt_t} {
         global ns rtt_file 
+        $self instvar fid_
         
-        $self instvar node_
-        if {[$node_ id] == 2 } {
-            set now [$ns now]
-            set rtt [$self set rtt_]
-        
-            puts $rtt_file "$now $rtt"
-        }
+        set now [$ns now]
+        set rtt [$self set rtt_]
+        puts $rtt_file "$now $fid_ $rtt"
     }
 
 } elseif {[string compare $congestion_alg "vegas"] == 0} {    
@@ -196,27 +195,24 @@ if {[string compare $congestion_alg "dctcp"] == 0} {
     }
     for {set i 0} {$i < $num_clients} {incr i} {
         for {set j 0} {$j < $num_conn_per_client} {incr j} {
-        set conn_idx [expr $i*$num_conn_per_client+$j]
+            set conn_idx [expr $i*$num_conn_per_client+$j]
 
-        # set up FTP connections
-        set ftp($conn_idx) [new Application/FTP]
-        $ftp($conn_idx) set packet_Size_ $pktSize
-        $ftp($conn_idx) set interval_ 0.000001
-        $ftp($conn_idx) set type_ FTP 
-        $ftp($conn_idx) attach-agent $tcp($conn_idx)
+            # set up FTP connections
+            set ftp($conn_idx) [new Application/FTP]
+            $ftp($conn_idx) set packet_Size_ $pktSize
+            $ftp($conn_idx) set interval_ 0.000001
+            $ftp($conn_idx) set type_ FTP 
+            $ftp($conn_idx) attach-agent $tcp($conn_idx)
         }
     }
-    Agent/TCP/Vegas instproc recv {rtt_t cong_signal_t hopCnt_t} {
-        global ns rtt_file       
+    # In vegas, timely_rate_ is just ignored. Hack hack hack.
+    Agent/TCP/Vegas instproc recv {rtt_t cong_signal_t hopCnt_t timely_rate_t} {
+        global ns rtt_file
+        $self instvar fid_
         
-        $self instvar node_
-        if {[$node_ id] == 2 } {
-            set now [$ns now]
-            #set rtt [$self set v_rtt_]
-            set rtt [expr $rtt_t*1000000.0]
-        
-            puts $rtt_file "$now $rtt"
-        }
+        set now [$ns now]
+        set rtt [$self set rtt_]
+        puts $rtt_file "$now $fid_ $rtt"
     }
 
 } elseif {[string compare $congestion_alg "timely"] == 0} {    
@@ -260,16 +256,16 @@ if {[string compare $congestion_alg "dctcp"] == 0} {
         }
     }
     # Timely implementation is also contained in vegas.cc
-    Agent/TCP/Vegas instproc recv {rtt_t cong_signal_t hopCnt_t} {
-        global ns rtt_file        
-        
-        $self instvar node_
-        if {[$node_ id] == 2 } {
-            set now [$ns now]
-            set rtt [expr $rtt_t*1000000.0]
-        
-            puts $rtt_file "$now $rtt"
-        }
+    Agent/TCP/Vegas instproc recv {rtt_t cong_signal_t hopCnt_t timely_rate_t} {
+        global ns rtt_file rate_file pktSize
+        $self instvar fid_
+
+        set now [$ns now]
+        set rtt [expr $rtt_t * 1000000.0]
+        puts $rtt_file "$now $fid_ $rtt"
+
+        # Write current timely send rate, in bits per second!
+        puts $rate_file "$now $fid_ $timely_rate_t"
     }
 
 } else {
@@ -291,14 +287,14 @@ if {[string compare $congestion_alg "dctcp"] == 0} {
     }
     for {set i 0} {$i < $num_clients} {incr i} {
         for {set j 0} {$j < $num_conn_per_client} {incr j} {
-        set conn_idx [expr $i*$num_conn_per_client+$j]
+            set conn_idx [expr $i*$num_conn_per_client+$j]
 
-        # set up FTP connections
-        set ftp($conn_idx) [new Application/FTP]
-        $ftp($conn_idx) set packet_Size_ $pktSize
-        $ftp($conn_idx) set interval_ 0.0001
-            $ftp($conn_idx) set type_ FTP 
-        $ftp($conn_idx) attach-agent $tcp($conn_idx)
+            # set up FTP connections
+            set ftp($conn_idx) [new Application/FTP]
+            $ftp($conn_idx) set packet_Size_ $pktSize
+            $ftp($conn_idx) set interval_ 0.0001
+                $ftp($conn_idx) set type_ FTP 
+            $ftp($conn_idx) attach-agent $tcp($conn_idx)
         }
     }
 }
@@ -335,12 +331,13 @@ $ns at $run_time "finish"
 
 # Define a 'finish' procedure
 proc finish {} {
-    global congestion_alg ns nf tracefile rtt_file qf_size repro_dir
+    global congestion_alg ns nf tracefile rtt_file qf_size repro_dir rate_file
     $ns flush-trace
     # Close the NAM trace file
     close $nf
     close $tracefile
-    close $rtt_file 
+    close $rtt_file
+    close $rate_file
     close $qf_size
     # Execute NAM on the trace file
     exec nam $repro_dir$congestion_alg.nam &

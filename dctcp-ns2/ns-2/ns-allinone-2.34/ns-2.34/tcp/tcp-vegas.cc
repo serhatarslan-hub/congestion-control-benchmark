@@ -522,7 +522,7 @@ VegasTcpAgent::recv(Packet *pkt, Handler *)
 		
 		/* Serhat's implementation of instproc recv for TCL scripts */
 		//Tcl::instance().evalf("%s recv %f", this->name(), rtt );
-		Tcl::instance().evalf("%s recv %f %f %d", this->name(), rtt, cong_signal_, iph->HOPE_hop_cnt() );
+		Tcl::instance().evalf("%s recv %f %f %d %f", this->name(), rtt, cong_signal_, iph->HOPE_hop_cnt(), timely_rate_);
 		
    	} else if (tcph->seqno() == last_ack_)  {
 		/* check if a timeout should happen */
