@@ -267,6 +267,7 @@ if {[string compare $congestion_alg "dctcp"] == 0} {
         global ns rtt_file rate_file pktSize
         
         $self instvar node_
+        $self instvar fid_
         set now [$ns now]
         set node_id [$node_ id]
         if {$node_id == 2 } {
@@ -275,7 +276,7 @@ if {[string compare $congestion_alg "dctcp"] == 0} {
         }
 
         # Write current timely send rate, in bits per second!
-        puts $rate_file "$now $node_id $timely_rate_t"
+        puts $rate_file "$now $fid_ $timely_rate_t"
     }
 
 } else {
