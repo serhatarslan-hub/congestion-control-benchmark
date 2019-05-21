@@ -141,11 +141,14 @@ def plot_rate(algo_name, num_clients, out_dir, conn_per_client=1, nplot=4):
 
     plt.figure()
     for idx, data in enumerate(plot_rates):
-        print(data.shape)
         mean = np.mean(data[:, 1])
         std = np.std(data[:, 1])
+
+        smooth = 10
+        y = data[:, 1]
+        y = np.convolve(y, np.ones((smooth,))/smooth, mode='same')
         label = ("(%d, %d)" % (round(mean), round(std)))
-        plt.plot(data[:, 0], data[:, 1], linestyle='-', marker='', label=label)
+        plt.plot(data[:, 0], y, linestyle='-', marker='', label=label)
 
     plt.ylim([0,750])
     plt.ylabel('Rate (Mbps)')
