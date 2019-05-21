@@ -10,38 +10,59 @@ from collections import defaultdict
 from random import sample
 
 
-def plot_rtt(algo_name, out_dir, log_plot=True):
-    fmat = r"(?P<time>[\d.]*) (?P<rtt>[\d.]*)"
+def plot_rtt(algo_name, out_dir, log_plot=True, nplot=20):
+    """
+    Plots connection RTTs from nplot sampled connections.
 
+    Returns CDF plot data across ALL flows to be used for overlay plot.
+    """
     in_file = out_dir+algo_name+'.rtt.out'
     out_file = out_dir+algo_name+'.rtt.png'
     cdf_file = out_dir+algo_name+'.rttCDF.png'
 
-    time = []
-    rtt = []
-    with open(in_file) as f:
+    rtts = defaultdict(lambda: ([])) 
+
+    with open(in_file, "r") as f:
         for line in f:
-            result = re.search(fmat, line)
-            if result is not None:
-                t = float(result.groupdict()['time'])
-                time.append(t)
-                s = float(result.groupdict()['rtt'])
-                rtt.append(s)
+            time, fid, rtt = line.split()
+            t = float(time)
+            f = int(fid)
+            r = float(rtt)
+            rtts[f].append((t, r))
+
+    # List of var-length 2d arrays
+    rtts = [np.array(rtts[f]) for f in sorted(rtts.keys())]
+
+    # Get all RTTs for later
+    all_rtts = np.array([rtt[1] for flow in rtts for rtt in flow])
+
+    # Just pick a subset of nplot
+    plot_rtts = sample(rtts, nplot)
+
     plt.figure()
-    #plt.xlim(0,time[-1])
-    plt.plot(time,rtt,'.', label=algo_name)
+    for data in plot_rtts:
+        mean = np.mean(data[:, 1])
+        std = np.std(data[:, 1])
+
+        smooth = 10
+        y = data[:, 1]
+        y = np.convolve(y, np.ones((smooth,))/smooth, mode='same')
+        label = r"($\mu$=" + ("%d, SD=%d)" % (round(mean), round(std)))
+        plt.plot(data[:, 0], y, linestyle='-', marker='', label=label)
+    if log_plot:
+        plt.yscale('log')
+    plt.ylim([0,300])
     plt.ylabel('RTT (usec)')
     plt.xlabel('Time (sec)')
     plt.title('RTT for '+algo_name+' experiment')
     plt.grid()
-    if(log_plot):
-        plt.yscale('log')
-    plt.savefig(out_file)
+    plt.legend(bbox_to_anchor=(1.04,0.5), loc="center left", borderaxespad=0)
+    plt.savefig(out_file, bbox_inches="tight")
     print("Saved plot: %s" % out_file)
     plt.close()
 
     # Compute the CDF
-    sorted_data = np.sort(rtt)
+    sorted_data = np.sort(all_rtts)
     yvals=np.arange(len(sorted_data))/float(len(sorted_data)-1)
     plt.figure()
     #plt.xlim(0,300)
@@ -140,17 +161,17 @@ def plot_rate(algo_name, num_clients, out_dir, conn_per_client=1, nplot=4):
     plot_rates = sample(rates, nplot)
 
     plt.figure()
-    for idx, data in enumerate(plot_rates):
+    for data in plot_rates:
         mean = np.mean(data[:, 1])
         std = np.std(data[:, 1])
 
         smooth = 10
         y = data[:, 1]
         y = np.convolve(y, np.ones((smooth,))/smooth, mode='same')
-        label = ("(%d, %d)" % (round(mean), round(std)))
+        label = r"($\mu$=" + ("%d, SD=%d)" % (round(mean), round(std)))
         plt.plot(data[:, 0], y, linestyle='-', marker='', label=label)
 
-    plt.ylim([0,750])
+    plt.ylim([0,1100])
     plt.ylabel('Rate (Mbps)')
     plt.xlabel('Time (sec)')
     plt.title('Queue size for '+algo_name+' experiment')
@@ -234,6 +255,7 @@ def plot_throughput(algo_name, num_clients, out_dir, conn_per_client=1):
     plt.xlabel('Time (sec)')
     plt.title('Throughput for '+algo_name+' experiment')
     #plt.legend(bbox_to_anchor=(1.04,0.5), loc="center left", borderaxespad=0)
+    plt.ylim([0,750])
     plt.grid()
     plt.savefig(out_file, bbox_inches="tight")
     print("Saved plot: %s" % out_file)

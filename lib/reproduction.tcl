@@ -167,14 +167,11 @@ if {[string compare $congestion_alg "dctcp"] == 0} {
     # The following procedure is called when ever a packet is received 
     Agent/TCP/FullTcp instproc recv {rtt_t} {
         global ns rtt_file 
+        $self instvar fid_
         
-        $self instvar node_
-        if {[$node_ id] == 2 } {
-            set now [$ns now]
-            set rtt [$self set rtt_]
-        
-            puts $rtt_file "$now $rtt"
-        }
+        set now [$ns now]
+        set rtt [$self set rtt_]
+        puts $rtt_file "$now $fid_ $rtt"
     }
 
 } elseif {[string compare $congestion_alg "vegas"] == 0} {    
@@ -211,15 +208,11 @@ if {[string compare $congestion_alg "dctcp"] == 0} {
     # In vegas, timely_rate_ is just ignored. Hack hack hack.
     Agent/TCP/Vegas instproc recv {rtt_t cong_signal_t hopCnt_t timely_rate_t} {
         global ns rtt_file
+        $self instvar fid_
         
-        $self instvar node_
-        if {[$node_ id] == 2 } {
-            set now [$ns now]
-            #set rtt [$self set v_rtt_]
-            set rtt [expr $rtt_t*1000000.0]
-        
-            puts $rtt_file "$now $rtt"
-        }
+        set now [$ns now]
+        set rtt [$self set rtt_]
+        puts $rtt_file "$now $fid_ $rtt"
     }
 
 } elseif {[string compare $congestion_alg "timely"] == 0} {    
@@ -265,15 +258,11 @@ if {[string compare $congestion_alg "dctcp"] == 0} {
     # Timely implementation is also contained in vegas.cc
     Agent/TCP/Vegas instproc recv {rtt_t cong_signal_t hopCnt_t timely_rate_t} {
         global ns rtt_file rate_file pktSize
-        
-        $self instvar node_
         $self instvar fid_
+
         set now [$ns now]
-        set node_id [$node_ id]
-        if {$node_id == 2 } {
-            set rtt [expr $rtt_t * 1000000.0]
-            puts $rtt_file "$now $rtt"
-        }
+        set rtt [expr $rtt_t * 1000000.0]
+        puts $rtt_file "$now $fid_ $rtt"
 
         # Write current timely send rate, in bits per second!
         puts $rate_file "$now $fid_ $timely_rate_t"
