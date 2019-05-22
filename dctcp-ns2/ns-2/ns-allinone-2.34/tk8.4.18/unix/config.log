@@ -228,7 +228,7 @@ configure:4231: gcc -o conftest  -pipe   conftest.c  >&5
 conftest.c:44:6: warning: conflicting types for built-in function 'sin'
  char sin ();
       ^
-/tmp/ccU2gf8H.o: In function `main':
+/tmp/ccyrD91j.o: In function `main':
 conftest.c:(.text+0xa): undefined reference to `sin'
 collect2: error: ld returned 1 exit status
 configure:4231: $? = 1

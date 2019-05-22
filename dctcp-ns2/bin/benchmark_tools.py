@@ -10,7 +10,7 @@ from collections import defaultdict
 from random import sample
 
 
-def plot_rtt(algo_name, out_dir, log_plot=True, nplot=4):
+def plot_rtt(algo_name, out_dir, log_plot=True, nplot=1):
     """
     Plots connection RTTs from nplot sampled connections.
 
@@ -51,7 +51,7 @@ def plot_rtt(algo_name, out_dir, log_plot=True, nplot=4):
         plt.plot(data[:, 0], y, linestyle='-', marker='', label=label)
     if log_plot:
         plt.yscale('log')
-    plt.ylim([0,300])
+    #plt.ylim([0,300])
     plt.ylabel('RTT (usec)')
     plt.xlabel('Time (sec)')
     plt.title('RTT for '+algo_name+' experiment')
@@ -130,7 +130,7 @@ def plot_allRTTcdf(out_dir, log_plot=True, dctcp=None, vegas=None, timely=None,
     plt.close()
 
 
-def plot_rate(algo_name, num_clients, out_dir, conn_per_client=1, nplot=4):
+def plot_rate(algo_name, num_clients, out_dir, conn_per_client=1, nplot=1):
     """
     Plots a sample of the output rates for the given connections to reproduce
     Figure 13 of the TIMELY paper.
@@ -171,7 +171,7 @@ def plot_rate(algo_name, num_clients, out_dir, conn_per_client=1, nplot=4):
         label = r"($\mu$=" + ("%d, SD=%d)" % (round(mean), round(std)))
         plt.plot(data[:, 0], y, linestyle='-', marker='', label=label)
 
-    plt.ylim([0,1100])
+    #plt.ylim([0,1100])
     plt.ylabel('Rate (Mbps)')
     plt.xlabel('Time (sec)')
     plt.title('Queue size for '+algo_name+' experiment')

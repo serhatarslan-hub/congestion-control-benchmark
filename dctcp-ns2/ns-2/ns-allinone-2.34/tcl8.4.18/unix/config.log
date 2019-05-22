@@ -286,7 +286,7 @@ configure:4229: gcc -o conftest  -pipe   conftest.c  >&5
 conftest.c:45:6: warning: conflicting types for built-in function 'sin'
  char sin ();
       ^
-/tmp/cchyOfk9.o: In function `main':
+/tmp/cc83Yqpv.o: In function `main':
 conftest.c:(.text+0xa): undefined reference to `sin'
 collect2: error: ld returned 1 exit status
 configure:4229: $? = 1
@@ -855,7 +855,7 @@ configure:7200: $? = 0
 configure:7200: result: yes
 configure:7213: checking for tmpnam
 configure:7213: gcc -o conftest  -pipe   -Wl,--export-dynamic conftest.c  >&5
-/tmp/ccpA2cJg.o: In function `main':
+/tmp/cc2unm1I.o: In function `main':
 conftest.c:(.text+0xa): warning: the use of `tmpnam' is dangerous, better use `mkstemp'
 configure:7213: $? = 0
 configure:7213: result: yes
@@ -869,7 +869,7 @@ configure:7240: $? = 0
 configure:7240: result: yes
 configure:7248: checking for getwd
 configure:7248: gcc -o conftest  -pipe   -Wl,--export-dynamic conftest.c  >&5
-/tmp/ccuxK0Lt.o: In function `main':
+/tmp/cc11JFUV.o: In function `main':
 conftest.c:(.text+0xa): warning: the `getwd' function is dangerous and should not be used.
 configure:7248: $? = 0
 configure:7248: result: yes
@@ -1678,7 +1678,7 @@ configure:9010: $? = 0
 configure:9010: result: yes
 configure:9120: checking for BSDgettimeofday
 configure:9120: gcc -o conftest  -pipe   -Wl,--export-dynamic conftest.c  >&5
-/tmp/ccNIqcBB.o: In function `main':
+/tmp/ccmHlk3f.o: In function `main':
 conftest.c:(.text+0xa): undefined reference to `BSDgettimeofday'
 collect2: error: ld returned 1 exit status
 configure:9120: $? = 1

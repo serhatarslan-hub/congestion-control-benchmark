@@ -775,7 +775,7 @@ configure:9200: $? = 0
 configure:9222: result: yes
 configure:9137: checking for fesetprecision
 configure:9193: gcc -o conftest -g -O2   conftest.c -lm  >&5
-/tmp/ccyU9GPF.o: In function `main':
+/tmp/ccr7dizD.o: In function `main':
 /home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/ns-2.34/conftest.c:82: undefined reference to `fesetprecision'
 collect2: error: ld returned 1 exit status
 configure:9200: $? = 1
@@ -1854,7 +1854,7 @@ configure:12022: $? = 0
 configure:12032: result: found
 configure:12052: checking for addr2ascii
 configure:12108: gcc -o conftest -g -O2   -Wl,-export-dynamic conftest.c -lm  >&5
-/tmp/cciP5uUh.o: In function `main':
+/tmp/ccZ8fOIe.o: In function `main':
 /home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/ns-2.34/conftest.c:93: undefined reference to `addr2ascii'
 collect2: error: ld returned 1 exit status
 configure:12115: $? = 1

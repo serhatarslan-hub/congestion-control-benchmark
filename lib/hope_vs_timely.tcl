@@ -36,7 +36,7 @@ set link_delay 5us
 # tcp_window (pkts)
 set tcp_window 10000000
 # run_time (sec)
-set run_time 0.3
+set run_time 0.5
 # pktSize (bytes)
 set pktSize 1460
 
@@ -179,7 +179,7 @@ if {[string compare $congestion_alg "dctcp"] == 0} {
     $ns attach-agent $my_src $my_tcp
     $ns attach-agent $my_dst $my_sink
     $ns connect $my_tcp $my_sink
-    $my_tcp set fid_ 1
+    $my_tcp set fid_ 0
     $my_sink listen
     
     # set up FTP connections
@@ -188,14 +188,15 @@ if {[string compare $congestion_alg "dctcp"] == 0} {
     
     # The following procedure is called whenever a packet is received 
     Agent/TCP/FullTcp instproc recv {rtt_t} {
-	global ns rtt_file       
+	global ns rtt_file 
+	$self instvar fid_      
 	
 	$self instvar node_
 	if {[$node_ id] == 0 } {
 	    set now [$ns now]
 	    set rtt [$self set rtt_]
 	
-	    puts $rtt_file "$now $rtt"
+	    puts $rtt_file "$now $fid_ $rtt"
 	}
     }
 
@@ -205,7 +206,7 @@ if {[string compare $congestion_alg "dctcp"] == 0} {
     $ns attach-agent $my_src $my_tcp
     $ns attach-agent $my_dst $my_sink
     $ns connect $my_tcp $my_sink
-    $my_tcp set fid_ 1
+    $my_tcp set fid_ 0
 
     if {[string compare $congestion_alg "vegas"] == 0} {    
         set timely 0
@@ -285,17 +286,6 @@ if {[string compare $congestion_alg "dctcp"] == 0} {
     set my_ftp [$my_tcp attach-source FTP]
     $my_ftp set type_ FTP
     
-    Agent/TCP/Vegas instproc recv {rtt_t cong_signal_t hop_cnt_t} {
-	global ns rtt_file       
-	
-	$self instvar node_
-	if {[$node_ id] == 0 } {
-	    set now [$ns now]
-	    set rtt [expr $rtt_t*1000000.0]
-	
-	    puts $rtt_file "$now $rtt"
-	}
-    }
 }
 
 # Connect "others"
@@ -351,6 +341,19 @@ for {set i 0} {$i < $last_sw} {incr i} {
 	}
 
     }
+}
+
+Agent/TCP/Vegas instproc recv {rtt_t cong_signal_t hopCnt_t timely_rate_t} {
+	global ns rtt_file  
+	$self instvar fid_     
+	
+	$self instvar node_
+	if {[$node_ id] == 0 } {
+	    set now [$ns now]
+	    set rtt [expr $rtt_t*1000000.0]
+	
+	    puts $rtt_file "$now $fid_ $rtt"
+	}
 }
 #for {set i 0} {$i < [expr $n_switch+$second_crowd+$n_crowd-3]} {incr i} {
 #    $other_tcp($i) set timely_packetSize_ [expr $pktSize+40]
