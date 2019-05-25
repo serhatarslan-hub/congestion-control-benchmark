@@ -96,7 +96,7 @@ if {[string compare $congestion_alg "dctcp"] == 0} {
 
 #### Generate the random topology ####
 set rng_topo [new RNG]
-$rng_topo seed 3
+$rng_topo seed 0
 
 set RV_switches [new RandomVariable/Uniform]
 $RV_switches set min_ 0.02
@@ -106,7 +106,7 @@ $RV_switches use-rng $rng_topo
 set num_nodes(0) $num_clients
 for {set i 1} {$i < $num_layers} {incr i} {
     set prev_layer $num_nodes([expr $i-1])
-    set num_nodes($i) [expr int([$RV_switches value]*exp($i-0.1)*$prev_layer)+1]
+    set num_nodes($i) [expr int([$RV_switches value]*exp($i-0.2)*$prev_layer)+1]
     puts "-There will be $num_nodes($i) nodes on level $i"
 }
 
@@ -139,7 +139,7 @@ for {set i 0} {$i < $num_nodes($last_level)} {incr i} {
 
 # Create random generator for TCP connections
 set rng_conn [new RNG]
-$rng_conn seed 4
+$rng_conn seed 0
 
 # Parameters for random variables to connection choice
 set RV_host [new RandomVariable/Uniform]
@@ -402,7 +402,7 @@ if {[string compare $congestion_alg "dctcp"] == 0} {
 
 # Create random generator for starting the ftp connections
 set rng_time [new RNG]
-$rng_time seed 2
+$rng_time seed 0
 
 # Parameters for random variables to ftp start times
 set RV_beg_fin [new RandomVariable/Uniform]
