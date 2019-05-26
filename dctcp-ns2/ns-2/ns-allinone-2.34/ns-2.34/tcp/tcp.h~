@@ -614,7 +614,8 @@ protected:
 	double timely_avgRTTDiff_;	// RTT difference
 	int timely_negGradientCount_;	// For HAI mode
 	/* Serhat's implementation of HOPE */
-	int hope_type_;		// whether to use hope congestion control
+	int hope_type_;		// Type of Hope function for congestion control
+	int hope_collector_;	// Type of Hope data collected along the path
 	double cong_signal_;	// The measurement to use for congestion control
 	/* End of TIMELY parameters */
 

@@ -403,7 +403,7 @@ VegasTcpAgent::recv(Packet *pkt, Handler *)
 		/* Serhat's implementation of TIMELY and HOPE */
 		hdr_ip* iph = hdr_ip::access(pkt);
 		int hop_cnt = iph->HOPE_hop_cnt(); 
-		hop_cnt = hop_cnt/2; //Only consider forward path
+		//hop_cnt = hop_cnt/2; //Only consider forward path
 		double* hop_delay = iph->HOPE_hop_delay();
 
 		if(cong_signal_ == -1) {
@@ -414,6 +414,7 @@ VegasTcpAgent::recv(Packet *pkt, Handler *)
 		if(timely_==1 || hope_type_!=0){
 			
 			double line_rate = 10000000000.0;
+			//double baseBufferSize = 200.0;	//Use buffer size instead of baseRTT
 			double epsilon = 0.000001;	//Threshold to say gradient <= 0
 					
 			if (hope_type_==1){
@@ -477,6 +478,9 @@ VegasTcpAgent::recv(Packet *pkt, Handler *)
 			//printf("*** rtt= %f | cong_sgnl= %f | prevRTT= %f | rtt_diff= %f | avgRTTDiff= %f | cwnd_= %f\n",rtt*1000000, cong_signal_*1000000, timely_prevRTT_*1000000, rtt_diff*1000000, timely_avgRTTDiff_*1000000, (double)cwnd_);
 
 			double normalized_gradient = timely_avgRTTDiff_ / v_baseRTT_;
+			//if (hope_collector_ != 0){
+			//	normalized_gradient = timely_avgRTTDiff_ / baseBufferSize;
+			//}
 
 			double delta_factor = (currentTime - timely_lastUpdateTime) / v_baseRTT_;
   			delta_factor = (delta_factor<1.0)?delta_factor:1.0;
@@ -522,7 +526,7 @@ VegasTcpAgent::recv(Packet *pkt, Handler *)
 		
 		/* Serhat's implementation of instproc recv for TCL scripts */
 		//Tcl::instance().evalf("%s recv %f", this->name(), rtt );
-		Tcl::instance().evalf("%s recv %f %f %d", this->name(), rtt, cong_signal_, iph->HOPE_hop_cnt() );
+		Tcl::instance().evalf("%s recv %f %f %d %f", this->name(), rtt, cong_signal_, iph->HOPE_hop_cnt(), timely_rate_);
 		
    	} else if (tcph->seqno() == last_ack_)  {
 		/* check if a timeout should happen */

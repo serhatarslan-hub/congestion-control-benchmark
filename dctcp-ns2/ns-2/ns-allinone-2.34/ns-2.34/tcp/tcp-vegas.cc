@@ -112,6 +112,7 @@ VegasTcpAgent::delay_bind_init_all()
 	/* Serhat's implementation of HOPE */
 	delay_bind_init_one("hope_type_");
 	delay_bind_init_one("hope_collector_");
+	delay_bind_init_one("hope_bits_");
 	/* End of TIMELY and HOPE parameters */
 
 	delay_bind_init_one("v_alpha_");
@@ -149,6 +150,8 @@ VegasTcpAgent::delay_bind_dispatch(const char *varName, const char *localName,
 	if (delay_bind(varName, localName, "hope_type_", &hope_type_, tracer)) 
 		return TCL_OK;
 	if (delay_bind(varName, localName, "hope_collector_", &hope_collector_, tracer)) 
+		return TCL_OK;
+	if (delay_bind(varName, localName, "hope_bits_", &hope_bits_, tracer)) 
 		return TCL_OK;
 	/* End of TIMELY and HOPE parameters */
 	
@@ -414,6 +417,7 @@ VegasTcpAgent::recv(Packet *pkt, Handler *)
 		if(timely_==1 || hope_type_!=0){
 			
 			double line_rate = 10000000000.0;
+			//double baseBufferSize = 200.0;	//Use buffer size instead of baseRTT
 			double epsilon = 0.000001;	//Threshold to say gradient <= 0
 					
 			if (hope_type_==1){
@@ -477,6 +481,9 @@ VegasTcpAgent::recv(Packet *pkt, Handler *)
 			//printf("*** rtt= %f | cong_sgnl= %f | prevRTT= %f | rtt_diff= %f | avgRTTDiff= %f | cwnd_= %f\n",rtt*1000000, cong_signal_*1000000, timely_prevRTT_*1000000, rtt_diff*1000000, timely_avgRTTDiff_*1000000, (double)cwnd_);
 
 			double normalized_gradient = timely_avgRTTDiff_ / v_baseRTT_;
+			//if (hope_collector_ != 0){
+			//	normalized_gradient = timely_avgRTTDiff_ / baseBufferSize;
+			//}
 
 			double delta_factor = (currentTime - timely_lastUpdateTime) / v_baseRTT_;
   			delta_factor = (delta_factor<1.0)?delta_factor:1.0;
