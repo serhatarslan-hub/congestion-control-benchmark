@@ -617,6 +617,7 @@ protected:
 	int hope_type_;		// Type of Hope function for congestion control
 	int hope_collector_;	// Type of Hope data collected along the path
 	double cong_signal_;	// The measurement to use for congestion control
+	int hobe_bits_;		// Number of bits to keep hope data
 	/* End of TIMELY parameters */
 
 	double t_cwnd_changed_; // last time cwnd changed

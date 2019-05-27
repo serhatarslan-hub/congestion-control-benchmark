@@ -417,7 +417,8 @@ VegasTcpAgent::recv(Packet *pkt, Handler *)
 		if(timely_==1 || hope_type_!=0){
 			
 			double line_rate = 10000000000.0;
-			//double baseBufferSize = 200.0;	//Use buffer size instead of baseRTT
+			double baseBufferSize = 200.0;	//Use buffer size instead of baseRTT
+			double packetSize = 1460;
 			double epsilon = 0.000001;	//Threshold to say gradient <= 0
 					
 			if (hope_type_==1){
@@ -426,6 +427,20 @@ VegasTcpAgent::recv(Packet *pkt, Handler *)
 				double dummy;
 				for (int i=0; i<hop_cnt; i++){
 					dummy = (double)*(hop_delay + i);
+					if( hope_bits_ != 0){
+						//printf("dummy: %f",dummy);
+						// Use quantization for the congestion signal
+						double num_interval = pow(2,hope_bits_);
+						//printf(" num_interval: %f ",num_interval);
+						double max_sgnl = (baseBufferSize*packetSize);
+						//printf("| max_sgnl: %f ",max_sgnl);
+						double interval = max_sgnl/num_interval;
+						//printf("| interval: %f ",interval);
+						double cur_interval = (int)(dummy/interval);
+						//printf("| cur_interval: %f ",cur_interval);
+						dummy = (cur_interval/num_interval)*max_sgnl;
+						//printf("| new_dummy: %f\n",dummy);
+					}
 					if( dummy > max_delay){ max_delay = dummy;}
 				}
 				if (hope_collector_ == 0){
@@ -439,6 +454,14 @@ VegasTcpAgent::recv(Packet *pkt, Handler *)
 				double dummy;
 				for (int i=0; i<hop_cnt; i++){
 					dummy = (double)*(hop_delay + i);
+					if( hope_bits_ != 0){
+						// Use quantization for the congestion signal
+						double num_interval = pow(2,hope_bits_);
+						double max_sgnl = (baseBufferSize*packetSize);
+						double interval = max_sgnl/num_interval;
+						double cur_interval = (int)(dummy/interval);
+						dummy = (cur_interval/num_interval)*max_sgnl;
+					}
 					tot_delay += dummy;
 				}
 				if (hope_collector_ == 0){
@@ -452,6 +475,14 @@ VegasTcpAgent::recv(Packet *pkt, Handler *)
 				double dummy;
 				for (int i=0; i<hop_cnt; i++){
 					dummy = (double)*(hop_delay + i);
+					if( hope_bits_ != 0){
+						// Use quantization for the congestion signal
+						double num_interval = pow(2,hope_bits_);
+						double max_sgnl = (baseBufferSize*packetSize);
+						double interval = max_sgnl/num_interval;
+						double cur_interval = (int)(dummy/interval);
+						dummy = (cur_interval/num_interval)*max_sgnl;
+					}
 					squ_delay += pow(dummy,2);
 				}
 				squ_delay = sqrt(squ_delay);
@@ -461,7 +492,8 @@ VegasTcpAgent::recv(Packet *pkt, Handler *)
 					cong_signal_ = squ_delay* 8.0 / line_rate;
 				}
 			}
-
+			
+			
 			if(timely_prevRTT_ == -1) {
 				timely_prevRTT_ = cong_signal_;
 				//timely_lastUpdateTime = currentTime;

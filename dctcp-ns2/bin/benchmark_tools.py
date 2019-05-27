@@ -41,7 +41,7 @@ def plot_rtt(algo_name, out_dir, log_plot=True, nplot=1, report_only=False):
     
 	if not report_only:
 		# Just pick a subset of nplot
-		plot_rtts = sample(rtts, nplot)
+		plot_rtts = sample(rtts, int(nplot))
 
 		plt.figure()
 		for data in plot_rtts:
@@ -50,7 +50,7 @@ def plot_rtt(algo_name, out_dir, log_plot=True, nplot=1, report_only=False):
 
 			smooth = 10
 			y = data[:, 1]
-			y = np.convolve(y, np.ones((smooth,))/smooth, mode='same')
+			#y = np.convolve(y, np.ones((smooth,))/smooth, mode='same')
 			label = r"($\mu$=" + ("%d, SD=%d)" % (round(mean), round(std)))
 			plt.plot(data[:, 0], y, linestyle='-', marker='.', label=label)
 		if log_plot:
@@ -737,4 +737,77 @@ def gen_report(congestion_alg, out_dir, rtt, thp, fct, verbose=True):
 		fo.write(report) 
 
 	print("Saved report to %s" % report_file)
+
+def plot_allResults(cong_alg, out_dir, results, log_plot=True):
+	"""
+    Plot the given RTT, Throughput, and Flow Completion Time results 
+    in the same figure for easier comparison.
+    Input results is a dictionary that includes results for different simulations.
+    results = {
+    	'simulation name': {
+    		'cdf': RTT cdf
+    		'thp': Total throughput
+    		'fct': Flow completion times
+    	}
+    }
+    """  
+	# Plot allRTTcdf
+	allCDF_file = out_dir+'All.rttCDF_benchmark.png'
+	plt.figure()
+	plt.xlabel('RTT (usec)')
+	plt.title('CDF of RTT for benchmarked congestion control algorithms')
+
+	for bits, result in results.iteritems():
+		label = cong_alg+str(bits)
+		plt.plot(result['cdf'][0], result['cdf'][1], '-', label=label)
+
+	plt.legend(loc='lower right')
+	if(log_plot):
+		plt.xscale('log')
+	plt.savefig(allCDF_file)
+	print "Saved plot: ", allCDF_file
+	plt.close()
+     
+    # Plot allThp
+	allThp_file = out_dir+'All.thp_benchmark.png'
+	plt.figure()
+	plt.ylabel('Throughput (Mbps)')
+	plt.xlabel('Time (sec)')
+	plt.title('Total throughputs for benchmarked congestion control algorithms')
+
+	for bits, result in results.iteritems():
+		label = cong_alg+str(bits)
+		plt.plot(result['thp'][0], result['thp'][1], '-', label=label)
+
+	plt.legend(loc='lower right')
+	plt.savefig(allThp_file)
+	print "Saved plot: ", allThp_file
+	plt.close()
+	
+	# Plot allFCT
+	f_sizes = ['Short', 'Mid-Length', 'Long']    
+	allFCT_file = out_dir+'All.fct_benchmark.png'
+
+	plt.figure()
+	plt.subplot(len(f_sizes),1,1)
+	plt.title('CDF of Flow Completion Times')
+
+	for i in range(len(f_sizes)):
+		plt.subplot(len(f_sizes),1,i+1)
+		plt.ylabel("%s Flows"%f_sizes[i])
+	plt.xlabel('Time(sec)')
+
+	for bits, result in results.iteritems():
+		label = cong_alg+str(bits)
+		# Compute the CDF for all sizes
+		for i in range(len(f_sizes)):
+			sorted_data = np.sort(result['fct'][i])
+			yvals = np.arange(len(sorted_data))/float(len(sorted_data)-1)
+			plt.subplot(len(f_sizes),1,i+1)
+			plt.plot(sorted_data, yvals, '-', label=label)
     
+	plt.legend(loc='lower right')
+
+	plt.savefig(allFCT_file)
+	print "Saved plot: ", allFCT_file
+	plt.close()

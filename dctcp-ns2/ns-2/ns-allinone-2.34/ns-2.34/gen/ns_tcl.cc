@@ -19753,6 +19753,7 @@ Agent/TCP/Vegas set timely_HAI_thresh_ 5\n\
 Agent/TCP/Vegas set timely_rate_ 10000000000\n\
 Agent/TCP/Vegas set hope_type_ 0\n\
 Agent/TCP/Vegas set hope_collector_ 0\n\
+Agent/TCP/Vegas set hope_bits_ 0\n\
 \n\
 Agent/TCP/Vegas/RBP set rbp_scale_ 0.75\n\
 Agent/TCP/Vegas/RBP set rbp_rate_algorithm_ 1\n\
