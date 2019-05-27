@@ -7,7 +7,7 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from collections import defaultdict
-from random import sample
+from random import sample, seed
 
 
 def plot_rtt(algo_name, out_dir, log_plot=True, nplot=1, report_only=False):
@@ -176,15 +176,64 @@ def plot_rate(algo_name, num_clients, out_dir, conn_per_client=1, nplot=1):
     #plt.ylim([0,1100])
     plt.ylabel('Rate (Mbps)')
     plt.xlabel('Time (sec)')
-    plt.title('Queue size for '+algo_name+' experiment')
+    plt.title('The choosen rate during '+algo_name+' experiment')
     plt.grid()
     plt.legend(bbox_to_anchor=(1.04,0.5), loc="center left", borderaxespad=0)
     plt.savefig(out_file, bbox_inches="tight")
     print("Saved plot: %s" % out_file)
     plt.close()
 
+def plot_signal(signal_name, algo_name, num_clients, out_dir, conn_per_client=1, nplot=1):
+    """
+    Plots a sample of the non-bottleneck Hope signal for the given connections. 
 
-def plot_throughput(algo_name, num_clients, out_dir, conn_per_client=1, report_only=False):
+    Assumes that connection IDs are numbered
+    {0, ..., num_clients*conn_per_client-1} client-by-client.
+    """
+    nflows = num_clients*conn_per_client
+
+    nonbnq_file = out_dir+algo_name+'.'+signal_name+'.out'
+    out_file = out_dir+algo_name+'.'+signal_name+'.png'
+
+    nonbnq = defaultdict(lambda: ([])) 
+
+    with open(nonbnq_file, "r") as f:
+        for line in f:
+            time, fid, signal = line.split()
+            t = float(time)
+            f = int(fid)
+            r = float(signal) * 1000000.0  # in usec
+            nonbnq[f].append((t, r))
+
+    nonbnq = [np.array(nonbnq[f]) for f in range(nflows)]
+    nonbnq = [q for q in nonbnq if q.shape[0] > 0]
+
+    # Just pick a subset of nplot
+    #seed(3)
+    plot_nonbnq = sample(nonbnq, nplot)
+
+    plt.figure()
+    for data in plot_nonbnq:
+        mean = np.mean(data[:, 1])
+        std = np.std(data[:, 1])
+
+        smooth = 10
+        y = data[:, 1]
+        #y = np.convolve(y, np.ones((smooth,))/smooth, mode='same')
+        label = r"($\mu$=" + ("%d, SD=%d)" % (round(mean), round(std)))
+        plt.plot(data[:, 0], y, linestyle='-', marker='', label=label)
+
+    #plt.ylim([0,1100])
+    plt.ylabel('Signal (usec)')
+    plt.xlabel('Time (sec)')
+    plt.title('Non-Bottleneck Hope Signal for '+algo_name+' experiment')
+    plt.grid()
+    plt.legend(bbox_to_anchor=(1.04,0.5), loc="center left", borderaxespad=0)
+    plt.savefig(out_file, bbox_inches="tight")
+    print("Saved plot: %s" % out_file)
+    plt.close()
+
+def plot_throughput(algo_name, num_clients, out_dir, conn_per_client=1, report_only=False, nplot=0):
 	"""
 	Plots the throughput for the first num_clients clients, assuming
 	each client serves conn_per_client connections.
@@ -196,6 +245,9 @@ def plot_throughput(algo_name, num_clients, out_dir, conn_per_client=1, report_o
 	out_file = out_dir+algo_name+'.thp.png'
 	granularity = 0.001
 	clock = 0
+	
+	if(nplot==0):
+		nplot=num_clients*conn_per_client
 
 	thp_sums = np.zeros((num_clients, conn_per_client))
 	seqs = np.zeros((num_clients, conn_per_client))
@@ -243,12 +295,20 @@ def plot_throughput(algo_name, num_clients, out_dir, conn_per_client=1, report_o
 	total_thp = np.sum(throughputs, axis=(1, 2))
 
 	if not report_only:
+		
+		#seed(3)
+		plot_flows = sample(range(num_clients*conn_per_client),nplot)
+		selected = []
+		for f in plot_flows:
+			selected.append((int(f/conn_per_client),f%conn_per_client))
+		
 		# Plot individual throughputs
 		plt.figure()
 		for i in range(num_clients):
 			for j in range(conn_per_client):
-				node_name = ('Client%d_connection_%d' % (i, j))
-				plt.plot(times, throughputs[:, i, j], linestyle='-', marker='', label=node_name)
+				if (i,j) in selected:
+					node_name = ('Client%d_connection_%d' % (i, j))
+					plt.plot(times, throughputs[:, i, j], linestyle='-', marker='', label=node_name)
 
 		# # Plot total
 		# plt.plot(times,total_thp,linestyle='-', marker='', label='Total')

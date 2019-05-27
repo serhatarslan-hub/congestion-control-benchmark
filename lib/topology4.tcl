@@ -15,6 +15,10 @@ set out_dir [lindex $argv 1]
 
 set out_rtt_file $out_dir$congestion_alg.rtt.out
 set rtt_file [open $out_rtt_file w]
+set out_nonbnQ_file $out_dir$congestion_alg.nonbnQ.out
+set nonbnQ_file [open $out_nonbnQ_file w]
+set out_signal_file $out_dir$congestion_alg.congSignal.out
+set signal_file [open $out_signal_file w]
 set out_q_file $out_dir$congestion_alg.queue.out
 
 set num_clients [lindex $argv 2]
@@ -404,13 +408,17 @@ if {[string compare $congestion_alg "dctcp"] == 0} {
         	#$ftp($conn_idx) attach-agent $tcp($conn_idx)
         }
     }
-    Agent/TCP/Vegas instproc recv {rtt_t cong_signal_t hopCnt_t timely_rate_t} {
-        global ns rtt_file pktSize
+    Agent/TCP/Vegas instproc recv {rtt_t cong_signal_t nonbn_q_t timely_rate_t} {
+        global ns rtt_file nonbnQ_file signal_file
         $self instvar fid_
 
         set now [$ns now]
         set rtt [expr $rtt_t * 1000000.0]
         puts $rtt_file "$now $fid_ $rtt"
+        
+        # Write hope signals for each flow
+        puts $nonbnQ_file "$now $fid_ $nonbn_q_t"
+        puts $signal_file "$now $fid_ $cong_signal_t"
     }
 }
 
@@ -453,12 +461,14 @@ $ns at $run_time "finish"
 
 #Define a 'finish' procedure
 proc finish {} {
-    global congestion_alg ns tracefile rtt_file qf_size out_dir
+    global congestion_alg ns tracefile rtt_file qf_size out_dir nonbnQ_file signal_file
     $ns flush-trace
     # Close the NAM trace file
 #    close $nf
     close $tracefile
-    close $rtt_file 
+    close $rtt_file
+    close $nonbnQ_file 
+    close $signal_file
     close $qf_size
     # Execute NAM on the trace file
 #    exec nam $out_dir$congestion_alg.nam &

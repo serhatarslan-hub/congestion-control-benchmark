@@ -409,6 +409,9 @@ VegasTcpAgent::recv(Packet *pkt, Handler *)
 		//hop_cnt = hop_cnt/2; //Only consider forward path
 		double* hop_delay = iph->HOPE_hop_delay();
 
+		double max_delay = -999999.9; // Max-delay to be used
+		double nonbn_q = 0;	//Sum of Non-Bottleneck Queue occupancy
+
 		if(cong_signal_ == -1) {
 			timely_prevRTT_ = -1;
 		}	
@@ -422,31 +425,26 @@ VegasTcpAgent::recv(Packet *pkt, Handler *)
 			double epsilon = 0.000001;	//Threshold to say gradient <= 0
 					
 			if (hope_type_==1){
-				// Max-delay to be used
-				double max_delay = -999999.9;
 				double dummy;
 				for (int i=0; i<hop_cnt; i++){
 					dummy = (double)*(hop_delay + i);
 					if( hope_bits_ != 0){
-						//printf("dummy: %f",dummy);
 						// Use quantization for the congestion signal
 						double num_interval = pow(2,hope_bits_);
-						//printf(" num_interval: %f ",num_interval);
 						double max_sgnl = (baseBufferSize*packetSize);
-						//printf("| max_sgnl: %f ",max_sgnl);
 						double interval = max_sgnl/num_interval;
-						//printf("| interval: %f ",interval);
 						double cur_interval = (int)(dummy/interval);
-						//printf("| cur_interval: %f ",cur_interval);
 						dummy = (cur_interval/num_interval)*max_sgnl;
-						//printf("| new_dummy: %f\n",dummy);
 					}
 					if( dummy > max_delay){ max_delay = dummy;}
+					nonbn_q += dummy;
 				}
+				nonbn_q -= max_delay;
 				if (hope_collector_ == 0){
 					cong_signal_ = max_delay;
 				} else {
 					cong_signal_ = max_delay* 8.0 / line_rate;
+					nonbn_q = nonbn_q* 8.0 / line_rate;
 				}				
 			} else if (hope_type_==2) {
 				// Total queueing delay to be used
@@ -463,11 +461,15 @@ VegasTcpAgent::recv(Packet *pkt, Handler *)
 						dummy = (cur_interval/num_interval)*max_sgnl;
 					}
 					tot_delay += dummy;
+					
+					if( dummy > max_delay){ max_delay = dummy;}
 				}
+				nonbn_q = tot_delay - max_delay;
 				if (hope_collector_ == 0){
 					cong_signal_ = tot_delay;
 				} else {
 					cong_signal_ = tot_delay* 8.0 / line_rate;
+					nonbn_q = nonbn_q* 8.0 / line_rate;
 				}
 			} else if (hope_type_==3) {
 				// Squared queueing delay to be used
@@ -484,12 +486,18 @@ VegasTcpAgent::recv(Packet *pkt, Handler *)
 						dummy = (cur_interval/num_interval)*max_sgnl;
 					}
 					squ_delay += pow(dummy,2);
+					
+					if( dummy > max_delay){ max_delay = dummy;}
+					nonbn_q += dummy;
 				}
+				nonbn_q -= max_delay;
+				
 				squ_delay = sqrt(squ_delay);
 				if (hope_collector_ == 0){
 					cong_signal_ = squ_delay;
 				} else {
 					cong_signal_ = squ_delay* 8.0 / line_rate;
+					nonbn_q = nonbn_q* 8.0 / line_rate;
 				}
 			}
 			
@@ -561,7 +569,7 @@ VegasTcpAgent::recv(Packet *pkt, Handler *)
 		
 		/* Serhat's implementation of instproc recv for TCL scripts */
 		//Tcl::instance().evalf("%s recv %f", this->name(), rtt );
-		Tcl::instance().evalf("%s recv %f %f %d %f", this->name(), rtt, cong_signal_, iph->HOPE_hop_cnt(), timely_rate_);
+		Tcl::instance().evalf("%s recv %f %f %f %f", this->name(), rtt, cong_signal_, nonbn_q, timely_rate_);
 		
    	} else if (tcph->seqno() == last_ack_)  {
 		/* check if a timeout should happen */
