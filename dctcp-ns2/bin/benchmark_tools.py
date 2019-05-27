@@ -209,7 +209,7 @@ def plot_signal(signal_name, algo_name, num_clients, out_dir, conn_per_client=1,
     nonbnq = [q for q in nonbnq if q.shape[0] > 0]
 
     # Just pick a subset of nplot
-    seed(3)
+    #seed(3)
     plot_nonbnq = sample(nonbnq, nplot)
 
     plt.figure()
@@ -296,7 +296,7 @@ def plot_throughput(algo_name, num_clients, out_dir, conn_per_client=1, report_o
 
 	if not report_only:
 		
-		seed(3)
+		#seed(3)
 		plot_flows = sample(range(num_clients*conn_per_client),nplot)
 		selected = []
 		for f in plot_flows:
