@@ -107,20 +107,20 @@ def main():
 		print("Hope-Sum Simulation Running...")
 		os.system('ns ./lib/topology4.tcl {0} {1} {2} {3} {4}'.format(congestion_alg, out_dir, num_clients, num_TORs, num_leafs))
 		hopeSum_cdf = benchmark_tools.plot_rtt(congestion_alg, out_dir, log_plot=False, nplot=num_clients-1)
-		hopeSum_thp = benchmark_tools.plot_throughput(congestion_alg, num_clients, out_dir, nplot=0)
+		hopeSum_thp = benchmark_tools.plot_throughput(congestion_alg, num_clients, out_dir, nplot=3)
 		hopeSum_fct = benchmark_tools.get_fct(congestion_alg, num_clients, out_dir)
-		#benchmark_tools.plot_signal('nonbnQ',congestion_alg, num_clients, out_dir, nplot=3)
-		#benchmark_tools.plot_signal('congSignal',congestion_alg, num_clients, out_dir, nplot=3)
+		benchmark_tools.plot_signal('nonbnQ',congestion_alg, num_clients, out_dir, nplot=3)
+		benchmark_tools.plot_signal('congSignal',congestion_alg, num_clients, out_dir, nplot=3)
 		benchmark_tools.plot_queue(congestion_alg, out_dir)
 	if (args.hope_max):
 		congestion_alg = 'hope_max'
 		print("Hope-Max Simulation Running...")
 		os.system('ns ./lib/topology4.tcl {0} {1} {2} {3} {4}'.format(congestion_alg, out_dir, num_clients, num_TORs, num_leafs))
 		hopeMax_cdf = benchmark_tools.plot_rtt(congestion_alg, out_dir, log_plot=False, nplot=num_clients-1)
-		hopeMax_thp = benchmark_tools.plot_throughput(congestion_alg, num_clients, out_dir, nplot=0)
+		hopeMax_thp = benchmark_tools.plot_throughput(congestion_alg, num_clients, out_dir, nplot=3)
 		hopeMax_fct = benchmark_tools.get_fct(congestion_alg, num_clients, out_dir)
-		#benchmark_tools.plot_signal('nonbnQ',congestion_alg, num_clients, out_dir, nplot=3)
-		#benchmark_tools.plot_signal('congSignal',congestion_alg, num_clients, out_dir, nplot=3)
+		benchmark_tools.plot_signal('nonbnQ',congestion_alg, num_clients, out_dir, nplot=3)
+		benchmark_tools.plot_signal('congSignal',congestion_alg, num_clients, out_dir, nplot=3)
 		benchmark_tools.plot_queue(congestion_alg, out_dir)
 	if (args.hope_maxq):
 		congestion_alg = 'hope_maxq'

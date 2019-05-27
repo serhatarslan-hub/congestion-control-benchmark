@@ -185,7 +185,7 @@ def plot_rate(algo_name, num_clients, out_dir, conn_per_client=1, nplot=1):
 
 def plot_signal(signal_name, algo_name, num_clients, out_dir, conn_per_client=1, nplot=1):
     """
-    Plots a sample of the non-bottleneck Hope signal for the given connections. 
+    Plots a sample of the Hope signal for the given connections. 
 
     Assumes that connection IDs are numbered
     {0, ..., num_clients*conn_per_client-1} client-by-client.
@@ -209,7 +209,7 @@ def plot_signal(signal_name, algo_name, num_clients, out_dir, conn_per_client=1,
     nonbnq = [q for q in nonbnq if q.shape[0] > 0]
 
     # Just pick a subset of nplot
-    #seed(3)
+    seed(3)
     plot_nonbnq = sample(nonbnq, nplot)
 
     plt.figure()
@@ -226,7 +226,7 @@ def plot_signal(signal_name, algo_name, num_clients, out_dir, conn_per_client=1,
     #plt.ylim([0,1100])
     plt.ylabel('Signal (usec)')
     plt.xlabel('Time (sec)')
-    plt.title('Non-Bottleneck Hope Signal for '+algo_name+' experiment')
+    plt.title(signal_name+' Hope Signal for '+algo_name+' experiment')
     plt.grid()
     plt.legend(bbox_to_anchor=(1.04,0.5), loc="center left", borderaxespad=0)
     plt.savefig(out_file, bbox_inches="tight")
@@ -296,7 +296,7 @@ def plot_throughput(algo_name, num_clients, out_dir, conn_per_client=1, report_o
 
 	if not report_only:
 		
-		#seed(3)
+		seed(3)
 		plot_flows = sample(range(num_clients*conn_per_client),nplot)
 		selected = []
 		for f in plot_flows:
