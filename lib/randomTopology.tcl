@@ -19,7 +19,7 @@ set rtt_file [open $out_rtt_file w]
 set num_clients [lindex $argv 2]
 
 set num_conn_per_client [lindex $argv 3]
-set num_layers 4
+set num_layers 5
 
 #Create a simulator object
 set ns [new Simulator]
@@ -38,15 +38,16 @@ set samp_int 0.0001
 set q_size 200
 # link_cap (Mbps)
 set link_cap(0) 1Gb
-set link_cap(1) 10Gb
-set link_cap(2) 40Gb
-set link_cap(3) 40Gb
-# link_delay (ms)
-set link_delay 50us
+set link_cap(1) 5Gb
+set link_cap(2) 10Gb
+set link_cap(3) 20Gb
+set link_cap(4) 40Gb
+# link_delay (ms) #Randomized below
+set link_delay 50us 
 # tcp_window (pkts)
 set tcp_window 10000000
 # run_time (sec)
-set run_time 0.1
+set run_time 0.3
 # pktSize (bytes)
 set pktSize 1460
 
@@ -61,10 +62,13 @@ set ackRatio 1
 #### Timely/Hope Parameters ####
 set timely_ewma_alpha 0.3
 set timely_t_low 0
-set timely_t_high 0.0015
-set timely_additiveInc 30000000.0
+set timely_t_high 0.015
+#set timely_additiveInc 30000000.0
+set timely_additiveInc 10000000.0
+#set timely_decreaseFac 0.8
 set timely_decreaseFac 0.8
 set timely_HAI_thresh 5
+#set timely_rate 100000000.0
 set timely_rate 100000000.0
 
 ##### Switch Parameters ####
@@ -96,17 +100,20 @@ if {[string compare $congestion_alg "dctcp"] == 0} {
 
 #### Generate the random topology ####
 set rng_topo [new RNG]
-$rng_topo seed 0
+$rng_topo seed 1
 
 set RV_switches [new RandomVariable/Uniform]
-$RV_switches set min_ 0.02
-$RV_switches set max_ 0.06
+#$RV_switches set min_ 0.02
+#$RV_switches set max_ 0.06
+$RV_switches set min_ 0.20
+$RV_switches set max_ 0.40
 $RV_switches use-rng $rng_topo
 
 set num_nodes(0) $num_clients
 for {set i 1} {$i < $num_layers} {incr i} {
     set prev_layer $num_nodes([expr $i-1])
-    set num_nodes($i) [expr int([$RV_switches value]*exp($i-0.2)*$prev_layer)+1]
+    #set num_nodes($i) [expr int([$RV_switches value]*exp($i-0.2)*$prev_layer)+1]
+    set num_nodes($i) [expr int([$RV_switches value]*$prev_layer)+1]
     puts "-There will be $num_nodes($i) nodes on level $i"
 }
 
@@ -117,7 +124,17 @@ for {set i 0} {$i < $num_layers} {incr i} {
     }
 }
 
-# Create links between the nodes
+# Create links between the nodeswith random delay
+set RV_delays [new RandomVariable/Uniform]
+$RV_delays set min_ 5
+$RV_delays set max_ 500
+$RV_delays use-rng $rng_topo
+set dly_unit us
+set RV_caps [new RandomVariable/Uniform]
+$RV_caps set min_ 0
+$RV_caps set max_ 0.999999
+$RV_caps use-rng $rng_topo
+
 for {set i 0} {$i < [expr $num_layers-1]} {incr i} {
     set RV_links [new RandomVariable/Uniform]
     $RV_links set min_ 0
@@ -125,21 +142,29 @@ for {set i 0} {$i < [expr $num_layers-1]} {incr i} {
     $RV_links use-rng $rng_topo
 
     for {set j 0} {$j < $num_nodes($i)} {incr j} {
-	set link_to [expr int([$RV_links value])]
-	$ns duplex-link $nodes($i,$j) $nodes([expr $i+1],$link_to) $link_cap($i) $link_delay $queue_type
+		set link_to [expr int([$RV_links value])]
+		set delay [expr int([$RV_delays value])]
+		set link_delay $delay$dly_unit
+		set link_capacity [expr int($num_layers*[$RV_caps value])]
+		set link_capacity $link_cap($link_capacity)
+		$ns duplex-link $nodes($i,$j) $nodes([expr $i+1],$link_to) $link_capacity $link_delay $queue_type
     }
 }
 # Last layer shall be fully connected to each other
 set last_level [expr $num_layers-1]
 for {set i 0} {$i < $num_nodes($last_level)} {incr i} {
     for {set j [expr $i+1]} {$j < $num_nodes($last_level)} {incr j} {
-	$ns duplex-link $nodes($last_level,$i) $nodes($last_level,$j) $link_cap($last_level) $link_delay $queue_type
+    	set delay [expr int([$RV_delays value])]
+		set link_delay $delay$dly_unit
+		set link_capacity [expr int($num_layers*[$RV_caps value])]
+		set link_capacity $link_cap($link_capacity)
+		$ns duplex-link $nodes($last_level,$i) $nodes($last_level,$j) $link_capapacity $link_delay $queue_type
     }
 }
 
 # Create random generator for TCP connections
 set rng_conn [new RNG]
-$rng_conn seed 0
+$rng_conn seed 2
 
 # Parameters for random variables to connection choice
 set RV_host [new RandomVariable/Uniform]
@@ -402,7 +427,7 @@ if {[string compare $congestion_alg "dctcp"] == 0} {
 
 # Create random generator for starting the ftp connections
 set rng_time [new RNG]
-$rng_time seed 0
+$rng_time seed 3
 
 # Parameters for random variables to ftp start times
 set RV_beg_fin [new RandomVariable/Uniform]
