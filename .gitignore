@@ -13,3 +13,6 @@
 sftp-config.json
 dctcp-ns2/settings.sh
 *.out~
+
+# Bulk results for random topology
+out_randomTopology/*/

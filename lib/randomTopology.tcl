@@ -65,10 +65,8 @@ set timely_t_low 0
 set timely_t_high 0.015
 #set timely_additiveInc 30000000.0
 set timely_additiveInc 10000000.0
-#set timely_decreaseFac 0.8
 set timely_decreaseFac 0.8
 set timely_HAI_thresh 5
-#set timely_rate 100000000.0
 set timely_rate 100000000.0
 
 ##### Switch Parameters ####
@@ -100,7 +98,7 @@ if {[string compare $congestion_alg "dctcp"] == 0} {
 
 #### Generate the random topology ####
 set rng_topo [new RNG]
-$rng_topo seed 1
+$rng_topo seed 0
 
 set RV_switches [new RandomVariable/Uniform]
 #$RV_switches set min_ 0.02
@@ -158,13 +156,13 @@ for {set i 0} {$i < $num_nodes($last_level)} {incr i} {
 		set link_delay $delay$dly_unit
 		set link_capacity [expr int($num_layers*[$RV_caps value])]
 		set link_capacity $link_cap($link_capacity)
-		$ns duplex-link $nodes($last_level,$i) $nodes($last_level,$j) $link_capapacity $link_delay $queue_type
+		$ns duplex-link $nodes($last_level,$i) $nodes($last_level,$j) $link_capacity $link_delay $queue_type
     }
 }
 
 # Create random generator for TCP connections
 set rng_conn [new RNG]
-$rng_conn seed 2
+$rng_conn seed 0
 
 # Parameters for random variables to connection choice
 set RV_host [new RandomVariable/Uniform]
@@ -415,7 +413,7 @@ if {[string compare $congestion_alg "dctcp"] == 0} {
 
         }
     }
-    Agent/TCP/Vegas instproc recv {rtt_t cong_signal_t hopCnt_t timely_rate_t} {
+    Agent/TCP/Vegas instproc recv {rtt_t cong_signal_t nonbn_q_t timely_rate_t} {
         global ns rtt_file
         $self instvar fid_
 
@@ -427,12 +425,12 @@ if {[string compare $congestion_alg "dctcp"] == 0} {
 
 # Create random generator for starting the ftp connections
 set rng_time [new RNG]
-$rng_time seed 3
+$rng_time seed 0
 
 # Parameters for random variables to ftp start times
 set RV_beg_fin [new RandomVariable/Uniform]
 $RV_beg_fin set min_ 0.0001
-$RV_beg_fin set max_ [expr $run_time/6]
+$RV_beg_fin set max_ [expr $run_time/5]
 $RV_beg_fin use-rng $rng_time
 
 #Schedule events for the FTP agents
