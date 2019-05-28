@@ -46,13 +46,13 @@ def consolidate(report_dir, algorithms):
 		allData[algorithms[i]] = defaultdict(lambda: ([]))
 		final_report[algorithms[i]] = {}
 	
-	root, _, _ = os.walk(report_dir)
-	n_folders = len(root[1])
+	folders = [dI for dI in os.listdir(report_dir) if os.path.isdir(os.path.join(report_dir,dI))]
+	n_folders = len(folders)
 	cnt = 0.0
 	
 	print("%d simulation folders are found.\n"%n_folders)
 	
-	for folder in root[1]:
+	for folder in folders:
 		print("*** {}%\t getting results from {}...".format(cnt/n_folders*100,folder))
 		cnt += 1
 		
