@@ -374,7 +374,7 @@ def plot_allTotalThp(out_dir, dctcp=None, vegas=None, timely=None, hopeSum=None,
     print "Saved plot: ", allThp_file
     plt.close()
 
-def plot_queue(algo_name, out_dir):
+def plot_queue(algo_name, out_dir, log_plot=True):
     fmat = r"(?P<time>[\d.]*) (?P<from_node>[\d]*) (?P<to_node>[\d]*) (?P<q_size_B>[\d.]*) (?P<q_size_p>[\d.]*) (?P<arr_p>[\d.]*) (?P<dep_p>[\d.]*) (?P<drop_p>[\d.]*) (?P<arr_B>[\d.]*) (?P<dep_B>[\d.]*) (?P<drop_B>[\d.]*)"
     """
     Parse the sampled queue size output file and plot the queue size over time
@@ -411,7 +411,8 @@ def plot_queue(algo_name, out_dir):
         queue_name = 'Queue Client_{}'.format(dst_nodes[i])
         plt.plot(times[i],q_sizes[i],linestyle='-', marker='', label=queue_name)
     #plt.plot(time,q_size,linestyle='-', marker='', label='Queue in packets')
-    plt.yscale('log')
+    if log_plot==True: 
+    	plt.yscale('log')
     plt.ylabel('Queue (packets)')
     plt.xlabel('Time (sec)')
     #plt.legend(loc='lower right')

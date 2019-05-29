@@ -444,6 +444,7 @@ VegasTcpAgent::recv(Packet *pkt, Handler *)
 					cong_signal_ = max_delay;
 				} else {
 					cong_signal_ = max_delay* 8.0 / line_rate;
+					nonbn_q = nonbn_q* 8.0 / line_rate;
 				}				
 			} else if (hope_type_==2) {
 				// Total queueing delay to be used
@@ -468,6 +469,7 @@ VegasTcpAgent::recv(Packet *pkt, Handler *)
 					cong_signal_ = tot_delay;
 				} else {
 					cong_signal_ = tot_delay* 8.0 / line_rate;
+					nonbn_q = nonbn_q* 8.0 / line_rate;
 				}
 			} else if (hope_type_==3) {
 				// Squared queueing delay to be used
@@ -495,6 +497,7 @@ VegasTcpAgent::recv(Packet *pkt, Handler *)
 					cong_signal_ = squ_delay;
 				} else {
 					cong_signal_ = squ_delay* 8.0 / line_rate;
+					nonbn_q = nonbn_q* 8.0 / line_rate;
 				}
 			}
 			
@@ -518,9 +521,9 @@ VegasTcpAgent::recv(Packet *pkt, Handler *)
 			//printf("*** rtt= %f | cong_sgnl= %f | prevRTT= %f | rtt_diff= %f | avgRTTDiff= %f | cwnd_= %f\n",rtt*1000000, cong_signal_*1000000, timely_prevRTT_*1000000, rtt_diff*1000000, timely_avgRTTDiff_*1000000, (double)cwnd_);
 
 			double normalized_gradient = timely_avgRTTDiff_ / v_baseRTT_;
-			//if (hope_collector_ != 0){
-			//	normalized_gradient = timely_avgRTTDiff_ / baseBufferSize;
-			//}
+			if (hope_type_ != 0){
+				normalized_gradient = timely_avgRTTDiff_ / (v_baseRTT_/((double)hop_cnt/2));
+			}
 
 			double delta_factor = (currentTime - timely_lastUpdateTime) / v_baseRTT_;
   			delta_factor = (delta_factor<1.0)?delta_factor:1.0;

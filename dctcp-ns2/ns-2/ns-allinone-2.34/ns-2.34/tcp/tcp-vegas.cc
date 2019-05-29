@@ -521,8 +521,8 @@ VegasTcpAgent::recv(Packet *pkt, Handler *)
 			//printf("*** rtt= %f | cong_sgnl= %f | prevRTT= %f | rtt_diff= %f | avgRTTDiff= %f | cwnd_= %f\n",rtt*1000000, cong_signal_*1000000, timely_prevRTT_*1000000, rtt_diff*1000000, timely_avgRTTDiff_*1000000, (double)cwnd_);
 
 			double normalized_gradient = timely_avgRTTDiff_ / v_baseRTT_;
-			//if (hope_collector_ != 0){
-			//	normalized_gradient = timely_avgRTTDiff_ / baseBufferSize;
+			//if (hope_type_ != 0){
+			//	normalized_gradient = timely_avgRTTDiff_ / (v_baseRTT_/((double)hop_cnt/2));
 			//}
 
 			double delta_factor = (currentTime - timely_lastUpdateTime) / v_baseRTT_;
