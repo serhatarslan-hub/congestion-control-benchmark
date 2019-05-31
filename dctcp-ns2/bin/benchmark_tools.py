@@ -634,7 +634,7 @@ def print_1ClientFCT(out_dir, dctcp=None, vegas=None, timely=None, hopeSum=None,
 	report += "{:>12} ".format("Algorithm")
 	for size in f_sizes:
 		report += "| {0: >16} ".format(size+' Flows')
-		report += "\n"
+	report += "\n"
 
 	if dctcp is not None:
 		report += "{:>12} ".format("DCTCP")

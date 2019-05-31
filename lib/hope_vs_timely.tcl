@@ -56,6 +56,7 @@ set timely_additiveInc 60000000.0
 set timely_decreaseFac 0.8
 set timely_HAI_thresh 5
 set timely_rate 1000000000.0
+set hope_bits 0
 
 ##### Switch Parameters ####
 set drop_prio_ false
@@ -73,6 +74,12 @@ $ns color 7 Green
 $ns color 8 Black
 $ns color 9 Blue
 $ns color 10 Orange
+$ns color 11 Brown
+$ns color 12 Green
+$ns color 13 Black
+$ns color 14 Blue
+$ns color 15 Orange
+$ns color 16 Brown
 
 
 #Open the Trace files
@@ -280,7 +287,8 @@ if {[string compare $congestion_alg "dctcp"] == 0} {
     $my_tcp set timely_rate_ $timely_rate
     $my_tcp set timely_ $timely
     $my_tcp set hope_type_ $hope_type
-    $my_tcp set hope_collector_ $hope_collector 
+    $my_tcp set hope_collector_ $hope_collector
+    $my_tcp set hope_bits_ $hope_bits 
 
     # set up FTP connections
     set my_ftp [$my_tcp attach-source FTP]
@@ -301,9 +309,8 @@ for {set i 0} {$i < $last_sw} {incr i} {
 		set other_ftp($i) [new Application/FTP]
 		$other_ftp($i) attach-agent $other_tcp($i)
 		$other_ftp($i) set type_ FTP
-		$other_tcp($i) set timely_ $timely
-		$other_tcp($i) set hope_type_ $hope_type
-    	$other_tcp($i) set hope_collector_ $hope_collector 
+		#$other_tcp($i) set timely_ 0
+		#$other_tcp($i) set hope_type_ 0 
 
     } elseif { $i < [expr $last_sw-1] } {
 
@@ -318,9 +325,8 @@ for {set i 0} {$i < $last_sw} {incr i} {
     	    set other_ftp($indx) [new Application/FTP]
     	    $other_ftp($indx) attach-agent $other_tcp($indx)
     	    $other_ftp($indx) set type_ FTP
-	    	$other_tcp($indx) set timely_ $timely
-	    	$other_tcp($indx) set hope_type_ $hope_type
-    		$other_tcp($indx) set hope_collector_ $hope_collector
+	    	#$other_tcp($indx) set timely_ 0
+	    	#$other_tcp($indx) set hope_type_ 0
 
 		}
 
@@ -337,14 +343,27 @@ for {set i 0} {$i < $last_sw} {incr i} {
     	    set other_ftp($indx) [new Application/FTP]
     	    $other_ftp($indx) attach-agent $other_tcp($indx)
     	    $other_ftp($indx) set type_ FTP
-	    	$other_tcp($indx) set timely_ $timely
-	    	$other_tcp($indx) set hope_type_ $hope_type
-    		$other_tcp($indx) set hope_collector_ $hope_collector
+	    	#$other_tcp($indx) set timely_ 0
+	    	#$other_tcp($indx) set hope_type_ 0
 
 		}
 
     }
 }
+
+#set disruptor [new Agent/TCP/Vegas]
+#$ns attach-agent $others(0) $disruptor
+#set disruptor_sink [new Agent/TCPSink]
+#$ns attach-agent $others($n_switch) $disruptor_sink
+#$ns connect $disruptor $disruptor_sink
+#$disruptor set fid_ [expr $second_crowd+$n_crowd-1+$n_switch]
+#set disruptor_ftp [new Application/FTP]
+#$disruptor_ftp attach-agent $disruptor
+#$disruptor_ftp set type_ FTP
+#$disruptor set timely_ 0
+#$disruptor set hope_type_ 0
+#$ns at [expr $run_time*0.4] "$disruptor_ftp start"
+#$ns at [expr $run_time*0.6] "$disruptor_ftp stop"
 
 Agent/TCP/Vegas instproc recv {rtt_t cong_signal_t hopCnt_t timely_rate_t} {
 	global ns rtt_file  
@@ -370,6 +389,7 @@ Agent/TCP/Vegas instproc recv {rtt_t cong_signal_t hopCnt_t timely_rate_t} {
 #    $other_tcp($i) set timely_ $timely
 #    $other_tcp($i) set hope_type_ $hope_type
 #    $other_tcp($i) set hope_collector_ $hope_collector 
+#    $other_tcp($i) set hope_bits_ $hope_bits
 #}
 
 # queue monitoring
