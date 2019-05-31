@@ -624,131 +624,131 @@ def print_1ClientFCT(out_dir, dctcp=None, vegas=None, timely=None, hopeSum=None,
                      hopeMaxq=None, hopeMaxqd=None, hopeMaxe=None, hopeMaxed=None, \
                      hopeSumq=None, hopeSumqd=None, hopeSume=None, hopeSumed=None, \
                      hopeSqu=None, hopeSquq=None):
-    """
-    Report the given flow completion times of algorithms for 1 client simulations
-    """
-    f_sizes = ['Short', 'Mid-Length', 'Long']    
-    allFCT_file = out_dir+'All.fct_benchmark.txt'
+	"""
+	Report the given flow completion times of algorithms for 1 client simulations
+	"""
+	f_sizes = ['Short', 'Mid-Length', 'Long']    
+	allFCT_file = out_dir+'All.fct_benchmark.txt'
 
-    report = "\n****** Flow Completion Times ******\n"
-    report += "{:>12} ".format("Algorithm")
-    for size in f_sizes:
-        report += "| {0: >16} ".format(size+' Flows')
-    report += "\n"
+	report = "\n****** Flow Completion Times ******\n"
+	report += "{:>12} ".format("Algorithm")
+	for size in f_sizes:
+		report += "| {0: >16} ".format(size+' Flows')
+		report += "\n"
 
-    if dctcp is not None:
-        report += "{:>12} ".format("DCTCP")
-	dctcp = [np.array(dctcp[i]) for i in range(len(f_sizes))]
-        for i in range(len(f_sizes)):
-            size = np.mean(dctcp[i])*1000
-            report += "| {0: >16} ".format(size)
-        report += "\n"
-    if vegas is not None:
-        report += "{:>12} ".format("Vegas")
-	vegas = [np.array(vegas[i]) for i in range(len(f_sizes))]
-        for i in range(len(f_sizes)):
-            size = np.mean(vegas[i])*1000
-            report += "| {0: >16} ".format(size)
-        report += "\n"
-    if timely is not None:
-        report += "{:>12} ".format("Timely")
-	timely = [np.array(timely[i]) for i in range(len(f_sizes))]
-        for i in range(len(f_sizes)):
-            size = np.mean(timely[i])*1000
-            report += "| {0: >16} ".format(size)
-        report += "\n"
-    if hopeSum is not None:
-        report += "{:>12} ".format("Hope-Sum")
-	hopeSum = [np.array(hopeSum[i]) for i in range(len(f_sizes))]
-        for i in range(len(f_sizes)):
-            size = np.mean(hopeSum[i])*1000
-            report += "| {0: >16} ".format(size)
-        report += "\n"
-    if hopeMax is not None:
-        report += "{:>12} ".format("Hope-Max")
-	hopeMax = [np.array(hopeMax[i]) for i in range(len(f_sizes))]
-        for i in range(len(f_sizes)):
-            size = np.mean(hopeMax[i])*1000
-            report += "| {0: >16} ".format(size)
-        report += "\n"
-    if hopeMaxq is not None:
-        report += "{:>12} ".format("Hope-Maxq")
-	hopeMaxq = [np.array(hopeMaxq[i]) for i in range(len(f_sizes))]
-        for i in range(len(f_sizes)):
-            size = np.mean(hopeMaxq[i])*1000
-            report += "| {0: >16} ".format(size)
-        report += "\n"
-    if hopeMaxqd is not None:
-        report += "{:>12} ".format("Hope-Maxqd")
-	hopeMaxqd = [np.array(hopeMaxqd[i]) for i in range(len(f_sizes))]
-        for i in range(len(f_sizes)):
-            size = np.mean(hopeMaxqd[i])*1000
-            report += "| {0: >16} ".format(size)
-        report += "\n"
-    if hopeMaxe is not None:
-        report += "{:>12} ".format("Hope-Maxe")
-	hopeMaxe = [np.array(hopeMaxe[i]) for i in range(len(f_sizes))]
-        for i in range(len(f_sizes)):
-            size = np.mean(hopeMaxe[i])*1000
-            report += "| {0: >16} ".format(size)
-        report += "\n"
-    if hopeMaxed is not None:
-        report += "{:>12} ".format("Hope-Maxed")
-	hopeMaxed = [np.array(hopeMaxed[i]) for i in range(len(f_sizes))]
-        for i in range(len(f_sizes)):
-            size = np.mean(hopeMaxed[i])*1000
-            report += "| {0: >16} ".format(size)
-        report += "\n"
-    if hopeSumq is not None:
-        report += "{:>12} ".format("Hope-Sumq")
-	hopeSumq = [np.array(hopeSumq[i]) for i in range(len(f_sizes))]
-        for i in range(len(f_sizes)):
-            size = np.mean(hopeSumq[i])*1000
-            report += "| {0: >16} ".format(size)
-        report += "\n"
-    if hopeSumqd is not None:
-        report += "{:>12} ".format("Hope-Sumqd")
-	hopeSumqd = [np.array(hopeSumqd[i]) for i in range(len(f_sizes))]
-        for i in range(len(f_sizes)):
-            size = np.mean(hopeSumqd[i])*1000
-            report += "| {0: >16} ".format(size)
-        report += "\n"
-    if hopeSume is not None:
-        report += "{:>12} ".format("Hope-Sume")
-	hopeSume = [np.array(hopeSume[i]) for i in range(len(f_sizes))]
-        for i in range(len(f_sizes)):
-            size = np.mean(hopeSume[i])*1000
-            report += "| {0: >16} ".format(size)
-        report += "\n"
-    if hopeSumed is not None:
-        report += "{:>12} ".format("Hope-Sumed")
-	hopeSumed = [np.array(hopeSumed[i]) for i in range(len(f_sizes))]
-        for i in range(len(f_sizes)):
-            size = np.mean(hopeSumed[i])*1000
-            report += "| {0: >16} ".format(size)
-        report += "\n"
-    if hopeSqu is not None:
-        report += "{:>12} ".format("Hope-Squ")
-	hopeSqu = [np.array(hopeSqu[i]) for i in range(len(f_sizes))]
-        for i in range(len(f_sizes)):
-            size = np.mean(hopeSqu[i])*1000
-            report += "| {0: >16} ".format(size)
-        report += "\n"
-    if hopeSquq is not None:
-        report += "{:>12} ".format("Hope-Squq")
-	hopeSquq = [np.array(hopeSquq[i]) for i in range(len(f_sizes))]
-        for i in range(len(f_sizes)):
-            size = np.mean(hopeSquq[i])*1000
-            report += "| {0: >16} ".format(size)
-        report += "\n"
+	if dctcp is not None:
+		report += "{:>12} ".format("DCTCP")
+		dctcp = [np.array(dctcp[i]) for i in range(len(f_sizes))]
+		for i in range(len(f_sizes)):
+			size = np.mean(dctcp[i])*1000
+			report += "| {0: >16} ".format(size)
+		report += "\n"
+	if vegas is not None:
+		report += "{:>12} ".format("Vegas")
+		vegas = [np.array(vegas[i]) for i in range(len(f_sizes))]
+		for i in range(len(f_sizes)):
+			size = np.mean(vegas[i])*1000
+			report += "| {0: >16} ".format(size)
+		report += "\n"
+	if timely is not None:
+		report += "{:>12} ".format("Timely")
+		timely = [np.array(timely[i]) for i in range(len(f_sizes))]
+		for i in range(len(f_sizes)):
+			size = np.mean(timely[i])*1000
+			report += "| {0: >16} ".format(size)
+		report += "\n"
+	if hopeSum is not None:
+		report += "{:>12} ".format("Hope-Sum")
+		hopeSum = [np.array(hopeSum[i]) for i in range(len(f_sizes))]
+		for i in range(len(f_sizes)):
+			size = np.mean(hopeSum[i])*1000
+			report += "| {0: >16} ".format(size)
+		report += "\n"
+	if hopeMax is not None:
+		report += "{:>12} ".format("Hope-Max")
+		hopeMax = [np.array(hopeMax[i]) for i in range(len(f_sizes))]
+		for i in range(len(f_sizes)):
+			size = np.mean(hopeMax[i])*1000
+			report += "| {0: >16} ".format(size)
+		report += "\n"
+	if hopeMaxq is not None:
+		report += "{:>12} ".format("Hope-Maxq")
+		hopeMaxq = [np.array(hopeMaxq[i]) for i in range(len(f_sizes))]
+		for i in range(len(f_sizes)):
+			size = np.mean(hopeMaxq[i])*1000
+			report += "| {0: >16} ".format(size)
+		report += "\n"
+	if hopeMaxqd is not None:
+		report += "{:>12} ".format("Hope-Maxqd")
+		hopeMaxqd = [np.array(hopeMaxqd[i]) for i in range(len(f_sizes))]
+		for i in range(len(f_sizes)):
+			size = np.mean(hopeMaxqd[i])*1000
+			report += "| {0: >16} ".format(size)
+		report += "\n"
+	if hopeMaxe is not None:
+		report += "{:>12} ".format("Hope-Maxe")
+		hopeMaxe = [np.array(hopeMaxe[i]) for i in range(len(f_sizes))]
+		for i in range(len(f_sizes)):
+			size = np.mean(hopeMaxe[i])*1000
+			report += "| {0: >16} ".format(size)
+		report += "\n"
+	if hopeMaxed is not None:
+		report += "{:>12} ".format("Hope-Maxed")
+		hopeMaxed = [np.array(hopeMaxed[i]) for i in range(len(f_sizes))]
+		for i in range(len(f_sizes)):
+			size = np.mean(hopeMaxed[i])*1000
+			report += "| {0: >16} ".format(size)
+		report += "\n"
+	if hopeSumq is not None:
+		report += "{:>12} ".format("Hope-Sumq")
+		hopeSumq = [np.array(hopeSumq[i]) for i in range(len(f_sizes))]
+		for i in range(len(f_sizes)):
+			size = np.mean(hopeSumq[i])*1000
+			report += "| {0: >16} ".format(size)
+		report += "\n"
+	if hopeSumqd is not None:
+		report += "{:>12} ".format("Hope-Sumqd")
+		hopeSumqd = [np.array(hopeSumqd[i]) for i in range(len(f_sizes))]
+		for i in range(len(f_sizes)):
+			size = np.mean(hopeSumqd[i])*1000
+			report += "| {0: >16} ".format(size)
+		report += "\n"
+	if hopeSume is not None:
+		report += "{:>12} ".format("Hope-Sume")
+		hopeSume = [np.array(hopeSume[i]) for i in range(len(f_sizes))]
+		for i in range(len(f_sizes)):
+			size = np.mean(hopeSume[i])*1000
+			report += "| {0: >16} ".format(size)
+		report += "\n"
+	if hopeSumed is not None:
+		report += "{:>12} ".format("Hope-Sumed")
+		hopeSumed = [np.array(hopeSumed[i]) for i in range(len(f_sizes))]
+		for i in range(len(f_sizes)):
+			size = np.mean(hopeSumed[i])*1000
+			report += "| {0: >16} ".format(size)
+		report += "\n"
+	if hopeSqu is not None:
+		report += "{:>12} ".format("Hope-Squ")
+		hopeSqu = [np.array(hopeSqu[i]) for i in range(len(f_sizes))]
+		for i in range(len(f_sizes)):
+			size = np.mean(hopeSqu[i])*1000
+			report += "| {0: >16} ".format(size)
+		report += "\n"
+	if hopeSquq is not None:
+		report += "{:>12} ".format("Hope-Squq")
+		hopeSquq = [np.array(hopeSquq[i]) for i in range(len(f_sizes))]
+		for i in range(len(f_sizes)):
+			size = np.mean(hopeSquq[i])*1000
+			report += "| {0: >16} ".format(size)
+		report += "\n"
 
-    report += "*All the times are given in miliseconds.\n\n"
+	report += "*All the times are given in miliseconds.\n\n"
 
-    print(report)
-    with open(allFCT_file,"w") as fo:
-        fo.write(report) 
+	print(report)
+	with open(allFCT_file,"w") as fo:
+		fo.write(report) 
 
-    print("Saved report to %s" % allFCT_file)
+	print("Saved report to %s" % allFCT_file)
     
 def gen_report(congestion_alg, out_dir, rtt, thp, fct, verbose=True):
 	"""

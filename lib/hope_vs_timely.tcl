@@ -63,7 +63,7 @@ set deque_prio_ false
 
 #Create a simulator object
 set ns [new Simulator]
-$ns color 1 Red
+$ns color 0 Red
 $ns color 2 Green
 $ns color 3 Black
 $ns color 4 Blue
@@ -188,16 +188,16 @@ if {[string compare $congestion_alg "dctcp"] == 0} {
     
     # The following procedure is called whenever a packet is received 
     Agent/TCP/FullTcp instproc recv {rtt_t} {
-	global ns rtt_file 
-	$self instvar fid_      
+		global ns rtt_file 
+		$self instvar fid_      
 	
-	$self instvar node_
-	if {[$node_ id] == 0 } {
-	    set now [$ns now]
-	    set rtt [$self set rtt_]
+		$self instvar node_
+		if {[$node_ id] == 0 } {
+	    	set now [$ns now]
+	    	set rtt [$self set rtt_]
 	
-	    puts $rtt_file "$now $fid_ $rtt"
-	}
+	    	puts $rtt_file "$now $fid_ $rtt"
+		}
     }
 
 } else {
@@ -210,64 +210,64 @@ if {[string compare $congestion_alg "dctcp"] == 0} {
 
     if {[string compare $congestion_alg "vegas"] == 0} {    
         set timely 0
-	set hope_type 0
-	set hope_collector 0
+		set hope_type 0
+		set hope_collector 0
     } elseif {[string compare $congestion_alg "timely"] == 0} { 
-	set timely 1
-	set hope_type 0 
-	set hope_collector 0  
+		set timely 1
+		set hope_type 0 
+		set hope_collector 0  
     } elseif {[string compare $congestion_alg "hope_sum"] == 0} {
-	set timely 0
-	set hope_type 2 
-	set hope_collector 0    
+		set timely 0
+		set hope_type 2 
+		set hope_collector 0    
     } elseif {[string compare $congestion_alg "hope_max"] == 0} { 
-	set timely 0   
-	set hope_type 1 
-	set hope_collector 0 
+		set timely 0   
+		set hope_type 1 
+		set hope_collector 0 
     } elseif {[string compare $congestion_alg "hope_maxq"] == 0} {
-	set timely 0    
-	set hope_type 1 
-	set hope_collector 1 
+		set timely 0    
+		set hope_type 1 
+		set hope_collector 1 
     } elseif {[string compare $congestion_alg "hope_maxqd"] == 0} { 
-	set timely 0   
-	set hope_type 1 
-	set hope_collector 2 
+		set timely 0   
+		set hope_type 1 
+		set hope_collector 2 
     } elseif {[string compare $congestion_alg "hope_maxe"] == 0} { 
-	set timely 0
-	set hope_type 1 
-	set hope_collector 3  
-	set timely_t_low -10  
+		set timely 0
+		set hope_type 1 
+		set hope_collector 3  
+		set timely_t_low -10  
     } elseif {[string compare $congestion_alg "hope_maxed"] == 0} {
-	set timely 0 
-	set hope_type 1 
-	set hope_collector 4  
-	set timely_t_low -10   
+		set timely 0 
+		set hope_type 1 
+		set hope_collector 4  
+		set timely_t_low -10   
     } elseif {[string compare $congestion_alg "hope_sumq"] == 0} { 
-	set timely 0
-	set hope_type 2 
-	set hope_collector 1    
+		set timely 0
+		set hope_type 2 
+		set hope_collector 1    
     } elseif {[string compare $congestion_alg "hope_sumqd"] == 0} {
-	set timely 0
-	set hope_type 2 
-	set hope_collector 2     
+		set timely 0
+		set hope_type 2 
+		set hope_collector 2     
     } elseif {[string compare $congestion_alg "hope_sume"] == 0} {
-	set timely 0
-	set hope_type 2 
-	set hope_collector 3  
-	set timely_t_low -10    
+		set timely 0
+		set hope_type 2 
+		set hope_collector 3  
+		set timely_t_low -10    
     } elseif {[string compare $congestion_alg "hope_sumed"] == 0} {
-	set timely 0
-	set hope_type 2 
-	set hope_collector 4  
-	set timely_t_low -10    
+		set timely 0
+		set hope_type 2 
+		set hope_collector 4  
+		set timely_t_low -10    
     } elseif {[string compare $congestion_alg "hope_squ"] == 0} {
-	set timely 0 
-	set hope_type 3 
-	set hope_collector 0   
+		set timely 0 
+		set hope_type 3 
+		set hope_collector 0   
     } elseif {[string compare $congestion_alg "hope_squq"] == 0} {
-	set timely 0
-	set hope_type 3 
-	set hope_collector 1    
+		set timely 0
+		set hope_type 3 
+		set hope_collector 1    
     }
 
     $my_tcp set timely_packetSize_ [expr $pktSize+40]
@@ -292,24 +292,25 @@ if {[string compare $congestion_alg "dctcp"] == 0} {
 for {set i 0} {$i < $last_sw} {incr i} {
     if { $i < [expr $last_sw-2] } {
 
-	set other_tcp($i) [new Agent/TCP/Vegas]
-	$ns attach-agent $others($i) $other_tcp($i)
-	set other_sink($i) [new Agent/TCPSink]
-	$ns attach-agent $others([expr $i+$n_switch]) $other_sink($i)
-	$ns connect $other_tcp($i) $other_sink($i)
-	$other_tcp($i) set fid_ [expr $i+2]
-	set other_ftp($i) [new Application/FTP]
-	$other_ftp($i) attach-agent $other_tcp($i)
-	$other_ftp($i) set type_ FTP
-	$other_tcp($i) set timely_ 0
-	$other_tcp($i) set hope_type_ 0
+		set other_tcp($i) [new Agent/TCP/Vegas]
+		$ns attach-agent $others($i) $other_tcp($i)
+		set other_sink($i) [new Agent/TCPSink]
+		$ns attach-agent $others([expr $i+$n_switch]) $other_sink($i)
+		$ns connect $other_tcp($i) $other_sink($i)
+		$other_tcp($i) set fid_ [expr $i+2]
+		set other_ftp($i) [new Application/FTP]
+		$other_ftp($i) attach-agent $other_tcp($i)
+		$other_ftp($i) set type_ FTP
+		$other_tcp($i) set timely_ $timely
+		$other_tcp($i) set hope_type_ $hope_type
+    	$other_tcp($i) set hope_collector_ $hope_collector 
 
     } elseif { $i < [expr $last_sw-1] } {
 
-	for {set j 0} {$j < $second_crowd} {incr j} {
-	    set indx [expr $i+$j]
+		for {set j 0} {$j < $second_crowd} {incr j} {
+	    	set indx [expr $i+$j]
     	    set other_tcp($indx) [new Agent/TCP/Vegas]
-	    $ns attach-agent $others($i) $other_tcp($indx)
+	    	$ns attach-agent $others($i) $other_tcp($indx)
     	    set other_sink($indx) [new Agent/TCPSink]
     	    $ns attach-agent $others([expr $i+$n_switch]) $other_sink($indx)
     	    $ns connect $other_tcp($indx) $other_sink($indx)
@@ -317,17 +318,18 @@ for {set i 0} {$i < $last_sw} {incr i} {
     	    set other_ftp($indx) [new Application/FTP]
     	    $other_ftp($indx) attach-agent $other_tcp($indx)
     	    $other_ftp($indx) set type_ FTP
-	    $other_tcp($indx) set timely_ 0
-	    $other_tcp($indx) set hope_type_ 0
+	    	$other_tcp($indx) set timely_ $timely
+	    	$other_tcp($indx) set hope_type_ $hope_type
+    		$other_tcp($indx) set hope_collector_ $hope_collector
 
-	}
+		}
 
     } else {
 
-	for {set j 0} {$j < $n_crowd} {incr j} {
-	    set indx [expr $second_crowd+$i-1+$j]
+		for {set j 0} {$j < $n_crowd} {incr j} {
+	    	set indx [expr $second_crowd+$i-1+$j]
     	    set other_tcp($indx) [new Agent/TCP/Vegas]
-	    $ns attach-agent $others($i) $other_tcp($indx)
+	    	$ns attach-agent $others($i) $other_tcp($indx)
     	    set other_sink($indx) [new Agent/TCPSink]
     	    $ns attach-agent $others($last_sw) $other_sink($indx)
     	    $ns connect $other_tcp($indx) $other_sink($indx)
@@ -335,10 +337,11 @@ for {set i 0} {$i < $last_sw} {incr i} {
     	    set other_ftp($indx) [new Application/FTP]
     	    $other_ftp($indx) attach-agent $other_tcp($indx)
     	    $other_ftp($indx) set type_ FTP
-	    $other_tcp($indx) set timely_ 0
-	    $other_tcp($indx) set hope_type_ 0
+	    	$other_tcp($indx) set timely_ $timely
+	    	$other_tcp($indx) set hope_type_ $hope_type
+    		$other_tcp($indx) set hope_collector_ $hope_collector
 
-	}
+		}
 
     }
 }
