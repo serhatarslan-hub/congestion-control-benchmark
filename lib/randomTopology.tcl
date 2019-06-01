@@ -268,6 +268,7 @@ if {[string compare $congestion_alg "dctcp"] == 0} {
             $tcp($conn_idx) set timely_decreaseFac_ $timely_decreaseFac
             $tcp($conn_idx) set timely_HAI_thresh_ $timely_HAI_thresh
             $tcp($conn_idx) set timely_rate_ $timely_rate
+            $tcp($conn_idx) set rttNoise_ 0
         }
     }
 
