@@ -557,7 +557,7 @@ VegasTcpAgent::recv(Packet *pkt, Handler *)
 			//derease in rate capped by 0.5 times the old rate
  			timely_rate_ = (timely_rate_<(timely_oldRate * 0.5))?(timely_oldRate * 0.5):timely_rate_;
 		
-			cwnd_ = timely_rate_ * rtt / double(timely_packetSize_ * 8.0);
+			cwnd_ = round(timely_rate_ * rtt / double(timely_packetSize_ * 8.0));
 			cwnd_ = ((double)cwnd_>1.0)?(double)cwnd_:1.1;
 
 			//printf("*** rtt= %f | cong_sgnl= %f | old_cwnd= %f | old_rate= %f\n",rtt*1000000, cong_signal_*1000000, old_cwnd, timely_oldRate);
