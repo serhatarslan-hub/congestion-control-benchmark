@@ -607,6 +607,7 @@ protected:
 	double timely_additiveInc_;	// Additive increase constant (in bits/sec)
 	double timely_decreaseFac_;	// Multiplicative decrease constant
 	int timely_HAI_thresh_;	// HAI mode threshold
+	double rttNoise_;  // RTT measurement noise (uniform in [0, rttNoiseMax_]); zero means no noise
 
 	double timely_rate_;	// Current rate in bits/sec
 	double timely_prevRTT_;	// Previous RTT in sec

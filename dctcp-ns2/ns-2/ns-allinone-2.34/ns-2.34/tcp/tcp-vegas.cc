@@ -108,6 +108,7 @@ VegasTcpAgent::delay_bind_init_all()
 	delay_bind_init_one("timely_additiveInc_");
 	delay_bind_init_one("timely_decreaseFac_");
 	delay_bind_init_one("timely_HAI_thresh_");
+	delay_bind_init_one("rttNoise_");
 	delay_bind_init_one("timely_rate_");
 	/* Serhat's implementation of HOPE */
 	delay_bind_init_one("hope_type_");
@@ -143,6 +144,8 @@ VegasTcpAgent::delay_bind_dispatch(const char *varName, const char *localName,
 	if (delay_bind(varName, localName, "timely_decreaseFac_", &timely_decreaseFac_, tracer)) 
 		return TCL_OK;
 	if (delay_bind(varName, localName, "timely_HAI_thresh_", &timely_HAI_thresh_, tracer)) 
+		return TCL_OK;
+	if (delay_bind(varName, localName, "rttNoise_", &rttNoise_, tracer)) 
 		return TCL_OK;
 	if (delay_bind(varName, localName, "timely_rate_", &timely_rate_, tracer)) 
 		return TCL_OK;
@@ -366,6 +369,11 @@ VegasTcpAgent::recv(Packet *pkt, Handler *)
 		
 		double rtt, n;
 		rtt = currentTime - sendTime;
+
+		// Add positive uniform noise if desired
+		// (0, 50, 100, 150, 200 micro-seconds in the timely paper)
+		rtt += rttNoise_ * (double)rand() / RAND_MAX;
+
 		if((sendTime !=0.) && (transmits==1)) {
 			 // update fine-grained timeout value, v_timeout_.
 			
