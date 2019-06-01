@@ -33,6 +33,7 @@ set link_cap 10Gb
 set other_link_cap 10Gb
 # link_delay (ms)
 set link_delay 5us
+set other_link_delay 17.4us
 # tcp_window (pkts)
 set tcp_window 10000000
 # run_time (sec)
@@ -50,12 +51,12 @@ set ackRatio 1
 
 #### Timely/Hope Parameters ####
 set timely_ewma_alpha 0.3
-set timely_t_low 0
+set timely_t_low 0.00012
 set timely_t_high 0.0005
-set timely_additiveInc 60000000.0
-set timely_decreaseFac 0.8
+set timely_additiveInc 20000000.0
+set timely_decreaseFac 0.6
 set timely_HAI_thresh 5
-set timely_rate 1000000000.0
+set timely_rate 2000000000.0
 set hope_bits 0
 
 ##### Switch Parameters ####
@@ -143,11 +144,11 @@ for {set i 0} {$i < $last_sw} {incr i} {
 $ns duplex-link $switch($last_sw) $my_dst $link_cap $link_delay $queue_type
 
 for {set i 0} {$i < $n_switch} {incr i} {
-    $ns duplex-link $switch($i) $others($i) $other_link_cap $link_delay $queue_type
+    $ns duplex-link $switch($i) $others($i) $other_link_cap $other_link_delay $queue_type
 }
 for {set i 1} {$i < $last_sw} {incr i} {
     set indx [expr $last_sw+$i]
-    $ns duplex-link $switch($i) $others($indx) $other_link_cap $link_delay $queue_type
+    $ns duplex-link $switch($i) $others($indx) $other_link_cap $other_link_delay $queue_type
 }
 
 #Monitor the queue for link. (for NAM)
@@ -350,6 +351,20 @@ for {set i 0} {$i < $last_sw} {incr i} {
 
     }
 }
+for {set i 0} {$i < [expr $n_switch+$second_crowd+$n_crowd-3]} {incr i} {
+    $other_tcp($i) set timely_packetSize_ [expr $pktSize+40]
+    $other_tcp($i) set timely_ewma_alpha_ $timely_ewma_alpha
+    $other_tcp($i) set timely_t_low_ $timely_t_low
+    $other_tcp($i) set timely_t_high_ $timely_t_high
+    $other_tcp($i) set timely_additiveInc_ $timely_additiveInc
+    $other_tcp($i) set timely_decreaseFac_ $timely_decreaseFac
+    $other_tcp($i) set timely_HAI_thresh_ $timely_HAI_thresh
+    $other_tcp($i) set timely_rate_ $timely_rate
+    $other_tcp($i) set timely_ $timely
+    $other_tcp($i) set hope_type_ $hope_type
+    $other_tcp($i) set hope_collector_ $hope_collector 
+    $other_tcp($i) set hope_bits_ $hope_bits
+}
 
 #set disruptor [new Agent/TCP/Vegas]
 #$ns attach-agent $others(0) $disruptor
@@ -377,20 +392,6 @@ Agent/TCP/Vegas instproc recv {rtt_t cong_signal_t hopCnt_t timely_rate_t} {
 	    puts $rtt_file "$now $fid_ $rtt"
 	}
 }
-#for {set i 0} {$i < [expr $n_switch+$second_crowd+$n_crowd-3]} {incr i} {
-#    $other_tcp($i) set timely_packetSize_ [expr $pktSize+40]
-#    $other_tcp($i) set timely_ewma_alpha_ $timely_ewma_alpha
-#    $other_tcp($i) set timely_t_low_ $timely_t_low
-#    $other_tcp($i) set timely_t_high_ $timely_t_high
-#    $other_tcp($i) set timely_additiveInc_ $timely_additiveInc
-#    $other_tcp($i) set timely_decreaseFac_ $timely_decreaseFac
-#    $other_tcp($i) set timely_HAI_thresh_ $timely_HAI_thresh
-#    $other_tcp($i) set timely_rate_ $timely_rate
-#    $other_tcp($i) set timely_ $timely
-#    $other_tcp($i) set hope_type_ $hope_type
-#    $other_tcp($i) set hope_collector_ $hope_collector 
-#    $other_tcp($i) set hope_bits_ $hope_bits
-#}
 
 # queue monitoring
 set qf_size [open $out_q_file w]
@@ -407,7 +408,7 @@ for {set i 0} {$i < [expr $n_switch+$second_crowd+$n_crowd-3]} {incr i} {
     $ns at 0 "$other_ftp($i) start"
     $ns at $run_time "$other_ftp($i) stop"
 }
-$ns at 0.0001 "$my_ftp start"
+$ns at 0.0000 "$my_ftp start"
 $ns at $run_time "$my_ftp stop"
 
 #Call the finish procedure after run_time seconds of simulation time
