@@ -167,7 +167,7 @@ for {set i 0} {$i < $num_clients} {incr i} {
         $tcp($conn_idx) set timely_decreaseFac_ $timely_decreaseFac
         $tcp($conn_idx) set timely_HAI_thresh_ $timely_HAI_thresh
         $tcp($conn_idx) set timely_rate_ $timely_rate
-        
+        $tcp($conn_idx) set rttNoise_ 0
         $tcp($conn_idx) set hope_type_ 1
         $tcp($conn_idx) set hope_collector_ 1
         $tcp($conn_idx) set hope_bits_ $hope_bits

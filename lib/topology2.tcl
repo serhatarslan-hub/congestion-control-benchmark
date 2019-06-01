@@ -214,25 +214,26 @@ if {[string compare $congestion_alg "dctcp"] == 0} {
 } else {
     for {set i 0} {$i < $num_clients} {incr i} {
         for {set j 0} {$j < $num_conn_per_client} {incr j} {
-        set conn_idx [expr $i*$num_conn_per_client+$j]        
-    
-        set tcp($conn_idx) [new Agent/TCP/Vegas]
-            set sink($conn_idx) [new Agent/TCPSink]
-            $ns attach-agent $client($i) $tcp($conn_idx)
-            $ns attach-agent $server_node $sink($conn_idx)
-            #$tcp($conn_idx) set fid_ [expr $conn_idx]
-            #$sink($conn_idx) set fid_ [expr $conn_idx]
-            $ns connect $tcp($conn_idx) $sink($conn_idx)
-            ## set up TCP-level connections
-            #$sink($conn_idx) listen
+            set conn_idx [expr $i*$num_conn_per_client+$j]        
+        
+            set tcp($conn_idx) [new Agent/TCP/Vegas]
+                set sink($conn_idx) [new Agent/TCPSink]
+                $ns attach-agent $client($i) $tcp($conn_idx)
+                $ns attach-agent $server_node $sink($conn_idx)
+                #$tcp($conn_idx) set fid_ [expr $conn_idx]
+                #$sink($conn_idx) set fid_ [expr $conn_idx]
+                $ns connect $tcp($conn_idx) $sink($conn_idx)
+                ## set up TCP-level connections
+                #$sink($conn_idx) listen
 
-        $tcp($conn_idx) set timely_packetSize_ $pktSize
-        $tcp($conn_idx) set timely_ewma_alpha_ $timely_ewma_alpha
-        $tcp($conn_idx) set timely_t_high_ $timely_t_high
-        $tcp($conn_idx) set timely_additiveInc_ $timely_additiveInc
-        $tcp($conn_idx) set timely_decreaseFac_ $timely_decreaseFac
-        $tcp($conn_idx) set timely_HAI_thresh_ $timely_HAI_thresh
-        $tcp($conn_idx) set timely_rate_ $timely_rate
+            $tcp($conn_idx) set timely_packetSize_ $pktSize
+            $tcp($conn_idx) set timely_ewma_alpha_ $timely_ewma_alpha
+            $tcp($conn_idx) set timely_t_high_ $timely_t_high
+            $tcp($conn_idx) set timely_additiveInc_ $timely_additiveInc
+            $tcp($conn_idx) set timely_decreaseFac_ $timely_decreaseFac
+            $tcp($conn_idx) set timely_HAI_thresh_ $timely_HAI_thresh
+            $tcp($conn_idx) set timely_rate_ $timely_rate
+            $tcp($conn_idx) set rttNoise_ 0
         }
     }
 

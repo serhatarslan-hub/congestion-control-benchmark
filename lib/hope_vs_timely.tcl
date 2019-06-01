@@ -284,6 +284,7 @@ if {[string compare $congestion_alg "dctcp"] == 0} {
     $my_tcp set timely_t_high_ $timely_t_high
     $my_tcp set timely_additiveInc_ $timely_additiveInc
     $my_tcp set timely_decreaseFac_ $timely_decreaseFac
+    $my_tcp set rttNoise_ 0
     $my_tcp set timely_HAI_thresh_ $timely_HAI_thresh
     $my_tcp set timely_rate_ $timely_rate
     $my_tcp set timely_ $timely
