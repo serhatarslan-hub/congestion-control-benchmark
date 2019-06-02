@@ -52,7 +52,7 @@ def plot_rtt(algo_name, out_dir, log_plot=True, nplot=1, report_only=False):
 			y = data[:, 1]
 			#y = np.convolve(y, np.ones((smooth,))/smooth, mode='same')
 			label = r"($\mu$=" + ("%d, SD=%d)" % (round(mean), round(std)))
-			plt.plot(data[:, 0], y, linestyle='-', marker='.', label=label)
+			plt.plot(data[:, 0], y, linestyle='-', marker='', label=label)
 		if log_plot:
 			plt.yscale('log')
 		#plt.ylim([0,300])
