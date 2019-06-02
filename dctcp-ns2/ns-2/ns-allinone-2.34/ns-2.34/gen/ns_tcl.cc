@@ -19743,6 +19743,7 @@ Agent/TCP/Vegas set v_beta_ 3\n\
 Agent/TCP/Vegas set v_gamma_ 1\n\
 Agent/TCP/Vegas set v_rtt_ 0\n\
 Agent/TCP/Vegas set timely_ 0\n\
+Agent/TCP/Vegas set rttNoise_ 0\n\
 Agent/TCP/Vegas set timely_packetSize_ 1500\n\
 Agent/TCP/Vegas set timely_ewma_alpha_ 0.02\n\
 Agent/TCP/Vegas set timely_t_low_ 0\n\

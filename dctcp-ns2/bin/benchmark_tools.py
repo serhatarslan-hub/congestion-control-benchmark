@@ -127,6 +127,7 @@ def plot_allRTTcdf(out_dir, log_plot=True, dctcp=None, vegas=None, timely=None,
     if(log_plot):
         plt.xscale('log')
     #plt.xlim(0,700)
+    plt.grid()
     plt.savefig(allCDF_file)
     print "Saved plot: ", allCDF_file
     plt.close()
@@ -370,6 +371,7 @@ def plot_allTotalThp(out_dir, dctcp=None, vegas=None, timely=None, hopeSum=None,
         plt.plot(hopeSquq[0][:-2], hopeSquq[1][:-2], '-', label='Hope-Squq')
 
     plt.legend(loc='lower right')
+    plt.grid()
     plt.savefig(allThp_file)
     print "Saved plot: ", allThp_file
     plt.close()

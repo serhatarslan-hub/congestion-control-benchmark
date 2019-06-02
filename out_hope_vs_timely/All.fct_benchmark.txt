@@ -1,8 +1,8 @@
 
 ****** Flow Completion Times ******
    Algorithm |      Short Flows | Mid-Length Flows |       Long Flows 
-    Hope-Sum |            0.398 |            3.843 |           14.522 
-    Hope-Max |            0.334 |            3.526 |           11.585 
-    Hope-Squ |            0.334 |            3.561 |           11.839 
+    Hope-Sum |            0.344 |            3.816 |           14.916 
+    Hope-Max |            0.329 |            3.484 |           11.111 
+    Hope-Squ |            0.329 |            3.549 |           12.131 
 *All the times are given in miliseconds.
 
