@@ -560,7 +560,7 @@ VegasTcpAgent::recv(Packet *pkt, Handler *)
                     double error = (rtt-RTT_REF)/RTT_REF;
 
                     // Unclear whether DCQCN people also use delta factor like in the timely paper...
-                    timely_rate_ = timely_additiveInc_*delta_factor*(1.0-weight)+rate*(1.0-timely_decreaseFac_*weight*error);
+                    timely_rate_ = timely_additiveInc_*delta_factor*(1.0-weight)+timely_rate_*(1.0-timely_decreaseFac_*weight*error);
                 }
             } else {
                 if (rtt < timely_t_low_) { // additivive increase if rtt < t_low
