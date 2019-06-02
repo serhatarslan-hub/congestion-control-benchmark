@@ -538,27 +538,21 @@ VegasTcpAgent::recv(Packet *pkt, Handler *)
             delta_factor = (delta_factor>0.0)?delta_factor:0.0;
 
             double timely_oldRate = timely_rate_;
-            //double old_cwnd = (double)cwnd_;
+
+            // TIMELY update step
             if (rtt < timely_t_low_) { //additivive increase if rtt < t_low
                     timely_rate_ = timely_rate_ + (timely_additiveInc_ * delta_factor);
-                //printf("****Entered rtt < timely_t_low \n");
-
             } else if (rtt > timely_t_high_) { //multiplicative decrease if rtt > t_high
                     timely_rate_ =timely_rate_ *(1.0 -(delta_factor *timely_decreaseFac_ *(1.0 -(timely_t_high_ /rtt))));
-                //printf("****Entered rtt > timely_t_low \n");
-
             } else if (normalized_gradient <= epsilon) { //additive increase if avg gradient <= 0 
-                    
                 int N = 1;
                 if (timely_negGradientCount_ >= timely_HAI_thresh_) N = 5;
                 timely_rate_ = timely_rate_ + (double(N) * timely_additiveInc_ * delta_factor);
-            //printf("****Entered normalized_gradient <= 0 \n");
 
             } else { //multiplicative decrease if avg gradient > 0
                 timely_rate_ = timely_rate_ * (1.0 - (timely_decreaseFac_ * normalized_gradient));
-            //printf("****Entered gradient > 0 \n");
-
             }
+
             timely_prevRTT_ = cong_signal_;
             timely_lastUpdateTime = currentTime;
 
