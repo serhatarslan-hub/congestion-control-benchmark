@@ -319,8 +319,10 @@ def plot_throughput(algo_name, num_clients, out_dir, conn_per_client=1,
         for i in range(num_clients):
             for j in range(conn_per_client):
                 if (i,j) in selected:
-                    node_name = ('Client%d_connection_%d' % (i, j))
-                    plt.plot(times*1000, throughputs[:, i, j], linestyle='-', marker='', label=node_name)
+                    mean = np.mean(throughputs[:, i, j])
+                    std = np.std(throughputs[:, i, j])
+                    label = r"($\mu$=" + ("%d, SD=%d)" % (round(mean), round(std)))
+                    plt.plot(times*1000, throughputs[:, i, j], linestyle='-', marker='', label=label)
 
         # # Plot total
         # plt.plot(times,total_thp,linestyle='-', marker='', label='Total')
