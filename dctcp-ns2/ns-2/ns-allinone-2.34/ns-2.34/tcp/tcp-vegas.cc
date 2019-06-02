@@ -540,19 +540,41 @@ VegasTcpAgent::recv(Packet *pkt, Handler *)
             double timely_oldRate = timely_rate_;
 
             // TIMELY update step
-            if (rtt < timely_t_low_) { //additivive increase if rtt < t_low
-                    timely_rate_ = timely_rate_ + (timely_additiveInc_ * delta_factor);
-            } else if (rtt > timely_t_high_) { //multiplicative decrease if rtt > t_high
-                    timely_rate_ =timely_rate_ *(1.0 -(delta_factor *timely_decreaseFac_ *(1.0 -(timely_t_high_ /rtt))));
-            } else if (normalized_gradient <= epsilon) { //additive increase if avg gradient <= 0 
-                int N = 1;
-                if (timely_negGradientCount_ >= timely_HAI_thresh_) N = 5;
-                timely_rate_ = timely_rate_ + (double(N) * timely_additiveInc_ * delta_factor);
+            if (patchedTimely_) {
+                if (rtt < timely_t_low_) { // additivive increase if rtt < t_low
+                        timely_rate_ = timely_rate_ + (timely_additiveInc_ * delta_factor);
+                } else if (rtt > timely_t_high_) { // multiplicative decrease if rtt > t_high
+                        timely_rate_ =timely_rate_ *(1.0 -(delta_factor *timely_decreaseFac_ *(1.0 -(timely_t_high_ /rtt))));
+                } else { // patched timely implementation
+                    double weight;
+                    if (normalized_gradient <= -0.25) // g_i <= -1/4
+                        weight = 0;
+                    else if (normalized_gradient < 0.25) // -1/4 < g_i < 1/4
+                        weight = 2.0*normalized_gradient+1/2;
+                    else // g_i >= 0.25
+                        weight = 1;
 
-            } else { //multiplicative decrease if avg gradient > 0
-                timely_rate_ = timely_rate_ * (1.0 - (timely_decreaseFac_ * normalized_gradient));
+                    // TODO: Setting this to the moving min doesn't seem quite
+                    // right. Adapt once we confirm with the authors.
+                    double RTT_REF = v_baseRTT_;
+                    double error = (rtt-RTT_REF)/RTT_REF;
+
+                    // Unclear whether DCQCN people also use delta factor like in the timely paper...
+                    timely_rate_ = timely_additiveInc_*delta_factor*(1.0-weight)+rate*(1.0-timely_decreaseFac_*weight*error);
+                }
+            } else {
+                if (rtt < timely_t_low_) { // additivive increase if rtt < t_low
+                        timely_rate_ = timely_rate_ + (timely_additiveInc_ * delta_factor);
+                } else if (rtt > timely_t_high_) { // multiplicative decrease if rtt > t_high
+                        timely_rate_ =timely_rate_ *(1.0 -(delta_factor *timely_decreaseFac_ *(1.0 -(timely_t_high_ /rtt))));
+                } else if (normalized_gradient <= epsilon) { // additive increase if avg gradient <= 0 
+                    int N = 1;
+                    if (timely_negGradientCount_ >= timely_HAI_thresh_) N = 5;
+                    timely_rate_ = timely_rate_ + (double(N) * timely_additiveInc_ * delta_factor);
+                } else { // multiplicative decrease if avg gradient > 0
+                    timely_rate_ = timely_rate_ * (1.0 - (timely_decreaseFac_ * normalized_gradient));
+                }
             }
-
             timely_prevRTT_ = cong_signal_;
             timely_lastUpdateTime = currentTime;
 
