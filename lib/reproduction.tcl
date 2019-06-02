@@ -243,6 +243,7 @@ if {[string compare $congestion_alg "dctcp"] == 0} {
             $tcp($conn_idx) set timely_rate_ 500000000
             # 0, 50, 100, 150, 200 micro-seconds in the timely paper
             $tcp($conn_idx) set rttNoise_ 0.00005
+            $tcp($conn_idx) set patchedTimely_ 1
         }
     }
     for {set i 0} {$i < $num_clients} {incr i} {
