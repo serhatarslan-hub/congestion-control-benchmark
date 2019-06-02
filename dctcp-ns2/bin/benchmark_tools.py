@@ -12,72 +12,73 @@ from random import sample, seed
 
 def plot_rtt(algo_name, out_dir, log_plot=True, nplot=1, report_only=False,
              timely_style=False):
-	"""
-	Plots connection RTTs from nplot sampled connections.
+    """
+    Plots connection RTTs from nplot sampled connections.
 
-	Returns CDF plot data across ALL flows to be used for overlay plot.
-	"""
-	in_file = out_dir+algo_name+'.rtt.out'
-	out_file = out_dir+algo_name+'.rtt.png'
-	cdf_file = out_dir+algo_name+'.rttCDF.png'
+    Returns CDF plot data across ALL flows to be used for overlay plot.
+    """
+    in_file = out_dir+algo_name+'.rtt.out'
+    out_file = out_dir+algo_name+'.rtt.png'
+    cdf_file = out_dir+algo_name+'.rttCDF.png'
 
-	rtts = defaultdict(lambda: ([])) 
+    rtts = defaultdict(lambda: ([])) 
 
-	with open(in_file, "r") as f:
-		for line in f:
-			time, fid, rtt = line.split()
-			t = float(time)
-			f = int(fid)
-			r = float(rtt)
-			rtts[f].append((t, r))
+    with open(in_file, "r") as f:
+        for line in f:
+            time, fid, rtt = line.split()
+            t = float(time)
+            f = int(fid)
+            r = float(rtt)
+            rtts[f].append((t, r))
 
-	# List of var-length 2d arrays
-	rtts = [np.array(rtts[f]) for f in sorted(rtts.keys())]
+    # List of var-length 2d arrays
+    rtts = [np.array(rtts[f]) for f in sorted(rtts.keys())]
 
-	# Get all RTTs for later
-	all_rtts = np.array([rtt[1] for flow in rtts for rtt in flow])
-	# Compute the CDF
-	sorted_data = np.sort(all_rtts)
-	yvals=np.arange(len(sorted_data))/float(len(sorted_data)-1)
+    # Get all RTTs for later
+    all_rtts = np.array([rtt[1] for flow in rtts for rtt in flow])
+    # Compute the CDF
+    sorted_data = np.sort(all_rtts)
+    yvals=np.arange(len(sorted_data))/float(len(sorted_data)-1)
     
-	if not report_only:
-		# Just pick a subset of nplot
-		plot_rtts = sample(rtts, int(nplot))
+    if not report_only:
+        # Just pick a subset of nplot
+        plot_rtts = sample(rtts, int(nplot))
 
-		plt.figure()
-		for data in plot_rtts:
-			mean = np.mean(data[:, 1])
-			std = np.std(data[:, 1])
+        plt.figure()
+        for data in plot_rtts:
+            mean = np.mean(data[:, 1])
+            std = np.std(data[:, 1])
 
-			smooth = 10
-			y = data[:, 1]
-			#y = np.convolve(y, np.ones((smooth,))/smooth, mode='same')
-			label = r"($\mu$=" + ("%d, SD=%d)" % (round(mean), round(std)))
-			plt.plot(data[:, 0], y, linestyle='-', marker='', label=label)
-		if log_plot:
-			plt.yscale('log')
-		#plt.ylim([0,300])
-		plt.ylabel('RTT (usec)')
-		plt.xlabel('Time (sec)')
-		plt.title('RTT for '+algo_name+' experiment')
-		plt.grid()
-		plt.legend(bbox_to_anchor=(1.04,0.5), loc="center left", borderaxespad=0)
-		plt.savefig(out_file, bbox_inches="tight")
-		print("Saved plot: %s" % out_file)
-		plt.close()
+            smooth = 10
+            y = data[:, 1]
+            #y = np.convolve(y, np.ones((smooth,))/smooth, mode='same')
+            label = r"($\mu$=" + ("%d, SD=%d)" % (round(mean), round(std)))
+            plt.plot(data[:, 0], y, linestyle='-', marker='', label=label)
+        if log_plot:
+            plt.yscale('log')
+        plt.ylim([0,300])
+        ax.set_aspect(4.3)
+        plt.ylabel('RTT (usec)')
+        plt.xlabel('Time (sec)')
+        plt.title('RTT for '+algo_name+' experiment')
+        plt.grid()
+        plt.legend(bbox_to_anchor=(1.04,0.5), loc="center left", borderaxespad=0)
+        plt.savefig(out_file, bbox_inches="tight")
+        print("Saved plot: %s" % out_file)
+        plt.close()
 
-		# Plot the CDF
-		plt.figure()
-		#plt.xlim(0,300)
-		#plt.xscale('log')
-		plt.xlabel('RTT (usec)')
-		plt.title('CDF of RTT for '+algo_name+' experiment')
-		plt.plot(sorted_data, yvals, '.', label=algo_name)
-		plt.savefig(cdf_file)
-		print "Saved plot: ", cdf_file
-		plt.close()
+        # Plot the CDF
+        plt.figure()
+        #plt.xlim(0,300)
+        #plt.xscale('log')
+        plt.xlabel('RTT (usec)')
+        plt.title('CDF of RTT for '+algo_name+' experiment')
+        plt.plot(sorted_data, yvals, '.', label=algo_name)
+        plt.savefig(cdf_file)
+        print "Saved plot: ", cdf_file
+        plt.close()
 
-	return sorted_data, yvals
+    return sorted_data, yvals
 
 
 def plot_allRTTcdf(out_dir, log_plot=True, dctcp=None, vegas=None, timely=None,
@@ -238,96 +239,96 @@ def plot_signal(signal_name, algo_name, num_clients, out_dir, conn_per_client=1,
 
 def plot_throughput(algo_name, num_clients, out_dir, conn_per_client=1,
                     report_only=False, nplot=0, timely_style=False):
-	"""
-	Plots the throughput for the first num_clients clients, assuming
-	each client serves conn_per_client connections.
+    """
+    Plots the throughput for the first num_clients clients, assuming
+    each client serves conn_per_client connections.
 
-	Assumes client IDs are in range {0, 1, ...} and that connection IDs are
-	numbered {0, ..., num_clients*conn_per_client-1} client-by-client.
-	"""
-	tr_file = out_dir+algo_name+'.tr'
-	out_file = out_dir+algo_name+'.thp.png'
-	granularity = 0.001
-	clock = 0
-	
-	if(nplot==0):
-		nplot=num_clients*conn_per_client
+    Assumes client IDs are in range {0, 1, ...} and that connection IDs are
+    numbered {0, ..., num_clients*conn_per_client-1} client-by-client.
+    """
+    tr_file = out_dir+algo_name+'.tr'
+    out_file = out_dir+algo_name+'.thp.png'
+    granularity = 0.001
+    clock = 0
+    
+    if(nplot==0):
+        nplot=num_clients*conn_per_client
 
-	thp_sums = np.zeros((num_clients, conn_per_client))
-	seqs = np.zeros((num_clients, conn_per_client))
-	throughputs = []  # becomes [time x num_clients x conn_per_client]
-	times = []
+    thp_sums = np.zeros((num_clients, conn_per_client))
+    seqs = np.zeros((num_clients, conn_per_client))
+    throughputs = []  # becomes [time x num_clients x conn_per_client]
+    times = []
 
-	# Parse the trace file per schema explained here:
-	# https://ns2blogger.blogspot.com/p/the-file-written-by-application-or-by.html
-	with open(tr_file, 'r') as f:
-		for line in f:
-			event, time, from_node, to_node, pkt_type, pkt_size, flags, fid, \
-				src_addr, dst_addr, seq_num, pkt_id = line.split()
+    # Parse the trace file per schema explained here:
+    # https://ns2blogger.blogspot.com/p/the-file-written-by-application-or-by.html
+    with open(tr_file, 'r') as f:
+        for line in f:
+            event, time, from_node, to_node, pkt_type, pkt_size, flags, fid, \
+                src_addr, dst_addr, seq_num, pkt_id = line.split()
 
-			# Given time, source node, and flow ID
-			t = float(time)
-			s = int(from_node)
-			f = int(fid)
+            # Given time, source node, and flow ID
+            t = float(time)
+            s = int(from_node)
+            f = int(fid)
 
-			# Consider dequeued packets that fit our spec only
-			if event == '-' and pkt_type == 'tcp' \
-				and s < num_clients and f < num_clients*conn_per_client:
-				# Let f only be the residual
-				f -= s*conn_per_client
+            # Consider dequeued packets that fit our spec only
+            if event == '-' and pkt_type == 'tcp' \
+                and s < num_clients and f < num_clients*conn_per_client:
+                # Let f only be the residual
+                f -= s*conn_per_client
 
-				# Only counting non-retransmissions
-				if int(seq_num) > seqs[s, f]:
-					thp_sums[s, f] += int(pkt_size)
-					seqs[s, f] = int(seq_num)
+                # Only counting non-retransmissions
+                if int(seq_num) > seqs[s, f]:
+                    thp_sums[s, f] += int(pkt_size)
+                    seqs[s, f] = int(seq_num)
                 
-				# Compute throughout in a sliding window of size granularity
-				if t-clock >= granularity:
-					times.append(t)
-					throughputs.append(thp_sums * 8 / (t-clock) / 1000000)
-					clock += granularity
+                # Compute throughout in a sliding window of size granularity
+                if t-clock >= granularity:
+                    times.append(t)
+                    throughputs.append(thp_sums * 8 / (t-clock) / 1000000)
+                    clock += granularity
 
-					# Zero out
-					thp_sums.fill(0)
-	# Last step
-	throughputs.append(thp_sums * 8 / (t-clock) / 1000000)
-	times.append(t)
+                    # Zero out
+                    thp_sums.fill(0)
+    # Last step
+    throughputs.append(thp_sums * 8 / (t-clock) / 1000000)
+    times.append(t)
 
-	# Aggregate
-	times = np.array(times)
-	throughputs = np.array(throughputs)
-	total_thp = np.sum(throughputs, axis=(1, 2))
+    # Aggregate
+    times = np.array(times)
+    throughputs = np.array(throughputs)
+    total_thp = np.sum(throughputs, axis=(1, 2))
 
-	if not report_only:
-		
-		#seed(3)
-		plot_flows = sample(range(num_clients*conn_per_client),nplot)
-		selected = []
-		for f in plot_flows:
-			selected.append((int(f/conn_per_client),f%conn_per_client))
-		
-		# Plot individual throughputs
-		plt.figure()
-		for i in range(num_clients):
-			for j in range(conn_per_client):
-				if (i,j) in selected:
-					node_name = ('Client%d_connection_%d' % (i, j))
-					plt.plot(times, throughputs[:, i, j], linestyle='-', marker='', label=node_name)
-
-		# # Plot total
-		# plt.plot(times,total_thp,linestyle='-', marker='', label='Total')
+    if not report_only:
         
-		plt.ylabel('Throughput (Mbps)')
-		plt.xlabel('Time (sec)')
-		plt.title('Throughput for '+algo_name+' experiment')
-		#plt.legend(bbox_to_anchor=(1.04,0.5), loc="center left", borderaxespad=0)
-		# plt.ylim([0,750])
-		plt.grid()
-		plt.savefig(out_file, bbox_inches="tight")
-		print("Saved plot: %s" % out_file)
-		plt.close()
+        #seed(3)
+        plot_flows = sample(range(num_clients*conn_per_client),nplot)
+        selected = []
+        for f in plot_flows:
+            selected.append((int(f/conn_per_client),f%conn_per_client))
+        
+        # Plot individual throughputs
+        plt.figure()
+        for i in range(num_clients):
+            for j in range(conn_per_client):
+                if (i,j) in selected:
+                    node_name = ('Client%d_connection_%d' % (i, j))
+                    plt.plot(times, throughputs[:, i, j], linestyle='-', marker='', label=node_name)
 
-	return times, total_thp
+        # # Plot total
+        # plt.plot(times,total_thp,linestyle='-', marker='', label='Total')
+        
+        plt.ylabel('Throughput (Mbps)')
+        plt.xlabel('Time (sec)')
+        plt.title('Throughput for '+algo_name+' experiment')
+        #plt.legend(bbox_to_anchor=(1.04,0.5), loc="center left", borderaxespad=0)
+        # plt.ylim([0,750])
+        plt.grid()
+        plt.savefig(out_file, bbox_inches="tight")
+        print("Saved plot: %s" % out_file)
+        plt.close()
+
+    return times, total_thp
 
 def plot_allTotalThp(out_dir, dctcp=None, vegas=None, timely=None, hopeSum=None, hopeMax=None, \
                         hopeMaxq=None, hopeMaxqd=None, hopeMaxe=None, hopeMaxed=None, \
@@ -416,7 +417,7 @@ def plot_queue(algo_name, out_dir, log_plot=True):
         plt.plot(times[i],q_sizes[i],linestyle='-', marker='', label=queue_name)
     #plt.plot(time,q_size,linestyle='-', marker='', label='Queue in packets')
     if log_plot==True: 
-    	plt.yscale('log')
+        plt.yscale('log')
     plt.ylabel('Queue (packets)')
     plt.xlabel('Time (sec)')
     #plt.legend(loc='lower right')
@@ -628,251 +629,251 @@ def print_1ClientFCT(out_dir, dctcp=None, vegas=None, timely=None, hopeSum=None,
                      hopeMaxq=None, hopeMaxqd=None, hopeMaxe=None, hopeMaxed=None, \
                      hopeSumq=None, hopeSumqd=None, hopeSume=None, hopeSumed=None, \
                      hopeSqu=None, hopeSquq=None):
-	"""
-	Report the given flow completion times of algorithms for 1 client simulations
-	"""
-	f_sizes = ['Short', 'Mid-Length', 'Long']    
-	allFCT_file = out_dir+'All.fct_benchmark.txt'
+    """
+    Report the given flow completion times of algorithms for 1 client simulations
+    """
+    f_sizes = ['Short', 'Mid-Length', 'Long']    
+    allFCT_file = out_dir+'All.fct_benchmark.txt'
 
-	report = "\n****** Flow Completion Times ******\n"
-	report += "{:>12} ".format("Algorithm")
-	for size in f_sizes:
-		report += "| {0: >16} ".format(size+' Flows')
-	report += "\n"
+    report = "\n****** Flow Completion Times ******\n"
+    report += "{:>12} ".format("Algorithm")
+    for size in f_sizes:
+        report += "| {0: >16} ".format(size+' Flows')
+    report += "\n"
 
-	if dctcp is not None:
-		report += "{:>12} ".format("DCTCP")
-		dctcp = [np.array(dctcp[i]) for i in range(len(f_sizes))]
-		for i in range(len(f_sizes)):
-			size = np.mean(dctcp[i])*1000
-			report += "| {0: >16} ".format(size)
-		report += "\n"
-	if vegas is not None:
-		report += "{:>12} ".format("Vegas")
-		vegas = [np.array(vegas[i]) for i in range(len(f_sizes))]
-		for i in range(len(f_sizes)):
-			size = np.mean(vegas[i])*1000
-			report += "| {0: >16} ".format(size)
-		report += "\n"
-	if timely is not None:
-		report += "{:>12} ".format("Timely")
-		timely = [np.array(timely[i]) for i in range(len(f_sizes))]
-		for i in range(len(f_sizes)):
-			size = np.mean(timely[i])*1000
-			report += "| {0: >16} ".format(size)
-		report += "\n"
-	if hopeSum is not None:
-		report += "{:>12} ".format("Hope-Sum")
-		hopeSum = [np.array(hopeSum[i]) for i in range(len(f_sizes))]
-		for i in range(len(f_sizes)):
-			size = np.mean(hopeSum[i])*1000
-			report += "| {0: >16} ".format(size)
-		report += "\n"
-	if hopeMax is not None:
-		report += "{:>12} ".format("Hope-Max")
-		hopeMax = [np.array(hopeMax[i]) for i in range(len(f_sizes))]
-		for i in range(len(f_sizes)):
-			size = np.mean(hopeMax[i])*1000
-			report += "| {0: >16} ".format(size)
-		report += "\n"
-	if hopeMaxq is not None:
-		report += "{:>12} ".format("Hope-Maxq")
-		hopeMaxq = [np.array(hopeMaxq[i]) for i in range(len(f_sizes))]
-		for i in range(len(f_sizes)):
-			size = np.mean(hopeMaxq[i])*1000
-			report += "| {0: >16} ".format(size)
-		report += "\n"
-	if hopeMaxqd is not None:
-		report += "{:>12} ".format("Hope-Maxqd")
-		hopeMaxqd = [np.array(hopeMaxqd[i]) for i in range(len(f_sizes))]
-		for i in range(len(f_sizes)):
-			size = np.mean(hopeMaxqd[i])*1000
-			report += "| {0: >16} ".format(size)
-		report += "\n"
-	if hopeMaxe is not None:
-		report += "{:>12} ".format("Hope-Maxe")
-		hopeMaxe = [np.array(hopeMaxe[i]) for i in range(len(f_sizes))]
-		for i in range(len(f_sizes)):
-			size = np.mean(hopeMaxe[i])*1000
-			report += "| {0: >16} ".format(size)
-		report += "\n"
-	if hopeMaxed is not None:
-		report += "{:>12} ".format("Hope-Maxed")
-		hopeMaxed = [np.array(hopeMaxed[i]) for i in range(len(f_sizes))]
-		for i in range(len(f_sizes)):
-			size = np.mean(hopeMaxed[i])*1000
-			report += "| {0: >16} ".format(size)
-		report += "\n"
-	if hopeSumq is not None:
-		report += "{:>12} ".format("Hope-Sumq")
-		hopeSumq = [np.array(hopeSumq[i]) for i in range(len(f_sizes))]
-		for i in range(len(f_sizes)):
-			size = np.mean(hopeSumq[i])*1000
-			report += "| {0: >16} ".format(size)
-		report += "\n"
-	if hopeSumqd is not None:
-		report += "{:>12} ".format("Hope-Sumqd")
-		hopeSumqd = [np.array(hopeSumqd[i]) for i in range(len(f_sizes))]
-		for i in range(len(f_sizes)):
-			size = np.mean(hopeSumqd[i])*1000
-			report += "| {0: >16} ".format(size)
-		report += "\n"
-	if hopeSume is not None:
-		report += "{:>12} ".format("Hope-Sume")
-		hopeSume = [np.array(hopeSume[i]) for i in range(len(f_sizes))]
-		for i in range(len(f_sizes)):
-			size = np.mean(hopeSume[i])*1000
-			report += "| {0: >16} ".format(size)
-		report += "\n"
-	if hopeSumed is not None:
-		report += "{:>12} ".format("Hope-Sumed")
-		hopeSumed = [np.array(hopeSumed[i]) for i in range(len(f_sizes))]
-		for i in range(len(f_sizes)):
-			size = np.mean(hopeSumed[i])*1000
-			report += "| {0: >16} ".format(size)
-		report += "\n"
-	if hopeSqu is not None:
-		report += "{:>12} ".format("Hope-Squ")
-		hopeSqu = [np.array(hopeSqu[i]) for i in range(len(f_sizes))]
-		for i in range(len(f_sizes)):
-			size = np.mean(hopeSqu[i])*1000
-			report += "| {0: >16} ".format(size)
-		report += "\n"
-	if hopeSquq is not None:
-		report += "{:>12} ".format("Hope-Squq")
-		hopeSquq = [np.array(hopeSquq[i]) for i in range(len(f_sizes))]
-		for i in range(len(f_sizes)):
-			size = np.mean(hopeSquq[i])*1000
-			report += "| {0: >16} ".format(size)
-		report += "\n"
+    if dctcp is not None:
+        report += "{:>12} ".format("DCTCP")
+        dctcp = [np.array(dctcp[i]) for i in range(len(f_sizes))]
+        for i in range(len(f_sizes)):
+            size = np.mean(dctcp[i])*1000
+            report += "| {0: >16} ".format(size)
+        report += "\n"
+    if vegas is not None:
+        report += "{:>12} ".format("Vegas")
+        vegas = [np.array(vegas[i]) for i in range(len(f_sizes))]
+        for i in range(len(f_sizes)):
+            size = np.mean(vegas[i])*1000
+            report += "| {0: >16} ".format(size)
+        report += "\n"
+    if timely is not None:
+        report += "{:>12} ".format("Timely")
+        timely = [np.array(timely[i]) for i in range(len(f_sizes))]
+        for i in range(len(f_sizes)):
+            size = np.mean(timely[i])*1000
+            report += "| {0: >16} ".format(size)
+        report += "\n"
+    if hopeSum is not None:
+        report += "{:>12} ".format("Hope-Sum")
+        hopeSum = [np.array(hopeSum[i]) for i in range(len(f_sizes))]
+        for i in range(len(f_sizes)):
+            size = np.mean(hopeSum[i])*1000
+            report += "| {0: >16} ".format(size)
+        report += "\n"
+    if hopeMax is not None:
+        report += "{:>12} ".format("Hope-Max")
+        hopeMax = [np.array(hopeMax[i]) for i in range(len(f_sizes))]
+        for i in range(len(f_sizes)):
+            size = np.mean(hopeMax[i])*1000
+            report += "| {0: >16} ".format(size)
+        report += "\n"
+    if hopeMaxq is not None:
+        report += "{:>12} ".format("Hope-Maxq")
+        hopeMaxq = [np.array(hopeMaxq[i]) for i in range(len(f_sizes))]
+        for i in range(len(f_sizes)):
+            size = np.mean(hopeMaxq[i])*1000
+            report += "| {0: >16} ".format(size)
+        report += "\n"
+    if hopeMaxqd is not None:
+        report += "{:>12} ".format("Hope-Maxqd")
+        hopeMaxqd = [np.array(hopeMaxqd[i]) for i in range(len(f_sizes))]
+        for i in range(len(f_sizes)):
+            size = np.mean(hopeMaxqd[i])*1000
+            report += "| {0: >16} ".format(size)
+        report += "\n"
+    if hopeMaxe is not None:
+        report += "{:>12} ".format("Hope-Maxe")
+        hopeMaxe = [np.array(hopeMaxe[i]) for i in range(len(f_sizes))]
+        for i in range(len(f_sizes)):
+            size = np.mean(hopeMaxe[i])*1000
+            report += "| {0: >16} ".format(size)
+        report += "\n"
+    if hopeMaxed is not None:
+        report += "{:>12} ".format("Hope-Maxed")
+        hopeMaxed = [np.array(hopeMaxed[i]) for i in range(len(f_sizes))]
+        for i in range(len(f_sizes)):
+            size = np.mean(hopeMaxed[i])*1000
+            report += "| {0: >16} ".format(size)
+        report += "\n"
+    if hopeSumq is not None:
+        report += "{:>12} ".format("Hope-Sumq")
+        hopeSumq = [np.array(hopeSumq[i]) for i in range(len(f_sizes))]
+        for i in range(len(f_sizes)):
+            size = np.mean(hopeSumq[i])*1000
+            report += "| {0: >16} ".format(size)
+        report += "\n"
+    if hopeSumqd is not None:
+        report += "{:>12} ".format("Hope-Sumqd")
+        hopeSumqd = [np.array(hopeSumqd[i]) for i in range(len(f_sizes))]
+        for i in range(len(f_sizes)):
+            size = np.mean(hopeSumqd[i])*1000
+            report += "| {0: >16} ".format(size)
+        report += "\n"
+    if hopeSume is not None:
+        report += "{:>12} ".format("Hope-Sume")
+        hopeSume = [np.array(hopeSume[i]) for i in range(len(f_sizes))]
+        for i in range(len(f_sizes)):
+            size = np.mean(hopeSume[i])*1000
+            report += "| {0: >16} ".format(size)
+        report += "\n"
+    if hopeSumed is not None:
+        report += "{:>12} ".format("Hope-Sumed")
+        hopeSumed = [np.array(hopeSumed[i]) for i in range(len(f_sizes))]
+        for i in range(len(f_sizes)):
+            size = np.mean(hopeSumed[i])*1000
+            report += "| {0: >16} ".format(size)
+        report += "\n"
+    if hopeSqu is not None:
+        report += "{:>12} ".format("Hope-Squ")
+        hopeSqu = [np.array(hopeSqu[i]) for i in range(len(f_sizes))]
+        for i in range(len(f_sizes)):
+            size = np.mean(hopeSqu[i])*1000
+            report += "| {0: >16} ".format(size)
+        report += "\n"
+    if hopeSquq is not None:
+        report += "{:>12} ".format("Hope-Squq")
+        hopeSquq = [np.array(hopeSquq[i]) for i in range(len(f_sizes))]
+        for i in range(len(f_sizes)):
+            size = np.mean(hopeSquq[i])*1000
+            report += "| {0: >16} ".format(size)
+        report += "\n"
 
-	report += "*All the times are given in miliseconds.\n\n"
+    report += "*All the times are given in miliseconds.\n\n"
 
-	print(report)
-	with open(allFCT_file,"w") as fo:
-		fo.write(report) 
+    print(report)
+    with open(allFCT_file,"w") as fo:
+        fo.write(report) 
 
-	print("Saved report to %s" % allFCT_file)
+    print("Saved report to %s" % allFCT_file)
     
 def gen_report(congestion_alg, out_dir, rtt, thp, fct, verbose=True):
-	"""
-	Generate a report for the given algorithm's results.
-	The report is saved to file congestion_alg.report in our_dir folder.
-	The report is single line with the following format:
-		"mean_rtt 95%ile_rtt 99%ile_rtt std_rtt ...
-		... mean_tot_thp median_tot_thp std_tot_thp ...
-		... mean_sfct 95%ile_sfct 99%ile_sfct std_sfct...
-		... mean_mfct 95%ile_mfct 99%ile_mfct std_mfct...
-		... mean_lfct 95%ile_lfct 99%ile_lfct std_lfct"
-	Values are separated with single space.
-	RTT statistics are in microseconds.
-	Throughput statistics are in Mbps
-	Flow Completion Time statistics are in 
-	"""
-	print("Generating report for %s"%congestion_alg)
-	report_file = out_dir+congestion_alg+'.report'
-	report = ''
+    """
+    Generate a report for the given algorithm's results.
+    The report is saved to file congestion_alg.report in our_dir folder.
+    The report is single line with the following format:
+        "mean_rtt 95%ile_rtt 99%ile_rtt std_rtt ...
+        ... mean_tot_thp median_tot_thp std_tot_thp ...
+        ... mean_sfct 95%ile_sfct 99%ile_sfct std_sfct...
+        ... mean_mfct 95%ile_mfct 99%ile_mfct std_mfct...
+        ... mean_lfct 95%ile_lfct 99%ile_lfct std_lfct"
+    Values are separated with single space.
+    RTT statistics are in microseconds.
+    Throughput statistics are in Mbps
+    Flow Completion Time statistics are in 
+    """
+    print("Generating report for %s"%congestion_alg)
+    report_file = out_dir+congestion_alg+'.report'
+    report = ''
     
-	# Calculate RTT statistics
-	rtt_vals = np.array(rtt[0])
-	report += '%f'%np.mean(rtt_vals)
-	report += ' %f'%np.percentile(rtt_vals,95)
-	report += ' %f'%np.percentile(rtt_vals,99)
-	report += ' %f'%np.std(rtt_vals)
+    # Calculate RTT statistics
+    rtt_vals = np.array(rtt[0])
+    report += '%f'%np.mean(rtt_vals)
+    report += ' %f'%np.percentile(rtt_vals,95)
+    report += ' %f'%np.percentile(rtt_vals,99)
+    report += ' %f'%np.std(rtt_vals)
     
-	# Calculate Throughput statistics
-	thp_vals = np.array(thp[1])
-	report += ' %f'%np.mean(thp_vals)
-	report += ' %f'%np.median(thp_vals)
-	report += ' %f'%np.std(thp_vals)
+    # Calculate Throughput statistics
+    thp_vals = np.array(thp[1])
+    report += ' %f'%np.mean(thp_vals)
+    report += ' %f'%np.median(thp_vals)
+    report += ' %f'%np.std(thp_vals)
     
-	# Calculate Flow Completion Time statistics
-	for i in range(len(fct)):
-		fct_val = np.array(fct[i])
-		report += ' %f'%np.mean(fct_val)
-		report += ' %f'%np.percentile(fct_val,95)
-		report += ' %f'%np.percentile(fct_val,99)
-		report += ' %f'%np.std(fct_val)
-	if verbose:
-		print("**** Statistics for %s ****"%congestion_alg)
-		print(report)
-		print("***************************")
-		
-	with open(report_file,"w") as fo:
-		fo.write(report) 
+    # Calculate Flow Completion Time statistics
+    for i in range(len(fct)):
+        fct_val = np.array(fct[i])
+        report += ' %f'%np.mean(fct_val)
+        report += ' %f'%np.percentile(fct_val,95)
+        report += ' %f'%np.percentile(fct_val,99)
+        report += ' %f'%np.std(fct_val)
+    if verbose:
+        print("**** Statistics for %s ****"%congestion_alg)
+        print(report)
+        print("***************************")
+        
+    with open(report_file,"w") as fo:
+        fo.write(report) 
 
-	print("Saved report to %s" % report_file)
+    print("Saved report to %s" % report_file)
 
 def plot_allResults(cong_alg, out_dir, results, log_plot=True):
-	"""
+    """
     Plot the given RTT, Throughput, and Flow Completion Time results 
     in the same figure for easier comparison.
     Input results is a dictionary that includes results for different simulations.
     results = {
-    	'simulation name': {
-    		'cdf': RTT cdf
-    		'thp': Total throughput
-    		'fct': Flow completion times
-    	}
+        'simulation name': {
+            'cdf': RTT cdf
+            'thp': Total throughput
+            'fct': Flow completion times
+        }
     }
     """  
-	# Plot allRTTcdf
-	allCDF_file = out_dir+'All.rttCDF_benchmark.png'
-	plt.figure()
-	plt.xlabel('RTT (usec)')
-	plt.title('CDF of RTT for benchmarked congestion control algorithms')
+    # Plot allRTTcdf
+    allCDF_file = out_dir+'All.rttCDF_benchmark.png'
+    plt.figure()
+    plt.xlabel('RTT (usec)')
+    plt.title('CDF of RTT for benchmarked congestion control algorithms')
 
-	for bits, result in results.iteritems():
-		label = cong_alg+str(bits)
-		plt.plot(result['cdf'][0], result['cdf'][1], '-', label=label)
+    for bits, result in results.iteritems():
+        label = cong_alg+str(bits)
+        plt.plot(result['cdf'][0], result['cdf'][1], '-', label=label)
 
-	plt.legend(loc='lower right')
-	if(log_plot):
-		plt.xscale('log')
-	plt.savefig(allCDF_file)
-	print "Saved plot: ", allCDF_file
-	plt.close()
+    plt.legend(loc='lower right')
+    if(log_plot):
+        plt.xscale('log')
+    plt.savefig(allCDF_file)
+    print "Saved plot: ", allCDF_file
+    plt.close()
      
     # Plot allThp
-	allThp_file = out_dir+'All.thp_benchmark.png'
-	plt.figure()
-	plt.ylabel('Throughput (Mbps)')
-	plt.xlabel('Time (sec)')
-	plt.title('Total throughputs for benchmarked congestion control algorithms')
+    allThp_file = out_dir+'All.thp_benchmark.png'
+    plt.figure()
+    plt.ylabel('Throughput (Mbps)')
+    plt.xlabel('Time (sec)')
+    plt.title('Total throughputs for benchmarked congestion control algorithms')
 
-	for bits, result in results.iteritems():
-		label = cong_alg+str(bits)
-		plt.plot(result['thp'][0], result['thp'][1], '-', label=label)
+    for bits, result in results.iteritems():
+        label = cong_alg+str(bits)
+        plt.plot(result['thp'][0], result['thp'][1], '-', label=label)
 
-	plt.legend(loc='lower right')
-	plt.savefig(allThp_file)
-	print "Saved plot: ", allThp_file
-	plt.close()
-	
-	# Plot allFCT
-	f_sizes = ['Short', 'Mid-Length', 'Long']    
-	allFCT_file = out_dir+'All.fct_benchmark.png'
-
-	plt.figure()
-	plt.subplot(len(f_sizes),1,1)
-	plt.title('CDF of Flow Completion Times')
-
-	for i in range(len(f_sizes)):
-		plt.subplot(len(f_sizes),1,i+1)
-		plt.ylabel("%s Flows"%f_sizes[i])
-	plt.xlabel('Time(sec)')
-
-	for bits, result in results.iteritems():
-		label = cong_alg+str(bits)
-		# Compute the CDF for all sizes
-		for i in range(len(f_sizes)):
-			sorted_data = np.sort(result['fct'][i])
-			yvals = np.arange(len(sorted_data))/float(len(sorted_data)-1)
-			plt.subplot(len(f_sizes),1,i+1)
-			plt.plot(sorted_data, yvals, '-', label=label)
+    plt.legend(loc='lower right')
+    plt.savefig(allThp_file)
+    print "Saved plot: ", allThp_file
+    plt.close()
     
-	plt.legend(loc='lower right')
+    # Plot allFCT
+    f_sizes = ['Short', 'Mid-Length', 'Long']    
+    allFCT_file = out_dir+'All.fct_benchmark.png'
 
-	plt.savefig(allFCT_file)
-	print "Saved plot: ", allFCT_file
-	plt.close()
+    plt.figure()
+    plt.subplot(len(f_sizes),1,1)
+    plt.title('CDF of Flow Completion Times')
+
+    for i in range(len(f_sizes)):
+        plt.subplot(len(f_sizes),1,i+1)
+        plt.ylabel("%s Flows"%f_sizes[i])
+    plt.xlabel('Time(sec)')
+
+    for bits, result in results.iteritems():
+        label = cong_alg+str(bits)
+        # Compute the CDF for all sizes
+        for i in range(len(f_sizes)):
+            sorted_data = np.sort(result['fct'][i])
+            yvals = np.arange(len(sorted_data))/float(len(sorted_data)-1)
+            plt.subplot(len(f_sizes),1,i+1)
+            plt.plot(sorted_data, yvals, '-', label=label)
+    
+    plt.legend(loc='lower right')
+
+    plt.savefig(allFCT_file)
+    print "Saved plot: ", allFCT_file
+    plt.close()
