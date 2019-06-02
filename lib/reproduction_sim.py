@@ -38,9 +38,11 @@ def main():
         os.system('ns ./lib/reproduction.tcl {0} {1} {2} {3}'.format(congestion_alg, out_dir, \
                                                                 num_clients, num_conn_per_client))
         print("DCTCP Simulation Done!")
-        dctcp_cdf = benchmark_tools.plot_rtt(congestion_alg, out_dir, log_plot=False, nplot=4)
+        dctcp_cdf = benchmark_tools.plot_rtt(congestion_alg, out_dir, log_plot=False, nplot=4,
+                                             timely_style=True)
         dctcp_thp = benchmark_tools.plot_throughput(congestion_alg, num_clients, out_dir, \
-                                                conn_per_client=num_conn_per_client, nplot=4)
+                                                    conn_per_client=num_conn_per_client, nplot=4,
+                                                    timely_style=True)
         benchmark_tools.plot_queue(congestion_alg, out_dir)
 
     if args.vegas:
@@ -48,9 +50,11 @@ def main():
         os.system('ns ./lib/reproduction.tcl {0} {1} {2} {3}'.format(congestion_alg, out_dir, \
                                                 num_clients, num_conn_per_client))
         print("Vegas Simulation Done!")
-        vegas_cdf = benchmark_tools.plot_rtt(congestion_alg, out_dir, log_plot=False, nplot=4)
+        vegas_cdf = benchmark_tools.plot_rtt(congestion_alg, out_dir, log_plot=False, nplot=4,
+                                             timely_style=True)
         vegas_thp = benchmark_tools.plot_throughput(congestion_alg, num_clients, out_dir, \
-                                                conn_per_client=num_conn_per_client, nplot=4)
+                                                    conn_per_client=num_conn_per_client, nplot=4,
+                                                    timely_style=True)
         benchmark_tools.plot_queue(congestion_alg, out_dir)
 
     if args.timely:
@@ -58,17 +62,21 @@ def main():
         os.system('ns ./lib/reproduction.tcl {0} {1} {2} {3}'.format(congestion_alg, out_dir, \
                                                 num_clients, num_conn_per_client))
         print("Timely Simulation Done!")
-        timely_cdf = benchmark_tools.plot_rtt(congestion_alg, out_dir, log_plot=False, nplot=4)
+        timely_cdf = benchmark_tools.plot_rtt(congestion_alg, out_dir, log_plot=False, nplot=4,
+                                              timely_style=True)
         timely_thp = benchmark_tools.plot_throughput(congestion_alg, num_clients, out_dir, \
-                                        conn_per_client=num_conn_per_client, nplot=4)
+                                                     conn_per_client=num_conn_per_client, nplot=4,
+                                                     timely_style=True)
         benchmark_tools.plot_rate(congestion_alg, num_clients, out_dir, \
-                            conn_per_client=num_conn_per_client, nplot=4)
+                                  conn_per_client=num_conn_per_client, nplot=4,
+                                  timely_style=True)
         benchmark_tools.plot_queue(congestion_alg, out_dir)
 
 
         benchmark_tools.plot_allRTTcdf(out_dir, dctcp=dctcp_cdf, vegas=vegas_cdf, timely=timely_cdf, \
-                                    log_plot=False)
-        benchmark_tools.plot_allTotalThp(out_dir, dctcp=dctcp_thp, vegas=vegas_thp, timely=timely_thp)
+                                       log_plot=False, timely_style=True)
+        benchmark_tools.plot_allTotalThp(out_dir, dctcp=dctcp_thp, vegas=vegas_thp, timely=timely_thp,
+                                         timely_style=True)
 
 if __name__ == "__main__":
     main()

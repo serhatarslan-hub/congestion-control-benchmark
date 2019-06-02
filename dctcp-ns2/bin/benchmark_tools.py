@@ -10,7 +10,8 @@ from collections import defaultdict
 from random import sample, seed
 
 
-def plot_rtt(algo_name, out_dir, log_plot=True, nplot=1, report_only=False):
+def plot_rtt(algo_name, out_dir, log_plot=True, nplot=1, report_only=False,
+             timely_style=False):
 	"""
 	Plots connection RTTs from nplot sampled connections.
 
@@ -83,7 +84,7 @@ def plot_allRTTcdf(out_dir, log_plot=True, dctcp=None, vegas=None, timely=None,
                    hopeSum=None, hopeMax=None, \
                    hopeMaxq=None, hopeMaxqd=None, hopeMaxe=None, hopeMaxed=None, \
                    hopeSumq=None, hopeSumqd=None, hopeSume=None, hopeSumed=None, \
-                   hopeSqu=None, hopeSquq=None):
+                   hopeSqu=None, hopeSquq=None, timely_style=False):
     """
     Plot the given CDFs on the same figure for easier comparison
     """    
@@ -132,7 +133,8 @@ def plot_allRTTcdf(out_dir, log_plot=True, dctcp=None, vegas=None, timely=None,
     plt.close()
 
 
-def plot_rate(algo_name, num_clients, out_dir, conn_per_client=1, nplot=1):
+def plot_rate(algo_name, num_clients, out_dir, conn_per_client=1, nplot=1,
+              timely_style=False):
     """
     Plots a sample of the output rates for the given connections to reproduce
     Figure 13 of the TIMELY paper.
@@ -183,7 +185,8 @@ def plot_rate(algo_name, num_clients, out_dir, conn_per_client=1, nplot=1):
     print("Saved plot: %s" % out_file)
     plt.close()
 
-def plot_signal(signal_name, algo_name, num_clients, out_dir, conn_per_client=1, nplot=1):
+def plot_signal(signal_name, algo_name, num_clients, out_dir, conn_per_client=1,
+                nplot=1):
     """
     Plots a sample of the Hope signal for the given connections. 
 
@@ -233,7 +236,8 @@ def plot_signal(signal_name, algo_name, num_clients, out_dir, conn_per_client=1,
     print("Saved plot: %s" % out_file)
     plt.close()
 
-def plot_throughput(algo_name, num_clients, out_dir, conn_per_client=1, report_only=False, nplot=0):
+def plot_throughput(algo_name, num_clients, out_dir, conn_per_client=1,
+                    report_only=False, nplot=0, timely_style=False):
 	"""
 	Plots the throughput for the first num_clients clients, assuming
 	each client serves conn_per_client connections.
@@ -328,7 +332,7 @@ def plot_throughput(algo_name, num_clients, out_dir, conn_per_client=1, report_o
 def plot_allTotalThp(out_dir, dctcp=None, vegas=None, timely=None, hopeSum=None, hopeMax=None, \
                         hopeMaxq=None, hopeMaxqd=None, hopeMaxe=None, hopeMaxed=None, \
                         hopeSumq=None, hopeSumqd=None, hopeSume=None, hopeSumed=None, \
-                        hopeSqu=None, hopeSquq=None):
+                        hopeSqu=None, hopeSquq=None, timely_style=False):
     """
     Plot the given throughputs in the same figure for easier comparison
     """
