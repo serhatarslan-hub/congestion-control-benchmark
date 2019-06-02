@@ -17,3 +17,4 @@ dctcp-ns2/settings.sh
 # Bulk results for random topology
 out_randomTopology/*/
 out_randomTopology/consolidatedReport.json
+dctcp-ns2/ns-2/ns-allinone-2.34/cweb/ctangle

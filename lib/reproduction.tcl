@@ -22,6 +22,7 @@ set out_q_file $repro_dir$congestion_alg.queue.out
 
 set num_clients [lindex $argv 2]
 set num_conn_per_client [lindex $argv 3]
+# set patched_timely [lindex $argv 4]
 
 # samp_int (sec)
 set samp_int 0.0001
@@ -34,8 +35,9 @@ set link_delay 5us
 # tcp_window (pkts)
 set tcp_window 10000000
 # run_time (sec)
-set run_time 0.1
-# 0.11
+set run_time 1.0
+# 0.1
+
 # pktSize (bytes)
 set pktSize 1460
 
@@ -242,8 +244,8 @@ if {[string compare $congestion_alg "dctcp"] == 0} {
             $tcp($conn_idx) set timely_HAI_thresh_ 5
             $tcp($conn_idx) set timely_rate_ 500000000
             # 0, 50, 100, 150, 200 micro-seconds in the timely paper
-            $tcp($conn_idx) set rttNoise_ 0.00005
-            $tcp($conn_idx) set patchedTimely_ 1
+            $tcp($conn_idx) set rttNoise_ 0.000025 #0.00005
+            $tcp($conn_idx) set patchedTimely_ 0
         }
     }
     for {set i 0} {$i < $num_clients} {incr i} {
