@@ -36,11 +36,11 @@ TK_LIBS='-lX11 -ldl  -lieee -lm'
 
 # Top-level directory in which Tk's platform-independent files are
 # installed.
-TK_PREFIX='/home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34'
+TK_PREFIX='/home/catalin/projects/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34'
 
 # Top-level directory in which Tk's platform-specific files (e.g.
 # executables) are installed.
-TK_EXEC_PREFIX='/home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34'
+TK_EXEC_PREFIX='/home/catalin/projects/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34'
 
 # -I switch(es) to use to make all of the X11 include files accessible:
 TK_XINCLUDES=''
@@ -53,15 +53,15 @@ TK_LIB_FLAG='-ltk8.4'
 
 # String to pass to linker to pick up the Tk library from its
 # build directory.
-TK_BUILD_LIB_SPEC='-L/home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/tk8.4.18/unix -ltk8.4'
+TK_BUILD_LIB_SPEC='-L/home/catalin/projects/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/tk8.4.18/unix -ltk8.4'
 
 # String to pass to linker to pick up the Tk library from its
 # installed directory.
-TK_LIB_SPEC='-L/home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/lib -ltk8.4'
+TK_LIB_SPEC='-L/home/catalin/projects/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/lib -ltk8.4'
 
 # String to pass to the compiler so that an extension can
 # find installed Tk headers.
-TK_INCLUDE_SPEC='-I/home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/include'
+TK_INCLUDE_SPEC='-I/home/catalin/projects/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/include'
 
 # Location of the top-level source directory from which Tk was built.
 # This is the directory that contains a README file as well as
@@ -69,7 +69,7 @@ TK_INCLUDE_SPEC='-I/home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone
 # different place than the directory containing the source files, this
 # points to the location of the sources, not the location where Tk was
 # compiled.
-TK_SRC_DIR='/home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/tk8.4.18'
+TK_SRC_DIR='/home/catalin/projects/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/tk8.4.18'
 
 # Needed if you want to make a 'fat' shared library library
 # containing tk objects or link a different wish.
@@ -84,14 +84,14 @@ TK_STUB_LIB_FLAG='-ltkstub8.4'
 
 # String to pass to linker to pick up the Tk stub library from its
 # build directory.
-TK_BUILD_STUB_LIB_SPEC='-L/home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/tk8.4.18/unix -ltkstub8.4'
+TK_BUILD_STUB_LIB_SPEC='-L/home/catalin/projects/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/tk8.4.18/unix -ltkstub8.4'
 
 # String to pass to linker to pick up the Tk stub library from its
 # installed directory.
-TK_STUB_LIB_SPEC='-L/home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/lib -ltkstub8.4'
+TK_STUB_LIB_SPEC='-L/home/catalin/projects/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/lib -ltkstub8.4'
 
 # Path to the Tk stub library in the build directory.
-TK_BUILD_STUB_LIB_PATH='/home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/tk8.4.18/unix/libtkstub8.4.a'
+TK_BUILD_STUB_LIB_PATH='/home/catalin/projects/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/tk8.4.18/unix/libtkstub8.4.a'
 
 # Path to the Tk stub library in the install directory.
-TK_STUB_LIB_PATH='/home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/lib/libtkstub8.4.a'
+TK_STUB_LIB_PATH='/home/catalin/projects/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/lib/libtkstub8.4.a'

@@ -32,4 +32,4 @@ dlopen=''
 dlpreopen=''
 
 # Directory that this library needs to be installed in:
-libdir='/home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/lib'
+libdir='/home/catalin/projects/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/lib'

@@ -359,7 +359,7 @@ Copyright (C) 2008 Free Software Foundation, Inc.
 This config.status script is free software; the Free Software Foundation
 gives unlimited permission to copy, distribute and modify it."
 
-ac_pwd='/home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/nam-1.14'
+ac_pwd='/home/catalin/projects/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/nam-1.14'
 srcdir='.'
 INSTALL='/usr/bin/install -c'
 test -n "$AWK" || AWK=awk
@@ -541,26 +541,27 @@ S["V_LIB"]=" -lnsl -ldl"
 S["V_TAR_EXTRA"]=""
 S["V_CCOPT"]="-O2 -Wall -Wno-write-strings"
 S["V_ALL"]="nam"
-S["V_LIB_TK"]="-L/home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/lib -ltk8.4"
-S["V_LIB_TCL"]="-L/home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/lib -ltcl8.4"
-S["V_LIB_OTCL"]="-L/home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/otcl-1.13 -lotcl"
-S["V_LIB_TCLCL"]="-L/home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/tclcl-1.19 -ltclcl"
+S["V_LIB_TK"]="-L/home/catalin/projects/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/lib -ltk8.4"
+S["V_LIB_TCL"]="-L/home/catalin/projects/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/lib -ltcl8.4"
+S["V_LIB_OTCL"]="-L/home/catalin/projects/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/otcl-1.13 -lotcl"
+S["V_LIB_TCLCL"]="-L/home/catalin/projects/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/tclcl-1.19 -ltclcl"
 S["V_TAR_TARGET"]="linux-gnu"
 S["V_STATIC"]=""
 S["V_DEFINES"]="-DHAVE_LIBTCLCL -DHAVE_TCLCL_H -DHAVE_LIBOTCL1_13 -DHAVE_OTCL_H -DHAVE_LIBTK8_4 -DHAVE_TK_H -DHAVE_LIBTCL8_4 -DHAVE_TCLINT_H -DHAVE_TCL_H -DHAVE_LIB"\
 "Z1_2_3 -DHAVE_ZLIB_H "
-S["V_LIBS"]="-L/home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/tclcl-1.19 -ltclcl -L/home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allin"\
-"one-2.34/otcl-1.13 -lotcl -L/home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/lib -ltk8.4 -L/home/sarslan/congestion_benchmark/dctc"\
-"p-ns2/ns-2/ns-allinone-2.34/lib -ltcl8.4 -L/home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/zlib-1.2.3 -lz"
-S["V_INCLUDES"]="-I/home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/tclcl-1.19 -I/home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34"\
-"/otcl-1.13 -I/home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/include -I/home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allin"\
-"one-2.34/include -I/home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/include -I/home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns"\
-"-allinone-2.34/zlib-1.2.3"
+S["V_LIBS"]="-L/home/catalin/projects/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/tclcl-1.19 -ltclcl -L/home/catalin/projects/congestion_benchmark/dctcp"\
+"-ns2/ns-2/ns-allinone-2.34/otcl-1.13 -lotcl -L/home/catalin/projects/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/lib -ltk8.4 -L/home/catali"\
+"n/projects/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/lib -ltcl8.4 -L/home/catalin/projects/congestion_benchmark/dctcp-ns2/ns-2/ns-allinon"\
+"e-2.34/zlib-1.2.3 -lz"
+S["V_INCLUDES"]="-I/home/catalin/projects/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/tclcl-1.19 -I/home/catalin/projects/congestion_benchmark/dctcp-ns2/ns-"\
+"2/ns-allinone-2.34/otcl-1.13 -I/home/catalin/projects/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/include -I/home/catalin/projects/congesti"\
+"on_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/include -I/home/catalin/projects/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/include -I/home/c"\
+"atalin/projects/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/zlib-1.2.3"
 S["V_TCL2CPP"]="../tclcl-1.19/tcl2c++"
 S["V_LIBRARY_TK"]="../lib/tk8.4"
 S["V_TKDOSNAMES"]="$(LIBRARY_TK)/optMenu.tcl $(LIBRARY_TK)/scrlbar.tcl"
 S["V_LIBRARY_TCL"]="../lib/tcl8.4"
-S["V_TCLSH"]="/home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/bin/tclsh8.4"
+S["V_TCLSH"]="/home/catalin/projects/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/bin/tclsh8.4"
 S["V_TCL_LIBRARY_FILES"]="$(TCL_BASE_LIBRARY_FILES) ../lib/tcl8.4/http1.0/http.tcl"
 S["V_LIB_X11"]="-lXext -lX11"
 S["V_INCLUDE_X11"]=""

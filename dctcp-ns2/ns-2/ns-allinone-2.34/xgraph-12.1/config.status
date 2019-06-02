@@ -67,7 +67,7 @@ s%@ACLOCAL@%aclocal%g
 s%@AUTOCONF@%autoconf%g
 s%@AUTOMAKE@%automake%g
 s%@AUTOHEADER@%autoheader%g
-s%@MAKEINFO@%/home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/xgraph-12.1/missing makeinfo%g
+s%@MAKEINFO@%/home/catalin/projects/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/xgraph-12.1/missing makeinfo%g
 s%@SET_MAKE@%%g
 s%@CC@%gcc%g
 s%@CPP@%gcc -E%g

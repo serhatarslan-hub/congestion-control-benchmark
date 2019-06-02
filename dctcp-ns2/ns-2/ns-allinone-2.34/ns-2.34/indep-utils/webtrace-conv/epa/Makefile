@@ -49,10 +49,10 @@ BINDEST = /usr/local/bin
 CC = g++
 MKDEP	= ../../../conf/mkdep
 
-INCLUDE = -I. -I/home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/tclcl-1.19 -I/home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/otcl-1.13 -I/home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/include -I/home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/include -I/home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/include -I/usr/include/pcap
+INCLUDE = -I. -I/home/catalin/projects/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/tclcl-1.19 -I/home/catalin/projects/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/otcl-1.13 -I/home/catalin/projects/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/include -I/home/catalin/projects/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/include -I/home/catalin/projects/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/include -I/usr/include/pcap
 CFLAGS = -O2 -Wall -Wno-write-strings -DCPP_NAMESPACE=std
 LDFLAGS = 
-LIBS = -L/home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/lib -ltcl8.4  -lnsl -ldl -lm 
+LIBS = -L/home/catalin/projects/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/lib -ltcl8.4  -lnsl -ldl -lm 
 INSTALL = /usr/bin/install -c
 
 SRC = tr-stat.cc
