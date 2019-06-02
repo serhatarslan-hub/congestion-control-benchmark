@@ -44,33 +44,35 @@ def plot_rtt(algo_name, out_dir, log_plot=True, nplot=1, report_only=False,
         # Just pick a subset of nplot
         plot_rtts = sample(rtts, int(nplot))
 
-        plt.figure()
+        fig = plt.figure(figsize=(8,2))
+
         for data in plot_rtts:
             mean = np.mean(data[:, 1])
             std = np.std(data[:, 1])
 
             smooth = 10
             y = data[:, 1]
-            #y = np.convolve(y, np.ones((smooth,))/smooth, mode='same')
+            # For smoothing, use
+            # y = np.convolve(y, np.ones((smooth,))/smooth, mode='same')
             label = r"($\mu$=" + ("%d, SD=%d)" % (round(mean), round(std)))
-            plt.plot(data[:, 0], y, linestyle='-', marker='', label=label)
+            plt.plot(data[:, 0][::20]*1000, y[::20], linestyle='-', marker='', label=label)
         if log_plot:
             plt.yscale('log')
-        plt.ylim([0,300])
-        ax.set_aspect(4.3)
+        if timely_style:
+            plt.ylim([0,300])
+            plt.yticks([0,50,100,150,200,250,300])
+            plt.xlim([0, 1000])
         plt.ylabel('RTT (usec)')
-        plt.xlabel('Time (sec)')
-        plt.title('RTT for '+algo_name+' experiment')
+        plt.xlabel('Time (ms)')
         plt.grid()
-        plt.legend(bbox_to_anchor=(1.04,0.5), loc="center left", borderaxespad=0)
+        plt.legend(loc="upper right", ncol=2)
+        plt.title('RTT for '+algo_name+' experiment')
         plt.savefig(out_file, bbox_inches="tight")
         print("Saved plot: %s" % out_file)
         plt.close()
 
         # Plot the CDF
         plt.figure()
-        #plt.xlim(0,300)
-        #plt.xscale('log')
         plt.xlabel('RTT (usec)')
         plt.title('CDF of RTT for '+algo_name+' experiment')
         plt.plot(sorted_data, yvals, '.', label=algo_name)
@@ -90,8 +92,8 @@ def plot_allRTTcdf(out_dir, log_plot=True, dctcp=None, vegas=None, timely=None,
     Plot the given CDFs on the same figure for easier comparison
     """    
     allCDF_file = out_dir+'All.rttCDF_benchmark.png'
-    plt.figure()
-    plt.xlabel('RTT (usec)')
+    plt.figure(figsize=(8,2))
+    plt.xlabel(r'RTT ($\mu$s)')
     plt.title('CDF of RTT for benchmarked congestion control algorithms')
 
     if dctcp is not None:
@@ -126,9 +128,15 @@ def plot_allRTTcdf(out_dir, log_plot=True, dctcp=None, vegas=None, timely=None,
         plt.plot(hopeSquq[0], hopeSquq[1], '-', label='Hope-Squq')
 
     plt.legend(loc='lower right')
-    if(log_plot):
+    if log_plot:
         plt.xscale('log')
-    #plt.xlim(0,700)
+    if timely_style:
+        plt.grid()
+        plt.yticks([0, 0.2, 0.4, 0.6, 0.8, 1])
+        plt.ylim([0, 1])
+        plt.xlim(0,1500)
+        plt.xlabel(r"RTT ($\mu$s)")
+
     plt.savefig(allCDF_file)
     print "Saved plot: ", allCDF_file
     plt.close()
@@ -165,23 +173,24 @@ def plot_rate(algo_name, num_clients, out_dir, conn_per_client=1, nplot=1,
     # Just pick a subset of nplot
     plot_rates = sample(rates, nplot)
 
-    plt.figure()
+    fig = plt.figure(figsize=(8,2))
     for data in plot_rates:
         mean = np.mean(data[:, 1])
         std = np.std(data[:, 1])
 
-        smooth = 10
         y = data[:, 1]
-        y = np.convolve(y, np.ones((smooth,))/smooth, mode='same')
         label = r"($\mu$=" + ("%d, SD=%d)" % (round(mean), round(std)))
-        plt.plot(data[:, 0], y, linestyle='-', marker='', label=label)
-
+        plt.plot(data[:, 0]*1000, y, linestyle='-', marker='', label=label)
+    if timely_style:
+        plt.ylim([0,300])
+        plt.yticks([0,250,500,750])
+        plt.xlim([0, 1000])
     #plt.ylim([0,1100])
     plt.ylabel('Rate (Mbps)')
-    plt.xlabel('Time (sec)')
+    plt.xlabel('Time (ms)')
     plt.title('The choosen rate during '+algo_name+' experiment')
     plt.grid()
-    plt.legend(bbox_to_anchor=(1.04,0.5), loc="center left", borderaxespad=0)
+    plt.legend(loc="lower right", ncol=2)
     plt.savefig(out_file, bbox_inches="tight")
     print("Saved plot: %s" % out_file)
     plt.close()
@@ -300,29 +309,31 @@ def plot_throughput(algo_name, num_clients, out_dir, conn_per_client=1,
     total_thp = np.sum(throughputs, axis=(1, 2))
 
     if not report_only:
-        
-        #seed(3)
         plot_flows = sample(range(num_clients*conn_per_client),nplot)
         selected = []
         for f in plot_flows:
             selected.append((int(f/conn_per_client),f%conn_per_client))
         
         # Plot individual throughputs
-        plt.figure()
+        plt.figure(figsize=(8,2))
         for i in range(num_clients):
             for j in range(conn_per_client):
                 if (i,j) in selected:
                     node_name = ('Client%d_connection_%d' % (i, j))
-                    plt.plot(times, throughputs[:, i, j], linestyle='-', marker='', label=node_name)
+                    plt.plot(times*1000, throughputs[:, i, j], linestyle='-', marker='', label=node_name)
 
         # # Plot total
         # plt.plot(times,total_thp,linestyle='-', marker='', label='Total')
         
         plt.ylabel('Throughput (Mbps)')
-        plt.xlabel('Time (sec)')
+        plt.xlabel('Time (ms)')
         plt.title('Throughput for '+algo_name+' experiment')
-        #plt.legend(bbox_to_anchor=(1.04,0.5), loc="center left", borderaxespad=0)
-        # plt.ylim([0,750])
+        if timely_style:
+            plt.ylim([0,750])
+            plt.yticks([0,250,500,750])
+            plt.xlim([0, 1000])
+            plt.legend(loc="lower right", ncol=2)
+
         plt.grid()
         plt.savefig(out_file, bbox_inches="tight")
         print("Saved plot: %s" % out_file)
