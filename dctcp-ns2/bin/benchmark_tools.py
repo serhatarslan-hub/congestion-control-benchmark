@@ -176,15 +176,13 @@ def plot_rate(algo_name, num_clients, out_dir, conn_per_client=1, nplot=1,
     else:
         plot_rates = [rates[i] for i in flows]
 
-
     fig = plt.figure(figsize=(8,2))
-    for idx, data in enumerate(plot_rates):
+    for data in plot_rates:
         mean = np.mean(data[:, 1])
         std = np.std(data[:, 1])
-        f = flows[idx]
 
         y = data[:, 1]
-        label = r"($\mu$=" + ("%d, SD=%d) [%d %d]" % (round(mean), round(std), int(f/conn_per_client), f%conn_per_client))
+        label = r"($\mu$=" + ("%d, SD=%d)" % (round(mean), round(std)))
         plt.plot(data[:, 0]*1000, y, linestyle='-', marker='', label=label)
     if timely_style:
         plt.ylim([0,300])
@@ -315,7 +313,7 @@ def plot_throughput(algo_name, num_clients, out_dir, conn_per_client=1,
 
     if not report_only:
         plot_flows = flows if flows is not None else sample(
-            range(num_clients*conn_per_client), nplot)
+            range(num_clients*conn_per_client),nplot)
 
         selected = [(int(f/conn_per_client), f%conn_per_client)
                     for f in plot_flows]
@@ -327,7 +325,7 @@ def plot_throughput(algo_name, num_clients, out_dir, conn_per_client=1,
                 if (i,j) in selected:
                     mean = np.mean(throughputs[:, i, j])
                     std = np.std(throughputs[:, i, j])
-                    label = r"($\mu$=" + ("%d, SD=%d) [%d %d]" % (round(mean), round(std), i, j))
+                    label = r"($\mu$=" + ("%d, SD=%d)" % (round(mean), round(std)))
                     plt.plot(times*1000, throughputs[:, i, j], linestyle='-', marker='', label=label)
 
         # # Plot total
