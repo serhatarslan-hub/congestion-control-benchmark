@@ -110,6 +110,7 @@ VegasTcpAgent::delay_bind_init_all()
     delay_bind_init_one("timely_HAI_thresh_");
     delay_bind_init_one("rttNoise_");
     delay_bind_init_one("timely_rate_");
+    delay_bind_init_one("patchedTimely_");
     /* Serhat's implementation of HOPE */
     delay_bind_init_one("hope_type_");
     delay_bind_init_one("hope_collector_");
@@ -148,6 +149,8 @@ VegasTcpAgent::delay_bind_dispatch(const char *varName, const char *localName,
     if (delay_bind(varName, localName, "rttNoise_", &rttNoise_, tracer)) 
         return TCL_OK;
     if (delay_bind(varName, localName, "timely_rate_", &timely_rate_, tracer)) 
+        return TCL_OK;
+    if (delay_bind(varName, localName, "patchedTimely_", &patchedTimely_, tracer)) 
         return TCL_OK;
     /* Serhat's implementation of HOPE */
     if (delay_bind(varName, localName, "hope_type_", &hope_type_, tracer)) 
