@@ -108,9 +108,9 @@ VegasTcpAgent::delay_bind_init_all()
     delay_bind_init_one("timely_additiveInc_");
     delay_bind_init_one("timely_decreaseFac_");
     delay_bind_init_one("timely_HAI_thresh_");
+    delay_bind_init_one("timely_patched_");
     delay_bind_init_one("rttNoise_");
     delay_bind_init_one("timely_rate_");
-    delay_bind_init_one("patchedTimely_");
     /* Serhat's implementation of HOPE */
     delay_bind_init_one("hope_type_");
     delay_bind_init_one("hope_collector_");
@@ -150,7 +150,7 @@ VegasTcpAgent::delay_bind_dispatch(const char *varName, const char *localName,
         return TCL_OK;
     if (delay_bind(varName, localName, "timely_rate_", &timely_rate_, tracer)) 
         return TCL_OK;
-    if (delay_bind(varName, localName, "patchedTimely_", &patchedTimely_, tracer)) 
+    if (delay_bind(varName, localName, "timely_patched_", &timely_patched_, tracer)) 
         return TCL_OK;
     /* Serhat's implementation of HOPE */
     if (delay_bind(varName, localName, "hope_type_", &hope_type_, tracer)) 
@@ -543,7 +543,7 @@ VegasTcpAgent::recv(Packet *pkt, Handler *)
             double timely_oldRate = timely_rate_;
 
             // TIMELY update step
-            if (patchedTimely_) {
+            if (timely_patched_ == 1) {
                 if (rtt < timely_t_low_) { // additivive increase if rtt < t_low
                         timely_rate_ = timely_rate_ + (timely_additiveInc_ * delta_factor);
                 } else if (rtt > timely_t_high_) { // multiplicative decrease if rtt > t_high
