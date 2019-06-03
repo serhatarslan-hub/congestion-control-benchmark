@@ -66,10 +66,10 @@ def main():
                                               timely_style=True)
         timely_thp = benchmark_tools.plot_throughput(congestion_alg, num_clients, out_dir, \
                                                      conn_per_client=num_conn_per_client, nplot=4,
-                                                     timely_style=True)
+                                                     timely_style=True, flows=[2,0,8,14])
         benchmark_tools.plot_rate(congestion_alg, num_clients, out_dir, \
                                   conn_per_client=num_conn_per_client, nplot=4,
-                                  timely_style=True)
+                                  timely_style=True, flows=[2,0,8,14])
         benchmark_tools.plot_queue(congestion_alg, out_dir)
 
 

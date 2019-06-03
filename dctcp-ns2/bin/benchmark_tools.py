@@ -143,7 +143,7 @@ def plot_allRTTcdf(out_dir, log_plot=True, dctcp=None, vegas=None, timely=None,
 
 
 def plot_rate(algo_name, num_clients, out_dir, conn_per_client=1, nplot=1,
-              timely_style=False):
+              timely_style=False, flows=None):
     """
     Plots a sample of the output rates for the given connections to reproduce
     Figure 13 of the TIMELY paper.
@@ -171,7 +171,10 @@ def plot_rate(algo_name, num_clients, out_dir, conn_per_client=1, nplot=1,
     print("Plotting rates. %d of %d flows had rates set" % (len(rates), nflows))
 
     # Just pick a subset of nplot
-    plot_rates = sample(rates, nplot)
+    if flows is None:
+        plot_rates = sample(rates, nplot)
+    else:
+        plot_rates = [rates[i] for i in flows]
 
     fig = plt.figure(figsize=(8,2))
     for data in plot_rates:
@@ -247,7 +250,7 @@ def plot_signal(signal_name, algo_name, num_clients, out_dir, conn_per_client=1,
     plt.close()
 
 def plot_throughput(algo_name, num_clients, out_dir, conn_per_client=1,
-                    report_only=False, nplot=0, timely_style=False):
+                    report_only=False, nplot=0, timely_style=False, flows=None):
     """
     Plots the throughput for the first num_clients clients, assuming
     each client serves conn_per_client connections.
@@ -309,10 +312,11 @@ def plot_throughput(algo_name, num_clients, out_dir, conn_per_client=1,
     total_thp = np.sum(throughputs, axis=(1, 2))
 
     if not report_only:
-        plot_flows = sample(range(num_clients*conn_per_client),nplot)
-        selected = []
-        for f in plot_flows:
-            selected.append((int(f/conn_per_client),f%conn_per_client))
+        plot_flows = flows if flows is not None else sample(
+            range(num_clients*conn_per_client),nplot)
+
+        selected = [(int(f/conn_per_client), f%conn_per_client)
+                    for f in plot_flows]
         
         # Plot individual throughputs
         plt.figure(figsize=(8,2))
