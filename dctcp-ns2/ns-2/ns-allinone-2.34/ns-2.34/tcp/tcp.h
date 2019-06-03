@@ -608,7 +608,7 @@ protected:
 	double timely_decreaseFac_;	// Multiplicative decrease constant
 	int timely_HAI_thresh_;	// HAI mode threshold
 	double rttNoise_;  // RTT measurement noise (uniform in [0, rttNoiseMax_]); zero means no noise
-	bool patchedTimely_;
+	int patchedTimely_;
 
 	double timely_rate_;	// Current rate in bits/sec
 	double timely_prevRTT_;	// Previous RTT in sec
