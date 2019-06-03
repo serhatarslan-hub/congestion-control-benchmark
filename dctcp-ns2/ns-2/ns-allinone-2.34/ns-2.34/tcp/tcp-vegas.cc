@@ -559,7 +559,8 @@ VegasTcpAgent::recv(Packet *pkt, Handler *)
 
                     // TODO: Setting this to the moving min doesn't seem quite
                     // right. Adapt once we confirm with the authors.
-                    double RTT_REF = v_baseRTT_;
+                    double RTT_REF = 0.00005; //v_baseRTT_; // 0.00005; //
+                    // double RTT_REF = v_baseRTT_;
                     double error = (rtt-RTT_REF)/RTT_REF;
 
                     // Unclear whether DCQCN people also use delta factor like in the timely paper...
