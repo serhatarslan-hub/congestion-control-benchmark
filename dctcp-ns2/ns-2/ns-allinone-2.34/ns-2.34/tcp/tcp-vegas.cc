@@ -553,7 +553,7 @@ VegasTcpAgent::recv(Packet *pkt, Handler *)
                     if (normalized_gradient <= -0.25) // g_i <= -1/4
                         weight = 0;
                     else if (normalized_gradient < 0.25) // -1/4 < g_i < 1/4
-                        weight = 2.0*normalized_gradient+1/2;
+                        weight = 2.0*normalized_gradient+0.5;
                     else // g_i >= 0.25
                         weight = 1;
 
