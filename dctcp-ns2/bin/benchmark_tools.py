@@ -174,6 +174,8 @@ def plot_rate(algo_name, num_clients, out_dir, conn_per_client=1, nplot=1,
     if flows is None:
         plot_rates = sample(rates, nplot)
     else:
+        # Ensure fixed sorting
+        flows.sort(key=lambda f: (int(f/conn_per_client), f%conn_per_client))
         plot_rates = [rates[i] for i in flows]
 
     fig = plt.figure(figsize=(8,2))
