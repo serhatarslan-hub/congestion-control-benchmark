@@ -92,12 +92,14 @@ def plot_allRTTcdf(out_dir, log_plot=True, dctcp=None, vegas=None, timely=None,
     Plot the given CDFs on the same figure for easier comparison
     """    
     allCDF_file = out_dir+'All.rttCDF_benchmark.png'
-    plt.figure(figsize=(8,2))
+    #fig = plt.figure(figsize=(8,2.3))
+    #plt.subplots_adjust(bottom=0.3)
+    plt.figure()
     plt.xlabel(r'RTT ($\mu$s)')
+    plt.grid()
     plt.title('CDF of RTT for benchmarked congestion control algorithms')
 
-    if dctcp is not None:
-        plt.plot(dctcp[0], dctcp[1], '--', label='DCTCP')
+    
     if vegas is not None:
         plt.plot(vegas[0], vegas[1], ':', label='Vegas')
     if timely is not None:
@@ -105,7 +107,7 @@ def plot_allRTTcdf(out_dir, log_plot=True, dctcp=None, vegas=None, timely=None,
     if hopeSum is not None:
         plt.plot(hopeSum[0], hopeSum[1], '-', label='Hope-Sum')
     if hopeMax is not None:
-        plt.plot(hopeMax[0], hopeMax[1], '-', label='Hope-Max')
+        plt.plot(hopeMax[0], hopeMax[1], '-', label='Max')
     if hopeMaxq is not None:
         plt.plot(hopeMaxq[0], hopeMaxq[1], '-', label='Hope-Maxq')
     if hopeMaxqd is not None:
@@ -123,9 +125,11 @@ def plot_allRTTcdf(out_dir, log_plot=True, dctcp=None, vegas=None, timely=None,
     if hopeSumed is not None:
         plt.plot(hopeSumed[0], hopeSumed[1], '-.', label='Hope-Sumed')
     if hopeSqu is not None:
-        plt.plot(hopeSqu[0], hopeSqu[1], '-', label='Hope-Squ')
+        plt.plot(hopeSqu[0], hopeSqu[1], '-', label='Squ')
     if hopeSquq is not None:
         plt.plot(hopeSquq[0], hopeSquq[1], '-', label='Hope-Squq')
+    if dctcp is not None:
+        plt.plot(dctcp[0], dctcp[1], '--', label='DCTCP')
 
     plt.legend(loc='lower right')
     if log_plot:
@@ -357,13 +361,14 @@ def plot_allTotalThp(out_dir, dctcp=None, vegas=None, timely=None, hopeSum=None,
     Plot the given throughputs in the same figure for easier comparison
     """
     allThp_file = out_dir+'All.thp_benchmark.png'
+    #fig = plt.figure(figsize=(8,2.3))
+    #plt.subplots_adjust(bottom=0.3)
     plt.figure()
     plt.ylabel('Throughput (Mbps)')
     plt.xlabel('Time (sec)')
     plt.title('Total throughputs for benchmarked congestion control algorithms')
 
-    if dctcp is not None:
-        plt.plot(dctcp[0][:-2], dctcp[1][:-2], '-', label='DCTCP')
+    
     if vegas is not None:
         plt.plot(vegas[0][:-2], vegas[1][:-2], ':', label='Vegas')
     if timely is not None:
@@ -371,7 +376,7 @@ def plot_allTotalThp(out_dir, dctcp=None, vegas=None, timely=None, hopeSum=None,
     if hopeSum is not None:
         plt.plot(hopeSum[0][:-2], hopeSum[1][:-2], '-', label='Hope-Sum')
     if hopeMax is not None:
-        plt.plot(hopeMax[0][:-2], hopeMax[1][:-2], '-', label='Hope-Max')
+        plt.plot(hopeMax[0][:-2], hopeMax[1][:-2], '-', label='Max')
     if hopeMaxq is not None:
         plt.plot(hopeMaxq[0][:-2], hopeMaxq[1][:-2], '-', label='Hope-Maxq')
     if hopeMaxqd is not None:
@@ -389,11 +394,13 @@ def plot_allTotalThp(out_dir, dctcp=None, vegas=None, timely=None, hopeSum=None,
     if hopeSumed is not None:
         plt.plot(hopeSumed[0][:-2], hopeSumed[1][:-2], '-.', label='Hope-Sumed')
     if hopeSqu is not None:
-        plt.plot(hopeSqu[0][:-2], hopeSqu[1][:-2], '-', label='Hope-Squ')
+        plt.plot(hopeSqu[0][:-2], hopeSqu[1][:-2], '-', label='Squ')
     if hopeSquq is not None:
         plt.plot(hopeSquq[0][:-2], hopeSquq[1][:-2], '-', label='Hope-Squq')
+    if dctcp is not None:
+        plt.plot(dctcp[0][:-2], dctcp[1][:-2], '-', label='DCTCP')
 
-    plt.legend(loc='lower right')
+    plt.legend(loc='lower left')
     plt.grid()
     plt.savefig(allThp_file)
     print "Saved plot: ", allThp_file

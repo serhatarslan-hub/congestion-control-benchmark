@@ -58,6 +58,8 @@ set timely_decreaseFac 0.6
 set timely_HAI_thresh 5
 set timely_rate 2000000000.0
 set hope_bits 0
+set timely_patched 0
+set rttNoise 0
 
 ##### Switch Parameters ####
 set drop_prio_ false
@@ -290,7 +292,9 @@ if {[string compare $congestion_alg "dctcp"] == 0} {
     $my_tcp set timely_ $timely
     $my_tcp set hope_type_ $hope_type
     $my_tcp set hope_collector_ $hope_collector
-    $my_tcp set hope_bits_ $hope_bits 
+    $my_tcp set hope_bits_ $hope_bits
+    $my_tcp set timely_patched_ $timely_patched
+    $my_tcp set rttNoise_ $rttNoise 
 
     # set up FTP connections
     set my_ftp [$my_tcp attach-source FTP]
@@ -301,70 +305,109 @@ if {[string compare $congestion_alg "dctcp"] == 0} {
 # Connect "others"
 for {set i 0} {$i < $last_sw} {incr i} {
     if { $i < [expr $last_sw-2] } {
-
-		set other_tcp($i) [new Agent/TCP/Vegas]
-		$ns attach-agent $others($i) $other_tcp($i)
-		set other_sink($i) [new Agent/TCPSink]
-		$ns attach-agent $others([expr $i+$n_switch]) $other_sink($i)
-		$ns connect $other_tcp($i) $other_sink($i)
-		$other_tcp($i) set fid_ [expr $i+2]
-		set other_ftp($i) [new Application/FTP]
-		$other_ftp($i) attach-agent $other_tcp($i)
-		$other_ftp($i) set type_ FTP
-		#$other_tcp($i) set timely_ 0
-		#$other_tcp($i) set hope_type_ 0 
+		
+		if {[string compare $congestion_alg "dctcp"] == 0} {
+			#set other_tcp($i) [new Agent/TCP/FullTcp]
+    		#set other_sink($i) [new Agent/TCP/FullTcp]
+    		#$ns attach-agent $others($i) $other_tcp($i)
+    		#$ns attach-agent $others([expr $i+$n_switch]) $other_sink($i)
+    		#$ns connect $other_tcp($i) $other_sink($i)
+    		#$other_tcp($i) set fid_ [expr $i+2]
+    		#$other_sink($i) listen
+    		#set other_ftp($i) [$other_tcp($i) attach-source FTP]
+    		#$other_ftp($i) set type_ FTP
+		} else {
+			set other_tcp($i) [new Agent/TCP/Vegas]
+			$ns attach-agent $others($i) $other_tcp($i)
+			set other_sink($i) [new Agent/TCPSink]
+			$ns attach-agent $others([expr $i+$n_switch]) $other_sink($i)
+			$ns connect $other_tcp($i) $other_sink($i)
+			$other_tcp($i) set fid_ [expr $i+2]
+			set other_ftp($i) [new Application/FTP]
+			$other_ftp($i) attach-agent $other_tcp($i)
+			$other_ftp($i) set type_ FTP
+			#$other_tcp($i) set timely_ 0
+			#$other_tcp($i) set hope_type_ 0 
+		}
 
     } elseif { $i < [expr $last_sw-1] } {
 
 		for {set j 0} {$j < $second_crowd} {incr j} {
-	    	set indx [expr $i+$j]
-    	    set other_tcp($indx) [new Agent/TCP/Vegas]
-	    	$ns attach-agent $others($i) $other_tcp($indx)
-    	    set other_sink($indx) [new Agent/TCPSink]
-    	    $ns attach-agent $others([expr $i+$n_switch]) $other_sink($indx)
-    	    $ns connect $other_tcp($indx) $other_sink($indx)
-    	    $other_tcp($indx) set fid_ [expr $indx+2]
-    	    set other_ftp($indx) [new Application/FTP]
-    	    $other_ftp($indx) attach-agent $other_tcp($indx)
-    	    $other_ftp($indx) set type_ FTP
-	    	#$other_tcp($indx) set timely_ 0
-	    	#$other_tcp($indx) set hope_type_ 0
-
+			set indx [expr $i+$j]
+			if {[string compare $congestion_alg "dctcp"] == 0} {
+				#set other_tcp($indx) [new Agent/TCP/FullTcp]
+    			#set other_sink($indx) [new Agent/TCP/FullTcp]
+    			#$ns attach-agent $others($i) $other_tcp($indx)
+    			#$ns attach-agent $others([expr $i+$n_switch]) $other_sink($indx)
+    			#$ns connect $other_tcp($indx) $other_sink($indx)
+    			#$other_tcp($indx) set fid_ [expr $indx+2]
+    			#$other_sink($indx) listen
+    			#set other_ftp($indx) [$other_tcp($indx) attach-source FTP]
+    			#$other_ftp($indx) set type_ FTP
+			} else {
+    	    	set other_tcp($indx) [new Agent/TCP/Vegas]
+	    		$ns attach-agent $others($i) $other_tcp($indx)
+    	    	set other_sink($indx) [new Agent/TCPSink]
+    	    	$ns attach-agent $others([expr $i+$n_switch]) $other_sink($indx)
+    	    	$ns connect $other_tcp($indx) $other_sink($indx)
+    	    	$other_tcp($indx) set fid_ [expr $indx+2]
+    	    	set other_ftp($indx) [new Application/FTP]
+    	    	$other_ftp($indx) attach-agent $other_tcp($indx)
+    	    	$other_ftp($indx) set type_ FTP
+	    		#$other_tcp($indx) set timely_ 0
+	    		#$other_tcp($indx) set hope_type_ 0
+	    	}
 		}
 
     } else {
 
 		for {set j 0} {$j < $n_crowd} {incr j} {
-	    	set indx [expr $second_crowd+$i-1+$j]
-    	    set other_tcp($indx) [new Agent/TCP/Vegas]
-	    	$ns attach-agent $others($i) $other_tcp($indx)
-    	    set other_sink($indx) [new Agent/TCPSink]
-    	    $ns attach-agent $others($last_sw) $other_sink($indx)
-    	    $ns connect $other_tcp($indx) $other_sink($indx)
-    	    $other_tcp($indx) set fid_ [expr $indx+2]
-    	    set other_ftp($indx) [new Application/FTP]
-    	    $other_ftp($indx) attach-agent $other_tcp($indx)
-    	    $other_ftp($indx) set type_ FTP
-	    	#$other_tcp($indx) set timely_ 0
-	    	#$other_tcp($indx) set hope_type_ 0
-
+			set indx [expr $second_crowd+$i-1+$j]
+			if {[string compare $congestion_alg "dctcp"] == 0} {
+				#set other_tcp($indx) [new Agent/TCP/FullTcp]
+    			#set other_sink($indx) [new Agent/TCP/FullTcp]
+    			#$ns attach-agent $others($i) $other_tcp($indx)
+    			#$ns attach-agent $others($last_sw) $other_sink($indx)
+    			#$ns connect $other_tcp($indx) $other_sink($indx)
+    			#$other_tcp($indx) set fid_ [expr $indx+2]
+    			#$other_sink($indx) listen
+    			#set other_ftp($indx) [$other_tcp($indx) attach-source FTP]
+    			#$other_ftp($indx) set type_ FTP
+			} else {
+    	    	set other_tcp($indx) [new Agent/TCP/Vegas]
+	    		$ns attach-agent $others($i) $other_tcp($indx)
+    	    	set other_sink($indx) [new Agent/TCPSink]
+    	    	$ns attach-agent $others($last_sw) $other_sink($indx)
+    	    	$ns connect $other_tcp($indx) $other_sink($indx)
+    	    	$other_tcp($indx) set fid_ [expr $indx+2]
+    	    	set other_ftp($indx) [new Application/FTP]
+    	    	$other_ftp($indx) attach-agent $other_tcp($indx)
+    	    	$other_ftp($indx) set type_ FTP
+	    		#$other_tcp($indx) set timely_ 0
+	    		#$other_tcp($indx) set hope_type_ 0
+			}
 		}
 
     }
 }
-for {set i 0} {$i < [expr $n_switch+$second_crowd+$n_crowd-3]} {incr i} {
-    $other_tcp($i) set timely_packetSize_ [expr $pktSize+40]
-    $other_tcp($i) set timely_ewma_alpha_ $timely_ewma_alpha
-    $other_tcp($i) set timely_t_low_ $timely_t_low
-    $other_tcp($i) set timely_t_high_ $timely_t_high
-    $other_tcp($i) set timely_additiveInc_ $timely_additiveInc
-    $other_tcp($i) set timely_decreaseFac_ $timely_decreaseFac
-    $other_tcp($i) set timely_HAI_thresh_ $timely_HAI_thresh
-    $other_tcp($i) set timely_rate_ $timely_rate
-    $other_tcp($i) set timely_ $timely
-    $other_tcp($i) set hope_type_ $hope_type
-    $other_tcp($i) set hope_collector_ $hope_collector 
-    $other_tcp($i) set hope_bits_ $hope_bits
+
+if {[string compare $congestion_alg "dctcp"] != 0} {
+	for {set i 0} {$i < [expr $n_switch+$second_crowd+$n_crowd-3]} {incr i} {
+		$other_tcp($i) set timely_packetSize_ [expr $pktSize+40]
+		$other_tcp($i) set timely_ewma_alpha_ $timely_ewma_alpha
+		$other_tcp($i) set timely_t_low_ $timely_t_low
+		$other_tcp($i) set timely_t_high_ $timely_t_high
+		$other_tcp($i) set timely_additiveInc_ $timely_additiveInc
+		$other_tcp($i) set timely_decreaseFac_ $timely_decreaseFac
+		$other_tcp($i) set timely_HAI_thresh_ $timely_HAI_thresh
+		$other_tcp($i) set timely_rate_ $timely_rate
+		$other_tcp($i) set timely_ $timely
+		$other_tcp($i) set hope_type_ $hope_type
+		$other_tcp($i) set hope_collector_ $hope_collector 
+		$other_tcp($i) set hope_bits_ $hope_bits
+		$other_tcp($i) set timely_patched_ $timely_patched
+		$other_tcp($i) set rttNoise_ $rttNoise
+	}
 }
 
 #set disruptor [new Agent/TCP/Vegas]
