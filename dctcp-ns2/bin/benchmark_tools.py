@@ -77,7 +77,7 @@ def plot_rtt(algo_name, out_dir, log_plot=True, nplot=1, report_only=False,
         plt.title('CDF of RTT for '+algo_name+' experiment')
         plt.plot(sorted_data, yvals, '.', label=algo_name)
         plt.savefig(cdf_file)
-        print "Saved plot: ", cdf_file
+        print "Saved plot:", cdf_file
         plt.close()
 
     return sorted_data, yvals
@@ -92,8 +92,11 @@ def plot_allRTTcdf(out_dir, log_plot=True, dctcp=None, vegas=None, timely=None,
     Plot the given CDFs on the same figure for easier comparison
     """    
     allCDF_file = out_dir+'All.rttCDF_benchmark.png'
+    
+    # # For plot styles similar to Timely paper, use
     #fig = plt.figure(figsize=(8,2.3))
     #plt.subplots_adjust(bottom=0.3)
+    
     plt.figure()
     plt.xlabel(r'RTT ($\mu$s)')
     plt.grid()
@@ -102,6 +105,8 @@ def plot_allRTTcdf(out_dir, log_plot=True, dctcp=None, vegas=None, timely=None,
     
     if vegas is not None:
         plt.plot(vegas[0], vegas[1], ':', label='Vegas')
+    if dctcp is not None:
+        plt.plot(dctcp[0], dctcp[1], '--', label='DCTCP')
     if timely is not None:
         plt.plot(timely[0], timely[1], '-', label='Timely')
     if hopeSum is not None:
@@ -128,8 +133,7 @@ def plot_allRTTcdf(out_dir, log_plot=True, dctcp=None, vegas=None, timely=None,
         plt.plot(hopeSqu[0], hopeSqu[1], '-', label='Squ')
     if hopeSquq is not None:
         plt.plot(hopeSquq[0], hopeSquq[1], '-', label='Hope-Squq')
-    if dctcp is not None:
-        plt.plot(dctcp[0], dctcp[1], '--', label='DCTCP')
+    
 
     plt.legend(loc='lower right')
     if log_plot:
@@ -142,7 +146,7 @@ def plot_allRTTcdf(out_dir, log_plot=True, dctcp=None, vegas=None, timely=None,
         plt.xlabel(r"RTT ($\mu$s)")
 
     plt.savefig(allCDF_file)
-    print "Saved plot: ", allCDF_file
+    print "Saved plot:", allCDF_file
     plt.close()
 
 
@@ -194,7 +198,7 @@ def plot_rate(algo_name, num_clients, out_dir, conn_per_client=1, nplot=1,
         plt.ylim([0,300])
         plt.yticks([0,250,500,750])
         plt.xlim([0, 1000])
-    #plt.ylim([0,1100])
+    
     plt.ylabel('Rate (Mbps)')
     plt.xlabel('Time (ms)')
     plt.title('The choosen rate during '+algo_name+' experiment')
@@ -241,11 +245,11 @@ def plot_signal(signal_name, algo_name, num_clients, out_dir, conn_per_client=1,
 
         smooth = 10
         y = data[:, 1]
+        # For smoothing, use
         #y = np.convolve(y, np.ones((smooth,))/smooth, mode='same')
         label = r"($\mu$=" + ("%d, SD=%d)" % (round(mean), round(std)))
         plt.plot(data[:, 0], y, linestyle='-', marker='', label=label)
 
-    #plt.ylim([0,1100])
     plt.ylabel('Signal (usec)')
     plt.xlabel('Time (sec)')
     plt.title(signal_name+' Hope Signal for '+algo_name+' experiment')
@@ -361,8 +365,11 @@ def plot_allTotalThp(out_dir, dctcp=None, vegas=None, timely=None, hopeSum=None,
     Plot the given throughputs in the same figure for easier comparison
     """
     allThp_file = out_dir+'All.thp_benchmark.png'
+    
+    # # For plot styles similar to Timely paper, use
     #fig = plt.figure(figsize=(8,2.3))
     #plt.subplots_adjust(bottom=0.3)
+    
     plt.figure()
     plt.ylabel('Throughput (Mbps)')
     plt.xlabel('Time (sec)')
@@ -371,6 +378,8 @@ def plot_allTotalThp(out_dir, dctcp=None, vegas=None, timely=None, hopeSum=None,
     
     if vegas is not None:
         plt.plot(vegas[0][:-2], vegas[1][:-2], ':', label='Vegas')
+    if dctcp is not None:
+        plt.plot(dctcp[0][:-2], dctcp[1][:-2], '-', label='DCTCP')
     if timely is not None:
         plt.plot(timely[0][:-2], timely[1][:-2], '-', label='Timely')
     if hopeSum is not None:
@@ -397,8 +406,7 @@ def plot_allTotalThp(out_dir, dctcp=None, vegas=None, timely=None, hopeSum=None,
         plt.plot(hopeSqu[0][:-2], hopeSqu[1][:-2], '-', label='Squ')
     if hopeSquq is not None:
         plt.plot(hopeSquq[0][:-2], hopeSquq[1][:-2], '-', label='Hope-Squq')
-    if dctcp is not None:
-        plt.plot(dctcp[0][:-2], dctcp[1][:-2], '-', label='DCTCP')
+    
 
     plt.legend(loc='lower left')
     plt.grid()
@@ -418,8 +426,6 @@ def plot_queue(algo_name, out_dir, log_plot=True):
     times = []
     q_sizes = []
 
-    #time = []
-    #q_size = []
     with open(in_file) as f:
         for line in f:
             result = re.search(fmat, line)
@@ -435,19 +441,17 @@ def plot_queue(algo_name, out_dir, log_plot=True):
                     dst_nodes.append(to_node)
                     times.append([t])
                     q_sizes.append([s])
-                #time.append(t)
-                #q_size.append(s)
     
     plt.figure()
     for i in range(len(dst_nodes)):
         queue_name = 'Queue Client_{}'.format(dst_nodes[i])
         plt.plot(times[i],q_sizes[i],linestyle='-', marker='', label=queue_name)
-    #plt.plot(time,q_size,linestyle='-', marker='', label='Queue in packets')
+    
     if log_plot==True: 
         plt.yscale('log')
     plt.ylabel('Queue (packets)')
     plt.xlabel('Time (sec)')
-    #plt.legend(loc='lower right')
+    
     plt.title('Queue size for '+algo_name+' experiment')
     plt.grid()
     plt.savefig(out_file, bbox_inches="tight")
