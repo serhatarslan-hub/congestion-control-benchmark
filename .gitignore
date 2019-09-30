@@ -2,6 +2,7 @@
 .DS_Store
 *.pyc
 *~
+*.out~
 
 # Nam
 *.nam
@@ -11,12 +12,15 @@
 
 # Sublime SFTP
 sftp-config.json
+
+# Unique for every clone
 dctcp-ns2/settings.sh
-*.out~
 
 # Bulk results for random topology
 out_randomTopology/*/
 out_randomTopology/consolidatedReport.json
+
+# Cweb
 dctcp-ns2/ns-2/ns-allinone-2.34/cweb/ctangle
 
 # Bin

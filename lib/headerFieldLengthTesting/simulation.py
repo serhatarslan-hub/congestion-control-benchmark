@@ -17,7 +17,7 @@ import benchmark_tools
 
 def main():
 	
-	bits = [1,2,4,8,16,0]   
+	bits = [1,2,4,8,16,0]  # 0 denotes regular floating values for queue occupancy (32 bit) 
 	num_clients = 192
 	num_TORs = 8
 	num_leafs = 4
@@ -26,7 +26,8 @@ def main():
 		print('ERROR: Please provide number of clients and number of TORs that are evenly distributable through number of leafs.')
 		return
 
-	out_dir = './out_hope_vs_bits/'
+	setup_dir = './lib/headerFieldLengthTesting/setup.tcl'
+	out_dir = './out_headerFieldLengthTesting/'
 	algorithm = 'hope_maxq_'
 	
 	results = {}
@@ -39,7 +40,7 @@ def main():
 	for bit in bits:
 		cong_alg = algorithm+str(bit)
 		print("Hope-Maxq Simulation Running for %d bits..."%bit)
-		os.system('ns ./lib/hope_vs_bits.tcl {0} {1} {2} {3} {4} {5}'.format(cong_alg, bit, out_dir, num_clients, num_TORs, num_leafs))
+		os.system('ns {0} {1} {2} {3} {4} {5} {6}'.format(setup_dir, cong_alg, bit, out_dir, num_clients, num_TORs, num_leafs))
 		results[bit]['cdf'] = benchmark_tools.plot_rtt(cong_alg, out_dir, log_plot=False, nplot=num_clients/2, report_only=False)
 		results[bit]['thp'] = benchmark_tools.plot_throughput(cong_alg, num_clients, out_dir, report_only=False)
 		results[bit]['fct'] = benchmark_tools.get_fct(cong_alg, num_clients, out_dir)

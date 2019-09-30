@@ -196,18 +196,16 @@ if {[string compare $congestion_alg "dctcp"] == 0} {
     }
     # The following procedure is called whenever a packet is received 
     Agent/TCP/FullTcp instproc recv {rtt_t} {
-    global ns rtt_file 
-    #puts $rtt_file "A packet received"       
+    global ns rtt_file       
     
     $self instvar node_
+    $self instvar fid_
+    
     if {[$node_ id] == 2 } {
         set now [$ns now]
         set rtt [$self set rtt_]
-        #set rtt [$self set t_rtt_]
     
-        puts $rtt_file "$now $rtt"
-        #puts $rtt_file "[$node_ id] $now $rtt"
-        #puts $rtt_file "[$self set node] $now $rtt"
+        puts $rtt_file "$now $fid_ $rtt"
     }
     }
 
@@ -220,8 +218,8 @@ if {[string compare $congestion_alg "dctcp"] == 0} {
                 set sink($conn_idx) [new Agent/TCPSink]
                 $ns attach-agent $client($i) $tcp($conn_idx)
                 $ns attach-agent $server_node $sink($conn_idx)
-                #$tcp($conn_idx) set fid_ [expr $conn_idx]
-                #$sink($conn_idx) set fid_ [expr $conn_idx]
+                $tcp($conn_idx) set fid_ [expr $conn_idx]
+                $sink($conn_idx) set fid_ [expr $conn_idx]
                 $ns connect $tcp($conn_idx) $sink($conn_idx)
                 ## set up TCP-level connections
                 #$sink($conn_idx) listen
@@ -370,18 +368,16 @@ if {[string compare $congestion_alg "dctcp"] == 0} {
         $ftp($conn_idx) attach-agent $tcp($conn_idx)
         }
     }
-    Agent/TCP/Vegas instproc recv {rtt_t cong_signal_t hop_cnt_t} {
+    Agent/TCP/Vegas instproc recv {rtt_t cong_signal_t hopCnt_t timely_rate_t} {
         global ns rtt_file       
         
         $self instvar node_
+        $self instvar fid_
         if {[$node_ id] == 2 } {
             set now [$ns now]
-            #set rtt [$self set v_rtt_]
             set rtt [expr $rtt_t*1000000.0]
         
-            puts $rtt_file "$now $rtt"
-            #puts $rtt_file "[$node_ id] $now $rtt"
-            #puts $rtt_file "[$self set node] $now $rtt"
+            puts $rtt_file "$now $fid_ $rtt"
         }
     }
 }

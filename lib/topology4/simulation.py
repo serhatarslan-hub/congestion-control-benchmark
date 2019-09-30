@@ -41,6 +41,7 @@ def main():
 		print('ERROR: Please provide number of clients and number of TORs that are evenly distributable through number of leafs.')
 		return
 
+	setup_dir = './lib/topology4/setup.tcl '
 	out_dir = './out_topology4/'
 
 	dctcp_cdf = None
@@ -89,7 +90,7 @@ def main():
 	if (args.dctcp):
 		congestion_alg = 'dctcp'
 		print("DCTCP Simulation Running...")
-		os.system('ns ./lib/topology4.tcl {0} {1} {2} {3} {4}'.format(congestion_alg, out_dir, num_clients, num_TORs, num_leafs))
+		os.system('ns {0} {1} {2} {3} {4} {5}'.format(setup_dir, congestion_alg, out_dir, num_clients, num_TORs, num_leafs))
 		dctcp_cdf = benchmark_tools.plot_rtt(congestion_alg, out_dir, log_plot=False, nplot=num_clients-1)
 		dctcp_thp = benchmark_tools.plot_throughput(congestion_alg, num_clients, out_dir)
 		dctcp_fct = benchmark_tools.get_fct(congestion_alg, num_clients, out_dir)
@@ -97,7 +98,7 @@ def main():
 	if (args.timely):
 		congestion_alg = 'timely'
 		print("Timely Simulation Running...")
-		os.system('ns ./lib/topology4.tcl {0} {1} {2} {3} {4}'.format(congestion_alg, out_dir, num_clients, num_TORs, num_leafs))
+		os.system('ns {0} {1} {2} {3} {4} {5}'.format(setup_dir, congestion_alg, out_dir, num_clients, num_TORs, num_leafs))
 		timely_cdf = benchmark_tools.plot_rtt(congestion_alg, out_dir, log_plot=False, nplot=num_clients-1)
 		timely_thp = benchmark_tools.plot_throughput(congestion_alg, num_clients, out_dir)
 		timely_fct = benchmark_tools.get_fct(congestion_alg, num_clients, out_dir)
@@ -105,7 +106,7 @@ def main():
 	if (args.hope_sum):
 		congestion_alg = 'hope_sum'
 		print("Hope-Sum Simulation Running...")
-		os.system('ns ./lib/topology4.tcl {0} {1} {2} {3} {4}'.format(congestion_alg, out_dir, num_clients, num_TORs, num_leafs))
+		os.system('ns {0} {1} {2} {3} {4} {5}'.format(setup_dir, congestion_alg, out_dir, num_clients, num_TORs, num_leafs))
 		hopeSum_cdf = benchmark_tools.plot_rtt(congestion_alg, out_dir, log_plot=False, nplot=num_clients-1)
 		hopeSum_thp = benchmark_tools.plot_throughput(congestion_alg, num_clients, out_dir, nplot=0)
 		hopeSum_fct = benchmark_tools.get_fct(congestion_alg, num_clients, out_dir)
@@ -115,7 +116,7 @@ def main():
 	if (args.hope_max):
 		congestion_alg = 'hope_max'
 		print("Hope-Max Simulation Running...")
-		os.system('ns ./lib/topology4.tcl {0} {1} {2} {3} {4}'.format(congestion_alg, out_dir, num_clients, num_TORs, num_leafs))
+		os.system('ns {0} {1} {2} {3} {4} {5}'.format(setup_dir, congestion_alg, out_dir, num_clients, num_TORs, num_leafs))
 		hopeMax_cdf = benchmark_tools.plot_rtt(congestion_alg, out_dir, log_plot=False, nplot=num_clients-1)
 		hopeMax_thp = benchmark_tools.plot_throughput(congestion_alg, num_clients, out_dir, nplot=0)
 		hopeMax_fct = benchmark_tools.get_fct(congestion_alg, num_clients, out_dir)
@@ -125,7 +126,7 @@ def main():
 	if (args.hope_maxq):
 		congestion_alg = 'hope_maxq'
 		print("Hope-Maxq Simulation Running...")
-		os.system('ns ./lib/topology4.tcl {0} {1} {2} {3} {4}'.format(congestion_alg, out_dir, num_clients, num_TORs, num_leafs))
+		os.system('ns {0} {1} {2} {3} {4} {5}'.format(setup_dir, congestion_alg, out_dir, num_clients, num_TORs, num_leafs))
 		hopeMaxq_cdf = benchmark_tools.plot_rtt(congestion_alg, out_dir, log_plot=False, nplot=num_clients-1)
 		hopeMaxq_thp = benchmark_tools.plot_throughput(congestion_alg, num_clients, out_dir)
 		hopeMaxq_fct = benchmark_tools.get_fct(congestion_alg, num_clients, out_dir)
@@ -133,7 +134,7 @@ def main():
 	if (args.hope_maxqd):
 		congestion_alg = 'hope_maxqd'
 		print("Hope-Maxqd Simulation Running...")
-		os.system('ns ./lib/topology4.tcl {0} {1} {2} {3} {4}'.format(congestion_alg, out_dir, num_clients, num_TORs, num_leafs))
+		os.system('ns {0} {1} {2} {3} {4} {5}'.format(setup_dir, congestion_alg, out_dir, num_clients, num_TORs, num_leafs))
 		hopeMaxqd_cdf = benchmark_tools.plot_rtt(congestion_alg, out_dir, log_plot=False, nplot=num_clients-1)
 		hopeMaxqd_thp = benchmark_tools.plot_throughput(congestion_alg, num_clients, out_dir)
 		hopeMaxqd_fct = benchmark_tools.get_fct(congestion_alg, num_clients, out_dir)
@@ -141,7 +142,7 @@ def main():
 	if (args.hope_maxe):
 		congestion_alg = 'hope_maxe'
 		print("Hope-Maxe Simulation Running...")
-		os.system('ns ./lib/topology4.tcl {0} {1} {2} {3} {4}'.format(congestion_alg, out_dir, num_clients, num_TORs, num_leafs))
+		os.system('ns {0} {1} {2} {3} {4} {5}'.format(setup_dir, congestion_alg, out_dir, num_clients, num_TORs, num_leafs))
 		hopeMaxe_cdf = benchmark_tools.plot_rtt(congestion_alg, out_dir, log_plot=False, nplot=num_clients-1)
 		hopeMaxe_thp = benchmark_tools.plot_throughput(congestion_alg, num_clients, out_dir)
 		hopeMaxe_fct = benchmark_tools.get_fct(congestion_alg, num_clients, out_dir)
@@ -149,7 +150,7 @@ def main():
 	if (args.hope_maxed):
 		congestion_alg = 'hope_maxed'
 		print("Hope-Maxed Simulation Running...")
-		os.system('ns ./lib/topology4.tcl {0} {1} {2} {3} {4}'.format(congestion_alg, out_dir, num_clients, num_TORs, num_leafs))
+		os.system('ns {0} {1} {2} {3} {4} {5}'.format(setup_dir, congestion_alg, out_dir, num_clients, num_TORs, num_leafs))
 		hopeMaxed_cdf = benchmark_tools.plot_rtt(congestion_alg, out_dir, log_plot=False, nplot=num_clients-1)
 		hopeMaxed_thp = benchmark_tools.plot_throughput(congestion_alg, num_clients, out_dir)
 		hopeMaxed_fct = benchmark_tools.get_fct(congestion_alg, num_clients, out_dir)
@@ -157,7 +158,7 @@ def main():
 	if (args.hope_sumq):
 		congestion_alg = 'hope_sumq'
 		print("Hope-Sumq Simulation Running...")
-		os.system('ns ./lib/topology4.tcl {0} {1} {2} {3} {4}'.format(congestion_alg, out_dir, num_clients, num_TORs, num_leafs))
+		os.system('ns {0} {1} {2} {3} {4} {5}'.format(setup_dir, congestion_alg, out_dir, num_clients, num_TORs, num_leafs))
 		hopeSumq_cdf = benchmark_tools.plot_rtt(congestion_alg, out_dir, log_plot=False, nplot=num_clients-1)
 		hopeSumq_thp = benchmark_tools.plot_throughput(congestion_alg, num_clients, out_dir)
 		hopeSumq_fct = benchmark_tools.get_fct(congestion_alg, num_clients, out_dir)
@@ -165,7 +166,7 @@ def main():
 	if (args.hope_sumqd):
 		congestion_alg = 'hope_sumqd'
 		print("Hope-Sumqd Simulation Running...")
-		os.system('ns ./lib/topology4.tcl {0} {1} {2} {3} {4}'.format(congestion_alg, out_dir, num_clients, num_TORs, num_leafs))
+		os.system('ns {0} {1} {2} {3} {4} {5}'.format(setup_dir, congestion_alg, out_dir, num_clients, num_TORs, num_leafs))
 		hopeSumqd_cdf = benchmark_tools.plot_rtt(congestion_alg, out_dir, log_plot=False, nplot=num_clients-1)
 		hopeSumqd_thp = benchmark_tools.plot_throughput(congestion_alg, num_clients, out_dir)
 		hopeSumqd_fct = benchmark_tools.get_fct(congestion_alg, num_clients, out_dir)
@@ -173,7 +174,7 @@ def main():
 	if (args.hope_sume):
 		congestion_alg = 'hope_sume'
 		print("Hope-Sume Simulation Running...")
-		os.system('ns ./lib/topology4.tcl {0} {1} {2} {3} {4}'.format(congestion_alg, out_dir, num_clients, num_TORs, num_leafs))
+		os.system('ns {0} {1} {2} {3} {4} {5}'.format(setup_dir, congestion_alg, out_dir, num_clients, num_TORs, num_leafs))
 		hopeSume_cdf = benchmark_tools.plot_rtt(congestion_alg, out_dir, log_plot=False, nplot=num_clients-1)
 		hopeSume_thp = benchmark_tools.plot_throughput(congestion_alg, num_clients, out_dir)
 		hopeSume_fct = benchmark_tools.get_fct(congestion_alg, num_clients, out_dir)
@@ -181,7 +182,7 @@ def main():
 	if (args.hope_sumed):
 		congestion_alg = 'hope_sumed'
 		print("Hope-Sumed Simulation Running...")
-		os.system('ns ./lib/topology4.tcl {0} {1} {2} {3} {4}'.format(congestion_alg, out_dir, num_clients, num_TORs, num_leafs))
+		os.system('ns {0} {1} {2} {3} {4} {5}'.format(setup_dir, congestion_alg, out_dir, num_clients, num_TORs, num_leafs))
 		hopeSumed_cdf = benchmark_tools.plot_rtt(congestion_alg, out_dir, log_plot=False, nplot=num_clients-1)
 		hopeSumed_thp = benchmark_tools.plot_throughput(congestion_alg, num_clients, out_dir)
 		hopeSumed_fct = benchmark_tools.get_fct(congestion_alg, num_clients, out_dir)
@@ -189,7 +190,7 @@ def main():
 	if (args.hope_squ):
 		congestion_alg = 'hope_squ'
 		print("Hope-Squ Simulation Running...")
-		os.system('ns ./lib/topology4.tcl {0} {1} {2} {3} {4}'.format(congestion_alg, out_dir, num_clients, num_TORs, num_leafs))
+		os.system('ns {0} {1} {2} {3} {4} {5}'.format(setup_dir, congestion_alg, out_dir, num_clients, num_TORs, num_leafs))
 		hopeSqu_cdf = benchmark_tools.plot_rtt(congestion_alg, out_dir, log_plot=False, nplot=num_clients-1)
 		hopeSqu_thp = benchmark_tools.plot_throughput(congestion_alg, num_clients, out_dir)
 		hopeSqu_fct = benchmark_tools.get_fct(congestion_alg, num_clients, out_dir)
@@ -197,7 +198,7 @@ def main():
 	if (args.hope_squq):
 		congestion_alg = 'hope_squq'
 		print("Hope-Squq Simulation Running...")
-		os.system('ns ./lib/topology4.tcl {0} {1} {2} {3} {4}'.format(congestion_alg, out_dir, num_clients, num_TORs, num_leafs))
+		os.system('ns {0} {1} {2} {3} {4} {5}'.format(setup_dir, congestion_alg, out_dir, num_clients, num_TORs, num_leafs))
 		hopeSquq_cdf = benchmark_tools.plot_rtt(congestion_alg, out_dir, log_plot=False, nplot=num_clients-1)
 		hopeSquq_thp = benchmark_tools.plot_throughput(congestion_alg, num_clients, out_dir)
 		hopeSquq_fct = benchmark_tools.get_fct(congestion_alg, num_clients, out_dir)

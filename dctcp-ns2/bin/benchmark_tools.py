@@ -283,8 +283,8 @@ def plot_throughput(algo_name, num_clients, out_dir, conn_per_client=1,
 
     # Parse the trace file per schema explained here:
     # https://ns2blogger.blogspot.com/p/the-file-written-by-application-or-by.html
-    with open(tr_file, 'r') as f:
-        for line in f:
+    with open(tr_file, 'r') as ff:
+        for line in ff:
             event, time, from_node, to_node, pkt_type, pkt_size, flags, fid, \
                 src_addr, dst_addr, seq_num, pkt_id = line.split()
 
@@ -297,7 +297,8 @@ def plot_throughput(algo_name, num_clients, out_dir, conn_per_client=1,
             if event == '-' and pkt_type == 'tcp' \
                 and s < num_clients and f < num_clients*conn_per_client:
                 # Let f only be the residual
-                f -= s*conn_per_client
+                f = f%conn_per_client
+                #f -= s*conn_per_client
 
                 # Only counting non-retransmissions
                 if int(seq_num) > seqs[s, f]:
