@@ -1,12 +1,21 @@
 
-Benchmarking Between Congestion Control Algorithms
+Benchmarking With Congestion Control Algorithms
 =====================
 
-This benchmark uses the public repository of sibanez12/dctcp-ns2 
-(https://github.com/sibanez12/dctcp-ns2) to start by reproducing DCTCP
-behavior in the simulations.
+This benchmark uses the public repository 
+[sibanez12/dctcp-ns2](https://github.com/sibanez12/dctcp-ns2) to start 
+by reproducing DCTCP behavior in the simulations. It also offers 
+[Timely Congestion Control](https://conferences.sigcomm.org/sigcomm/2015/pdf/papers/p537.pdf) 
+implementation.
 
-The results are designed to be reproduced on a machine running Ubuntu 14.04. 
+In addition, queue occupancy stamping feature is added to IP packet switches 
+to experiment with the effectiveness of queue occupancy knowledge (the exact 
+measure of congestion in the network) on congestion control. Our findings with 
+this feature are presented in our report, [Moving Beyond Proxy Signals for Datacenter
+Congestion Control](https://web.stanford.edu/~sarslan/files/MovingBeyondProxySignalsforDatacenterCongestionControl.pdf).
+
+The repository is especially organized for easy reproduction. 
+The simulations are designed to be reproduced on a machine running Ubuntu 14.04. 
 It is recommended to run the simulations on a Google Compute Engine instance 
 to ensure maximum consistency and reproducibility. Below are the instructions
 to reproduce:
