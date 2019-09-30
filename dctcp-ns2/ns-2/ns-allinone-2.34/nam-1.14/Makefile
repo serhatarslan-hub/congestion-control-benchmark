@@ -47,17 +47,17 @@ CCOPT = -O2 -Wall -Wno-write-strings
 MKDEP = ./conf/mkdep
 # Have to be the same as that defined in conf/makefile.win
 TCL2C = ../tclcl-1.19/tcl2c++
-TCLSH = /home/catalin/projects/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/bin/tclsh8.4
+TCLSH = /home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/bin/tclsh8.4
 
 #
 # Remember to add a dependency if you add any tcl sources here.
 #
 LIB =  \
-	-L/home/catalin/projects/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/tclcl-1.19 -ltclcl -L/home/catalin/projects/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/otcl-1.13 -lotcl -L/home/catalin/projects/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/lib -ltk8.4 -L/home/catalin/projects/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/lib -ltcl8.4 -L/home/catalin/projects/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/zlib-1.2.3 -lz \
+	-L/home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/tclcl-1.19 -ltclcl -L/home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/otcl-1.13 -lotcl -L/home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/lib -ltk8.4 -L/home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/lib -ltcl8.4 -L/home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/zlib-1.2.3 -lz \
 	-lXext -lX11 \
 	 -lnsl -ldl -lm 
 INCLUDE = \
-	-I. -I/home/catalin/projects/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/tclcl-1.19 -I/home/catalin/projects/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/otcl-1.13 -I/home/catalin/projects/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/include -I/home/catalin/projects/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/include -I/home/catalin/projects/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/include -I/home/catalin/projects/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/zlib-1.2.3 \
+	-I. -I/home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/tclcl-1.19 -I/home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/otcl-1.13 -I/home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/include -I/home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/include -I/home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/include -I/home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/zlib-1.2.3 \
 	 
 
 STATIC = 

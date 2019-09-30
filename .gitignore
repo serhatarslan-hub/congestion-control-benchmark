@@ -3,6 +3,7 @@
 *.pyc
 *~
 *.out~
+*.o
 
 # Nam
 *.nam
@@ -16,7 +17,8 @@ sftp-config.json
 # Unique for every clone
 dctcp-ns2/settings.sh
 
-# Bulk results for random topology
+# Bulk results 
+out_*/
 out_randomTopology/*/
 out_randomTopology/consolidatedReport.json
 

@@ -31,10 +31,10 @@ LOCALES			= cs de el en en_gb eo es fr hu it nl pl pt ru
 # to the "configure" script.  The *dir vars are standard configure
 # substitutions that are based off prefix and exec_prefix.
 
-prefix			= /home/catalin/projects/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34
-exec_prefix		= /home/catalin/projects/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34
+prefix			= /home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34
+exec_prefix		= /home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34
 bindir			= ${exec_prefix}/bin
-libdir			= /home/catalin/projects/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/lib
+libdir			= /home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/lib
 includedir		= ${prefix}/include
 mandir			= ${prefix}/share/man
 
@@ -94,11 +94,11 @@ HTML_INSTALL_DIR	= $(INSTALL_ROOT)$(HTML_DIR)
 # The directory containing the Tcl sources and headers appropriate
 # for this version of Tk ("srcdir" will be replaced or has already
 # been replaced by the configure script):
-TCL_GENERIC_DIR		= /home/catalin/projects/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/tcl8.4.18/generic
+TCL_GENERIC_DIR		= /home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/tcl8.4.18/generic
 
 # The directory containing the Tcl library archive file appropriate
 # for this version of Tk:
-TCL_BIN_DIR		= /home/catalin/projects/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/tcl8.4.18/unix
+TCL_BIN_DIR		= /home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/tcl8.4.18/unix
 
 # The linker flags needed to link in the Tcl library (ex: -ltcl8.2)
 TCL_LIB_FLAG		= -ltcl8.4
@@ -193,14 +193,14 @@ SHELL			= /bin/sh
 # path. Targets that need an installed tclsh should not depend
 # on this variable.
 
-BUILD_TCLSH		= /home/catalin/projects/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/tcl8.4.18/unix/tclsh
+BUILD_TCLSH		= /home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/tcl8.4.18/unix/tclsh
 
 # TCL_EXE is the name of a tclsh executable that is available *BEFORE*
 # running make for the first time. Certain build targets (make genstubs)
 # need it to be available on the PATH. This executable should *NOT* be
 # required just to do a normal build although it can be required to run
 # make dist. This variable is set to "" if no tclsh is available.
-TCL_EXE			= /home/catalin/projects/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/bin/tclsh8.4
+TCL_EXE			= /home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/bin/tclsh8.4
 
 # Tk used to let the configure script choose which program to use
 # for installing, but there are just too many different versions of
@@ -210,7 +210,7 @@ TCL_EXE			= /home/catalin/projects/congestion_benchmark/dctcp-ns2/ns-2/ns-allino
 INSTALL_STRIP_PROGRAM   = -s
 INSTALL_STRIP_LIBRARY   = -S -S
 
-INSTALL			= /home/catalin/projects/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/tk8.4.18/unix/install-sh -c
+INSTALL			= /home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/tk8.4.18/unix/install-sh -c
 INSTALL_PROGRAM		= ${INSTALL}
 INSTALL_LIBRARY		= ${INSTALL}
 INSTALL_DATA		= ${INSTALL} -m 644
@@ -242,8 +242,8 @@ LIB_FILE		= ${TK_LIB_FILE}
 TK_LIB_FLAG		= -ltk8.4
 #TK_LIB_FLAG		= -ltk
 
-TCL_LIB_SPEC		= -L/home/catalin/projects/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/tcl8.4.18/unix -ltcl8.4
-TCL_STUB_LIB_SPEC	= -L/home/catalin/projects/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/tcl8.4.18/unix -ltclstub8.4
+TCL_LIB_SPEC		= -L/home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/tcl8.4.18/unix -ltcl8.4
+TCL_STUB_LIB_SPEC	= -L/home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/tcl8.4.18/unix -ltclstub8.4
 TCL_STUB_LIB_FLAG	= -ltclstub8.4
 TCL_STUB_LIB_FILE	= libtclstub8.4.a
 TK_EXP_FILE		= 
@@ -291,12 +291,12 @@ REZ_SWITCHES =  -i $(GENERIC_DIR) -i $(TCL_GENERIC_DIR)
 AC_FLAGS		= -DPACKAGE_NAME=\"\" -DPACKAGE_TARNAME=\"\" -DPACKAGE_VERSION=\"\" -DPACKAGE_STRING=\"\" -DPACKAGE_BUGREPORT=\"\" -DPACKAGE_URL=\"\" -DSTDC_HEADERS=1 -DHAVE_SYS_TYPES_H=1 -DHAVE_SYS_STAT_H=1 -DHAVE_STDLIB_H=1 -DHAVE_STRING_H=1 -DHAVE_MEMORY_H=1 -DHAVE_STRINGS_H=1 -DHAVE_INTTYPES_H=1 -DHAVE_STDINT_H=1 -DHAVE_UNISTD_H=1 -DHAVE_LIMITS_H=1 -DHAVE_UNISTD_H=1 -DSTATIC_BUILD=1 -DPEEK_XCLOSEIM=1 -D_LARGEFILE64_SOURCE=1 -DTCL_WIDE_INT_IS_LONG=1 -DHAVE_SYS_TIME_H=1 -DTIME_WITH_SYS_TIME=1 -DHAVE_PW_GECOS=1
 AR			= ar
 RANLIB			= ranlib
-SRC_DIR			= /home/catalin/projects/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/tk8.4.18/unix
+SRC_DIR			= /home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/tk8.4.18/unix
 TOP_DIR			= $(SRC_DIR)/..
 GENERIC_DIR		= $(TOP_DIR)/generic
 UNIX_DIR		= $(SRC_DIR)
 BMAP_DIR		= $(TOP_DIR)/bitmaps
-TOOL_DIR		= /home/catalin/projects/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/tcl8.4.18/tools
+TOOL_DIR		= /home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/tcl8.4.18/tools
 MAC_OSX_DIR		= $(TOP_DIR)/macosx
 XLIB_DIR		= $(TOP_DIR)/xlib
 
@@ -488,7 +488,7 @@ libraries:
 
 $(TOP_DIR)/doc/man.macros:
 	chmod +x $(UNIX_DIR)/install-sh
-	$(INSTALL_DATA) /home/catalin/projects/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/tcl8.4.18/doc/man.macros $(TOP_DIR)/doc/man.macros
+	$(INSTALL_DATA) /home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/tcl8.4.18/doc/man.macros $(TOP_DIR)/doc/man.macros
 
 doc: $(TOP_DIR)/doc/man.macros
 
@@ -524,7 +524,7 @@ objs: ${OBJS}
 
 
 wish: $(WISH_OBJS) $(TK_LIB_FILE) $(TK_STUB_LIB_FILE) 
-	${CC} ${CFLAGS} ${LDFLAGS} $(WISH_OBJS) -L/home/catalin/projects/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/tk8.4.18/unix -ltk8.4 \
+	${CC} ${CFLAGS} ${LDFLAGS} $(WISH_OBJS) -L/home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/tk8.4.18/unix -ltk8.4 \
 		$(WISH_LIBS) $(CC_SEARCH_FLAGS) -o wish
 
 # Resetting the LIB_RUNTIME_DIR below is required so that
@@ -537,7 +537,7 @@ tktest: $(TKTEST_OBJS) $(TK_LIB_FILE)
 	$(MAKE) tktest-real LIB_RUNTIME_DIR=`pwd`:$(TCL_BIN_DIR)
 
 tktest-real:
-	${CC} ${CFLAGS} ${LDFLAGS} $(TKTEST_OBJS) -L/home/catalin/projects/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/tk8.4.18/unix -ltk8.4 \
+	${CC} ${CFLAGS} ${LDFLAGS} $(TKTEST_OBJS) -L/home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/tk8.4.18/unix -ltk8.4 \
 		$(WISH_LIBS) $(CC_SEARCH_FLAGS) -o tktest
 
 # FIXME: This xttest rule seems to be broken in a number of ways.
@@ -546,7 +546,7 @@ tktest-real:
 # test.o object file comes from.
 xttest: test.o tkTest.o tkSquare.o $(TK_LIB_FILE)
 	${CC} ${CFLAGS} ${LDFLAGS} test.o tkTest.o tkSquare.o \
-		-L/home/catalin/projects/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/tk8.4.18/unix -ltk8.4 \
+		-L/home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/tk8.4.18/unix -ltk8.4 \
 		$(WISH_LIBS) $(LD_SEARCH_FLAGS) -lXt -o xttest
 
 # Note, in the target below TCL_LIBRARY needs to be set or else
@@ -559,8 +559,8 @@ xttest: test.o tkTest.o tkSquare.o $(TK_LIB_FILE)
 test: tktest
 	LD_LIBRARY_PATH=`pwd`:${TCL_BIN_DIR}:$${LD_LIBRARY_PATH}; \
 	export LD_LIBRARY_PATH; \
-	TCL_LIBRARY=/home/catalin/projects/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/tcl8.4.18/library; export TCL_LIBRARY; \
-	TK_LIBRARY=/home/catalin/projects/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/tk8.4.18/library; export TK_LIBRARY; \
+	TCL_LIBRARY=/home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/tcl8.4.18/library; export TCL_LIBRARY; \
+	TK_LIBRARY=/home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/tk8.4.18/library; export TK_LIBRARY; \
 	./tktest $(TOP_DIR)/tests/all.tcl -geometry +0+0 \
 	$(TESTFLAGS) $(TCLTESTARGS)
 
@@ -568,8 +568,8 @@ test: tktest
 testlang: tktest
 	LD_LIBRARY_PATH=`pwd`:${TCL_BIN_DIR}:$${LD_LIBRARY_PATH}; \
 	export LD_LIBRARY_PATH; \
-	TCL_LIBRARY=/home/catalin/projects/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/tcl8.4.18/library; export TCL_LIBRARY; \
-	TK_LIBRARY=/home/catalin/projects/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/tk8.4.18/library; export TK_LIBRARY; \
+	TCL_LIBRARY=/home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/tcl8.4.18/library; export TCL_LIBRARY; \
+	TK_LIBRARY=/home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/tk8.4.18/library; export TK_LIBRARY; \
 	for lang in $(LOCALES) ;  \
 	do \
 	LANG=$(lang); export LANG; \
@@ -581,8 +581,8 @@ testlang: tktest
 runtest: tktest
 	LD_LIBRARY_PATH=`pwd`:${TCL_BIN_DIR}:$${LD_LIBRARY_PATH}; \
 	export LD_LIBRARY_PATH; \
-	TCL_LIBRARY=/home/catalin/projects/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/tcl8.4.18/library; export TCL_LIBRARY; \
-	TK_LIBRARY=/home/catalin/projects/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/tk8.4.18/library; export TK_LIBRARY; \
+	TCL_LIBRARY=/home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/tcl8.4.18/library; export TCL_LIBRARY; \
+	TK_LIBRARY=/home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/tk8.4.18/library; export TK_LIBRARY; \
 	./tktest
 
 # This target can be used to run wish from the build directory
@@ -590,15 +590,15 @@ runtest: tktest
 shell: wish
 	LD_LIBRARY_PATH=`pwd`:${TCL_BIN_DIR}:$${LD_LIBRARY_PATH}; \
 	export LD_LIBRARY_PATH; \
-	TCL_LIBRARY=/home/catalin/projects/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/tcl8.4.18/library; export TCL_LIBRARY; \
-	TK_LIBRARY=/home/catalin/projects/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/tk8.4.18/library; export TK_LIBRARY; \
+	TCL_LIBRARY=/home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/tcl8.4.18/library; export TCL_LIBRARY; \
+	TK_LIBRARY=/home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/tk8.4.18/library; export TK_LIBRARY; \
 	./wish $(SCRIPT)
 
 # This target can be used to run wish inside either gdb or insight
 gdb: wish
 	@echo "set env LD_LIBRARY_PATH=`pwd`:${TCL_BIN_DIR}:$${LD_LIBRARY_PATH}" > gdb.run
-	@echo "set env TCL_LIBRARY=/home/catalin/projects/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/tcl8.4.18/library" >> gdb.run
-	@echo "set env TK_LIBRARY=/home/catalin/projects/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/tk8.4.18/library" >> gdb.run
+	@echo "set env TCL_LIBRARY=/home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/tcl8.4.18/library" >> gdb.run
+	@echo "set env TK_LIBRARY=/home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/tk8.4.18/library" >> gdb.run
 	gdb ./wish --command=gdb.run
 	rm gdb.run
 
@@ -1307,7 +1307,7 @@ DISTROOT = /tmp/dist
 DISTNAME = tk${VERSION}${PATCH_LEVEL}
 ZIPNAME	 = tk${MAJOR_VERSION}${MINOR_VERSION}${PATCH_LEVEL}-src.zip
 DISTDIR	 = $(DISTROOT)/$(DISTNAME)
-TCLDIR   = /home/catalin/projects/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/tcl8.4.18
+TCLDIR   = /home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/tcl8.4.18
 
 dist:
 	rm -rf $(DISTDIR)
@@ -1477,7 +1477,7 @@ html-tk:
 BUILD_HTML = \
 	@if test -f "$(BUILD_TCLSH)"; then \
 	LD_LIBRARY_PATH=$(TCL_BIN_DIR):$${LD_LIBRARY_PATH}; export LD_LIBRARY_PATH; \
-	TCL_LIBRARY=/home/catalin/projects/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/tcl8.4.18/library; export TCL_LIBRARY; \
+	TCL_LIBRARY=/home/sarslan/congestion_benchmark/dctcp-ns2/ns-2/ns-allinone-2.34/tcl8.4.18/library; export TCL_LIBRARY; \
 	TCLSH="$(BUILD_TCLSH)"; else \
 	TCLSH="$(TCL_EXE)"; fi ;\
 	$${TCLSH} $(TOOL_DIR)/tcltk-man2html.tcl --htmldir=$(HTML_INSTALL_DIR) \
