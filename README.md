@@ -110,9 +110,10 @@ have a look and change the code as you'd like. However, remember to redo the ste
 What is HOPE?
 -------------
 
-HOPE (Hop-by-hop Obstructions Provided to End-hosts) is a framework where each switch 
-stamps the queue occupancy information onto every packet. When the server gets the packet,
-the queue occupancy information is piggybacked to the client via the acknowledgement packet.
+HOPE (Hop-by-hop Obstructions Provided to End-hosts) is a framework where each switch, 
+similar to INT, stamps the queue occupancy information onto every packet. When the server 
+gets the packet, the queue occupancy information is piggybacked to the client via the 
+acknowledgement packet.
 
 The client collects this information and processes to decide how to change the tranmission 
 rate. In our implementation, we used Timely's gradient based approach for desicion process,
@@ -127,7 +128,7 @@ summarized with the following formulation:
 
 + Function:
     - *Sum* : Sums all the queue occupancies along the path. Equivalent to RTT.
-    - *Max* : Takes the hisghest level occupancy, i.e. bottleneck, only into consideration
+    - *Max* : Takes the highest level occupancy, i.e. bottleneck, only into consideration
     - *Squ* : Takes square of each queue occupancy, sum them up, and calculate the square root. Gives more emphasis on longer queues but does't ignore others.
 + Data:
     - default : Time between arrival and departure of the packet
